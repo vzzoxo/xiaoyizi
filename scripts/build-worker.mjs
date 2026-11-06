@@ -46,7 +46,7 @@ await build({
         const code = await fs.promises.readFile(args.path, 'utf8');
         const patched=code.replace(/init: \(\(\) => \{[\s\S]*?\}\)\(\),/, 'init: Promise.resolve(),');
         if(patched===code) throw new Error('ssh2 initialization changed: recheck Workers crypto adapter');
-        return {contents:patched,loader:'js'};
+        return {contents:patched.replace("binding = require('./crypto/build/Release/sshcrypto.node');", 'binding = null;'),loader:'js'};
       }
       if (args.path.endsWith('/ssh2/lib/protocol/node-fs-compat.js')) {
         const code = await fs.promises.readFile(args.path, 'utf8');
