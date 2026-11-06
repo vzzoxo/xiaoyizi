@@ -132,7 +132,7 @@ const singleton = env => env.PANEL.get(env.PANEL.idFromName('xiaoyizi'));
 export default {
   fetch: (request, env) => {
     const url = new URL(request.url);
-    if (/^\/(css|js|images|fonts)\//.test(url.pathname) || ['/favicon.ico','/favicon.svg','/robots.txt'].includes(url.pathname)) return env.ASSETS.fetch(request);
+    if (/^\/(css|js|images|fonts)\//.test(url.pathname) || ['/favicon.ico','/favicon.svg','/robots.txt','/apple-touch-icon.png','/icon-192.png'].includes(url.pathname)) return env.ASSETS.fetch(request);
     return singleton(env).fetch(request);
   },
   scheduled: (event, env, ctx) => {

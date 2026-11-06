@@ -5,10 +5,11 @@
   "compatibility_date": "2026-11-06",
   "compatibility_flags": ["nodejs_compat"],
   "no_bundle": true,
+  "workers_dev": true,
   "assets": { "directory": "public", "binding": "ASSETS", "run_worker_first": true },
   "durable_objects": { "bindings": [{ "name": "PANEL", "class_name": "Panel" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Panel"] }],
   "triggers": { "crons": ["* * * * *"] },
-  "vars": { "NODE_ENV": "production" },
+  "vars": { "NODE_ENV": "production", "PANEL_DOMAIN": "xiaoyizi.hekuo.workers.dev" },
   "observability": { "enabled": true, "traces": { "enabled": true } }
 }
