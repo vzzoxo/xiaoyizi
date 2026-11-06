@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../services/database');
 const agentWs = require('../services/agent-ws');
-const { requireAuth } = require('../middleware/auth');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { userApiLimiter } = require('../middleware/rateLimit');
 
 // 按 ssh_host 合并同机节点
@@ -36,7 +36,7 @@ function groupNodesByMachine(nodes, agentMap, metricsMap) {
 }
 
 // GET /api/monitor/overview
-router.get('/api/monitor/overview', requireAuth, userApiLimiter, (req, res) => {
+router.get('/api/monitor/overview', requireAuth, requireAdmin, userApiLimiter, (req, res) => {
   try {
     const nodes = db.getAllNodes(true);
     const connectedAgents = agentWs.getConnectedAgents();
@@ -94,7 +94,7 @@ router.get('/api/monitor/overview', requireAuth, userApiLimiter, (req, res) => {
 });
 
 // GET /api/monitor/node/:id?range=1h|6h|24h|7d
-router.get('/api/monitor/node/:id', requireAuth, userApiLimiter, (req, res) => {
+router.get('/api/monitor/node/:id', requireAuth, requireAdmin, userApiLimiter, (req, res) => {
   try {
     const nodeId = parseInt(req.params.id, 10);
     if (!Number.isFinite(nodeId)) {

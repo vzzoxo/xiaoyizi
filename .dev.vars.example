@@ -1,0 +1,8 @@
+SESSION_SECRET=local-development-only-replace-with-a-random-secret
+ADMIN_EMAIL=admin@example.test
+ADMIN_PASSWORD=local-development-password-replace-me
+PANEL_DOMAIN=localhost:8787
+# JSON must stay on one line; never commit real session cookies.
+# ULZIX_COOKIES_JSON='[{"name":"PHPSESSID","value":"YOUR_SESSION","domain":"idc-new.ulzix.com","path":"/"}]'
+# TG_BOT_TOKEN=
+# TG_WEBHOOK_SECRET=

@@ -27,14 +27,14 @@
     <!-- 详情视图 -->
     <div id="monitor-detail" style="display:none">
       <div class="flex items-center gap-3 mb-4">
-        <button onclick="monitorBack()" class="text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition">← 返回</button>
+        <button id="monitor-back" class="text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition">← 返回</button>
         <h2 class="text-lg font-semibold text-white" id="monitor-detail-title"></h2>
       </div>
       <div class="flex gap-2 mb-4" id="monitor-range-btns">
-        <button onclick="switchMonitorRange('1h')" class="monitor-range-btn active text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="1h">1小时</button>
-        <button onclick="switchMonitorRange('6h')" class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="6h">6小时</button>
-        <button onclick="switchMonitorRange('24h')" class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="24h">24小时</button>
-        <button onclick="switchMonitorRange('7d')" class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="7d">7天</button>
+        <button class="monitor-range-btn active text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="1h">1小时</button>
+        <button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="6h">6小时</button>
+        <button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="24h">24小时</button>
+        <button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="7d">7天</button>
       </div>
       <div id="monitor-detail-status" class="mb-4"></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -181,7 +181,7 @@
         return '<span class="inline-block px-1.5 py-0.5 rounded text-[10px] bg-white/10 text-gray-400">' + escapeHtml(p) + '</span>';
       }).join(' ');
 
-      return '<div class="node-card glass rounded-xl p-4 cursor-pointer" onclick="loadNodeDetail(' + n.agentNodeId + ',\'' + _currentMonitorRange + '\')">'
+      return '<div class="node-card glass rounded-xl p-4 cursor-pointer" data-node-id="' + Number(n.agentNodeId) + '">'
         /* 顶部：名称 + 状态 + 协议 */
         + '<div class="flex items-center justify-between mb-3">'
         + '<div class="flex items-center gap-2 min-w-0">'
@@ -324,6 +324,15 @@
     });
   }
 
+  document.getElementById('monitor-back').addEventListener('click', monitorBack);
+  document.getElementById('monitor-range-btns').addEventListener('click', function(event) {
+    var button = event.target.closest('[data-range]');
+    if(button) switchMonitorRange(button.dataset.range);
+  });
+  document.getElementById('monitor-cards').addEventListener('click', function(event) {
+    var card=event.target.closest('[data-node-id]');
+    if(card && Number.isSafeInteger(Number(card.dataset.nodeId))) loadNodeDetail(Number(card.dataset.nodeId), _currentMonitorRange);
+  });
   loadMonitorOverview();
   startAutoRefresh();
   </script>

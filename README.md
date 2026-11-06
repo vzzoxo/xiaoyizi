@@ -6,7 +6,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green.svg)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-5-lightgrey.svg)](https://expressjs.com)
 
-基于 Node.js + Express + SQLite，把用户、节点、订阅、流量、运维放进一套系统。覆盖 VLESS Reality / Shadowsocks / Hysteria 2 三种协议，支持邮箱注册、AWS EC2/Lightsail 节点编排、Telegram 互动游戏、自动化运维巡检。
+基于 Node.js + Express + SQLite，把用户、节点、订阅、流量、运维放进一套系统。覆盖 VLESS Reality / Shadowsocks / Hysteria 2 三种协议，支持 Cloudflare Workers 部署、邮箱注册、Ulzix 订单与节点绑定、Telegram 互动游戏、自动化运维巡检。
 
 ## 功能
 
@@ -19,8 +19,8 @@
 - **健康监控**：Agent WebSocket 长连接 + xray/Hysteria 存活检测 + 资源用量
 
 ### 自动化
-- **AWS 集成**：EC2 / Lightsail 多账号管理、一键创建实例、换 IP（含 Wavelength）
-- **被墙检测**：自动识别 → 自动换 IP → 自动同步配置
+- **Ulzix 集成**：FOSSBilling Client API、Cookie JSON 登录态、订单列表、节点绑定
+- **被墙检测**：Agent 连通性检测与通知；Ulzix 换 IP 需在其控制台操作
 - **密钥轮换**：UUID/订阅 Token 按用户组配置周期重置
 - **不活跃冻结**：TG 30 天未签到自动冻结，签到一次自动解冻
 
@@ -32,17 +32,21 @@
 
 ### 运维
 - **管理后台**：节点 CRUD / 用户 CRUD / 流量统计 / 安全审计 / 备份恢复
-- **探针**：实时性能监控（CPU/内存/磁盘/带宽/延迟），所有登录用户可见
+- **探针**：实时性能监控（CPU/内存/磁盘/带宽/延迟），仅管理员可见
 - **审计日志**：操作可追溯，过期自动清理
 - **OPS API**：RESTful 接口，可被 OpenClaw 或外部系统调用做巡检和自愈
 - **备份**：每日定时备份 + 手动一键备份 + 一键恢复
 
+## Cloudflare Workers 部署（推荐）
+
+请阅读 [Workers 部署与 Ulzix 配置](./README-WORKERS.md)。包含初始化管理员、Cookie JSON、Agent、备份和 Telegram webhook 配置。
+
 ## 快速部署
 
-### 一键脚本（推荐）
+### 旧版 Node 常驻部署
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/vzzoxo/xiaoyizi/main/install.sh)
+bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/xiaoyizi/main/install.sh)
 ```
 
 脚本会自动完成：系统依赖 → Node.js 22 → PM2 → 拉取代码 → 配置 .env → Nginx + Let's Encrypt SSL → PM2 启动 → 健康检查。
@@ -54,7 +58,7 @@ bash <(curl -sL https://raw.githubusercontent.com/vzzoxo/xiaoyizi/main/install.s
 ### 手动部署
 
 ```bash
-git clone https://github.com/vzzoxo/xiaoyizi.git
+git clone https://github.com/hekuo5310/xiaoyizi.git
 cd xiaoyizi
 npm install --omit=dev
 cp .env.example .env
@@ -98,7 +102,7 @@ src/
 ├── services/               # 业务逻辑
 │   ├── database.js         # SQLite + 迁移
 │   ├── deploy.js           # 节点部署
-│   ├── aws.js              # AWS EC2/Lightsail
+│   ├── ulzix.js            # Ulzix FOSSBilling Client API
 │   ├── health.js           # 健康检查 + 流量上报
 │   ├── tgbot.js            # Telegram Bot
 │   ├── agent-ws.js         # Agent WebSocket
@@ -133,7 +137,7 @@ openclaw-ops/               # OpenClaw AI 运维 workspace（可选）
 - **进程管理**：PM2
 - **模板**：EJS
 - **样式**：Tailwind CSS（预编译）
-- **AWS SDK**：v3（按需加载 EC2 / Lightsail）
+- **Workers**：Durable Object SQLite / Assets / Cron / WebSocket
 - **WebSocket**：ws（面板侧）+ 自实现协议（Agent 侧，避免依赖）
 
 ## 安全特性
@@ -142,7 +146,7 @@ openclaw-ops/               # OpenClaw AI 运维 workspace（可选）
 - CSRF 双重防护（Origin + Token）
 - 登录限流 + 验证码次数限制
 - 密码使用 scrypt 哈希（参数范围限制防 DoS）
-- AWS 凭据 AES-256-GCM 加密存储
+- Ulzix Cookie 仅存服务端 Secret
 - 订阅链接 HMAC 签名（可选）
 - 多层 Rate Limiting（IP / Token / 行为）
 - Timing-safe 比较防时序攻击

@@ -26,7 +26,7 @@ async function tgFetch(url, init) {
   } finally { clearTimeout(timer); }
 }
 
-async function send(text) {
+async function sendActual(text) {
   const cfg = getConfig();
   if (!cfg) return;
   try {
@@ -122,3 +122,8 @@ const notify = {
 };
 
 module.exports = { send, sendToUser, notify };
+
+function send(text) {
+  const work = sendActual(text);
+  return process.env.WORKERS_RUNTIME ? require('../../workers/lifetime').track(work) : work;
+}

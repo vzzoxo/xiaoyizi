@@ -15,7 +15,7 @@
 - 编辑节点信息、流量倍率、用户组等级限制
 - 重启 Xray / Hysteria 2
 - 同步配置到节点
-- AWS 绑定与一键换 IP（支持 EC2 / Lightsail / Wavelength）
+- Ulzix 订单列表与节点绑定
 - 节点 AI 标签（基于审计日志识别近期换 IP 等动作）
 
 ### 用户管理
@@ -43,13 +43,13 @@
 - 运维诊断与 AI 运营日记（蜜桃酱）
 - Agent 批量自更新
 
-### AWS
+### Ulzix
 
-- 多账号管理（EC2 / Lightsail）
-- 一键创建实例并部署
-- 节点绑定实例
-- 实例换 IP（含 Wavelength 弹性 IP / Lightsail 静态 IP）
-- 区域支持：覆盖 33+ AWS 商用区域，含吉隆坡、曼谷等较新区域
+- 使用 Secret `ULZIX_COOKIES_JSON` 提供 FOSSBilling 客户区登录态
+- 订单列表、状态、到期时间与节点绑定
+- 登录态失效时明确提示更新 Cookie
+- VPS 开关机、重装、换 IP 请到 Ulzix 控制台操作，未假定扩展接口
+- Workers 部署、备份和 Telegram 配置请参阅 [部署文档](./README-WORKERS.md)
 
 ### 设置
 
@@ -141,7 +141,7 @@ journalctl -u vless-agent -f          # 节点 Agent 日志（在节点上执行
 ## 风险提示
 
 - 数据库恢复会覆盖当前数据，操作前先备份
-- AWS 换 IP、自动冻结、批量更新 Agent 属于有副作用的操作
+- 自动冻结、批量更新 Agent 属于有副作用的操作
 - OPS API Token 不要暴露在公网，泄露后立刻在 `.env` 中轮换
 - 删除节点/用户前确认无在线流量，否则可能导致 Agent 上报失败（已加保护，但仍建议谨慎）
 - 默认 `auto_swap_ip` 等自动化开关在新部署时是关闭的，按需开启

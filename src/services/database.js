@@ -1,4 +1,4 @@
-const Database = require('better-sqlite3');
+const Database = process.env.WORKERS_RUNTIME ? require('../../workers/sqlite').Database : require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');

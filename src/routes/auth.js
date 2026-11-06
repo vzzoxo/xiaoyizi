@@ -13,10 +13,11 @@ const { hashPassword, verifyPassword } = require('../utils/password');
 const { sendMail } = require('../services/mailer');
 
 const router = express.Router();
-const usedTempLoginTokens = new Map();
+const { PersistentMap } = require('../../workers/persistent-map');
+const usedTempLoginTokens = process.env.WORKERS_RUNTIME ? new PersistentMap('temp-login') : new Map();
 
 // 邮箱验证码存储: email -> { code, expiresAt, attempts }
-const emailCodes = new Map();
+const emailCodes = process.env.WORKERS_RUNTIME ? new PersistentMap('email-codes') : new Map();
 const CODE_TTL = 10 * 60 * 1000; // 10 分钟
 const CODE_COOLDOWN = 60 * 1000;  // 60 秒发送间隔
 
@@ -298,6 +299,7 @@ router.post('/email-register', emailRegisterLimiter, async (req, res) => {
   }
   if (!safeTokenEqual(stored.code, code)) {
     stored.attempts++;
+    emailCodes.set(email, stored);
     return fail('验证码错误');
   }
 
@@ -380,7 +382,7 @@ router.post('/email-register', emailRegisterLimiter, async (req, res) => {
 });
 
 // ─── 找回密码 ───
-const forgotCodes = new Map(); // email -> { code, expiresAt, attempts }
+const forgotCodes = process.env.WORKERS_RUNTIME ? new PersistentMap('forgot-codes') : new Map(); // email -> { code, expiresAt, attempts }
 
 router.get('/forgot-password', (req, res) => {
   res.render('forgot-password', { nonce: res.locals.nonce || '' });
@@ -444,6 +446,7 @@ router.post('/forgot-reset', emailLoginLimiter, csrfProtection, (req, res) => {
     return res.json({ ok: false, error: '验证码已过期，请重新发送' });
   }
   stored.attempts++;
+  forgotCodes.set(email, stored);
   if (stored.attempts > 5) {
     forgotCodes.delete(email);
     return res.json({ ok: false, error: '验证码错误次数过多，请重新发送' });

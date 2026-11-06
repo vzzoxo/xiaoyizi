@@ -9,7 +9,7 @@ const { getTzDateParts, shiftIsoDate, today, weekKey, TG_TIMEZONE } = require('.
 const TOKEN = process.env.TG_BOT_TOKEN;
 let bot = null;
 const DOMAIN = process.env.PANEL_DOMAIN || 'vip.sd';
-let _botUsername = null;
+let _botUsername = process.env.TG_BOT_USERNAME || null;
 
 const MENU = {
   checkin: '📌 签到',
@@ -35,6 +35,15 @@ function getNodeEmoji(name) {
 }
 
 function getBotUsername() { return _botUsername; }
+async function ensureBotUsername() {
+  if (_botUsername || !bot) return _botUsername;
+  const cached = db.getSetting('tg_bot_username');
+  if (cached) return (_botUsername = cached);
+  const me = await bot.getMe();
+  _botUsername = me.username;
+  db.setSetting('tg_bot_username', _botUsername);
+  return _botUsername;
+}
 
 // ─── 签到配置 ───
 const CHECKIN_MIN_GB = 5;
@@ -454,13 +463,14 @@ if (!TOKEN) {
     init() {},
     generateBindToken,
     getBotUsername,
+    ensureBotUsername,
     _test: { today, weekKey, shiftIsoDate, countCurrentStreak, getTzDateParts },
   };
   return;
 }
 
 bot = new TelegramBot(TOKEN, {
-  polling: {
+  polling: process.env.WORKERS_RUNTIME ? false : {
     interval: 1000,
     autoStart: true,
     params: { timeout: 30 },
@@ -627,5 +637,7 @@ module.exports = {
   init,
   generateBindToken,
   getBotUsername,
+  ensureBotUsername,
+  processUpdate: update => bot.processUpdate(update),
   _test: { today, weekKey, shiftIsoDate, countCurrentStreak, getTzDateParts },
 };

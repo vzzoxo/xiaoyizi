@@ -52,13 +52,13 @@ journalctl -u vless-agent -f
 
 后台确认 Agent 在线，可同步配置、重启服务。
 
-## 9. AWS
+## 9. Ulzix
 
-账号可保存、实例可拉取、绑定正常、换 IP 成功。
+Cookie JSON 作为服务端 Secret 配置；订单可分页拉取、节点可绑定；过期登录态有明确提示。未核实的 VPS 扩展操作转到 Ulzix 控制台。
 
 ## 10. 备份
 
-后台可创建备份，文件实际落盘。
+后台可创建、下载和恢复备份；Workers 为持久化 JSON 快照，Node 版为本地 SQLite 文件。
 
 ## 11. OPS API
 
@@ -77,4 +77,4 @@ cd /root/panel && npm test
 
 ## 13. 高风险操作前
 
-先备份：数据库恢复、手动轮换、批量更新 Agent、AWS 换 IP。
+先备份：数据库恢复、手动轮换、批量更新 Agent。

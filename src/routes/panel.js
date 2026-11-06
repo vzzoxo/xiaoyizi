@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('../services/database');
 const { buildVlessLink, buildSsLink, buildHy2Link } = require('../utils/vless');
 const { formatBytes } = require('../utils/formatBytes');
-const { requireAuth } = require('../middleware/auth');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { csrfProtection } = require('../middleware/csrf');
 const logger = require('../services/logger');
 const { toSqlUtc } = require('../utils/time');
@@ -186,15 +186,15 @@ router.post('/api/tg-unbind', requireAuth, csrfProtection, (req, res) => {
   res.json({ ok: true });
 });
 
-router.post('/api/tg-bind-token', requireAuth, csrfProtection, (req, res) => {
-  const { generateBindToken, getBotUsername } = require('../services/tgbot');
-  const botUsername = getBotUsername();
+router.post('/api/tg-bind-token', requireAuth, csrfProtection, async (req, res) => {
+  const { generateBindToken, ensureBotUsername } = require('../services/tgbot');
+  const botUsername = await ensureBotUsername();
   if (!botUsername) return res.json({ ok: false, error: 'TG Bot 未配置' });
   const token = generateBindToken(req.user.id);
   res.json({ ok: true, url: `https://t.me/${botUsername}?start=bind_${token}`, command: `/bind ${token}` });
 });
 
-router.get('/monitor', requireAuth, (req, res) => {
+router.get('/monitor', requireAuth, requireAdmin, (req, res) => {
   res.render('monitor', { user: req.user, nonce: res.locals.nonce || '' });
 });
 

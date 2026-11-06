@@ -65,8 +65,9 @@ function cleanupPendingCommands(nodeId) {
 }
 
 function handleNormalAuth(ws, msg) {
-  const { token, nodeId, version, capabilities } = msg;
-  if (!nodeId) {
+  const { token, version, capabilities } = msg;
+  const nodeId = Number(msg.nodeId);
+  if (!Number.isSafeInteger(nodeId) || nodeId < 1) {
     return ws.close(4004, '缺少 nodeId');
   }
 
@@ -359,7 +360,7 @@ function handleReport(ws, msg) {
 function handleCmdResult(ws, msg) {
   const { id, success, stdout, stderr, error, message: resultMsg, ...rest } = msg;
   const pending = pendingCommands.get(id);
-  if (!pending) return;
+  if (!pending || pending.nodeId !== ws._agentState.nodeId) return;
 
   clearTimeout(pending.timer);
   pendingCommands.delete(id);
@@ -450,6 +451,16 @@ function getAgentReport(nodeId) {
   return agent.reportData;
 }
 
+function releaseConnection(ws) {
+  clearTimeout(ws._authTimer);
+  const nodeId = ws._agentState?.nodeId;
+  if (nodeId && agents.get(nodeId)?.ws === ws) {
+    markDisconnected(nodeId);
+    agents.delete(nodeId);
+    cleanupPendingCommands(nodeId);
+  }
+}
+
 /**
  * 关闭 WebSocket 服务
  */
@@ -474,6 +485,9 @@ function shutdown() {
 
 module.exports = {
   init,
+  handleMessage,
+  releaseConnection,
+  handleReport,
   sendCommand,
   getConnectedAgents,
   isAgentOnline,

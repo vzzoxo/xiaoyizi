@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+if (!process.env.WORKERS_RUNTIME) require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 
 // O9: 启动时 .env 校验（必须在其他模块加载前）
 const { validateEnv } = require('./services/env-check');
@@ -6,7 +6,7 @@ validateEnv();
 
 const express = require('express');
 const session = require('express-session');
-const SqliteStore = require('better-sqlite3-session-store')(session);
+const SqliteStore = process.env.WORKERS_RUNTIME ? require('../workers/session-store')(session) : require('better-sqlite3-session-store')(session);
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cron = require('node-cron');
@@ -30,6 +30,11 @@ const deployService = require('./services/deploy');
 const { configEvents } = require('./services/configEvents');
 
 const app = express();
+if (process.env.WORKERS_RUNTIME) {
+  app.engine('ejs', require('../workers/views.cjs').renderFile);
+  app.set('trust proxy', 1);
+}
+
 const PORT = process.env.PORT || 3000;
 const DEFAULT_TRAFFIC_RAW_RETENTION_DAYS = Math.max(1, parseInt(process.env.TRAFFIC_RAW_RETENTION_DAYS || '30', 10) || 30); // 最小 1 天
 const DEFAULT_TRAFFIC_DAILY_RETENTION_DAYS = Math.max(90, parseInt(process.env.TRAFFIC_DAILY_RETENTION_DAYS || '120', 10) || 120); // 最小 90 天，保证趋势图数据充足
@@ -75,7 +80,7 @@ app.use(helmet({
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
-app.use(morgan(accessLogFormat));
+app.use(morgan(process.env.WORKERS_RUNTIME ? (tokens, req, res) => JSON.stringify({method:req.method, path:req.path, status:res.statusCode, durationMs:tokens['response-time'](req,res)}) : accessLogFormat));
 app.use(requestMetricsMiddleware);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
@@ -83,7 +88,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // 反代信任边界：优先使用 TRUST_PROXY_CIDRS，仅在可信来源下接受 X-Forwarded-For
 const trustProxyConfig = resolveTrustProxyConfig(process.env);
-app.set('trust proxy', trustProxyConfig.value);
+app.set('trust proxy', process.env.WORKERS_RUNTIME ? 1 : trustProxyConfig.value);
 if (trustProxyConfig.mode === 'cidr') {
   logger.info({ cidrs: trustProxyConfig.cidrs }, 'trust proxy 已启用 CIDR 白名单');
 }
@@ -204,8 +209,11 @@ cron.schedule('0 4 * * *', async () => {
   } catch (err) { logger.error({ err }, '清理/冻结失败'); }
 }, { timezone: 'Asia/Shanghai' });
 
+// 常驻 Node 启动逻辑；Workers 的生命周期由入口与 Cron Trigger 管理。
+let server;
+if (!process.env.WORKERS_RUNTIME) {
 // 启动
-const server = app.listen(PORT, () => {
+server = app.listen(PORT, () => {
   logger.info({ port: PORT, env: process.env.NODE_ENV || 'development' }, '🚀 VLESS 节点面板已启动');
 
   // 启动 TG Bot
@@ -226,9 +234,10 @@ const server = app.listen(PORT, () => {
 // 初始化 WebSocket Agent 服务
 const agentWs = require('./services/agent-ws');
 agentWs.init(server);
+}
 
 // O4: 每天凌晨 2 点自动备份数据库
-cron.schedule('0 2 * * *', async () => {
+if (!process.env.WORKERS_RUNTIME) cron.schedule('0 2 * * *', async () => {
   const result = await performBackup(getDb());
   if (!result.ok) {
     logger.error({ error: result.error }, '定时备份失败');
@@ -311,7 +320,7 @@ function gracefulShutdown(signal) {
   server.close(() => {
     logger.info('HTTP 服务器已关闭');
     // 关闭 WebSocket
-    try { agentWs.shutdown(); } catch (err) {
+    try { require('./services/agent-ws').shutdown(); } catch (err) {
       logger.debug({ err }, '关闭 Agent WebSocket 失败，继续关闭流程');
     }
     // 关闭数据库
@@ -329,6 +338,7 @@ function gracefulShutdown(signal) {
     process.exit(1);
   }, 5000);
 }
+if (!process.env.WORKERS_RUNTIME) {
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
@@ -354,4 +364,5 @@ process.on('unhandledRejection', (reason) => {
   // unhandledRejection 不立即退出（多数为业务侧 Promise 链断裂），仅记录
 });
 
+}
 module.exports = app;

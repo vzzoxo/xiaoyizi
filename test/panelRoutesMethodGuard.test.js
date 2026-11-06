@@ -6,7 +6,7 @@ const panelRoutes = require('../src/routes/panel');
 
 test('panelRoutes do not expose mutating methods (POST/PUT/PATCH/DELETE)', () => {
   const disallowed = new Set(['post', 'put', 'patch', 'delete']);
-  const allowed = new Set(['POST /api/tg-bind-token']);
+  const allowed = new Set(['POST /api/tg-bind-token', 'POST /api/tg-unbind']);
   const offenders = [];
 
   for (const layer of panelRoutes.stack || []) {

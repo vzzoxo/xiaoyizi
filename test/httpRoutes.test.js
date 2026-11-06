@@ -318,7 +318,8 @@ test('admin api success path works with session login and csrf', async (t) => {
     app.post('/test-login', (req, res, next) => {
       req.logIn({ id: 1, is_admin: 1, is_blocked: 0 }, (err) => {
         if (err) return next(err);
-        return res.json({ ok: true });
+        req.session.csrfToken = 'session-test-csrf-token';
+        req.session.save(err => err ? next(err) : res.json({ ok: true }));
       });
     });
     app.use('/admin/api', csrfProtection, adminApiRoutes);
@@ -344,6 +345,7 @@ test('admin api success path works with session login and csrf', async (t) => {
         'Content-Type': 'application/json',
         Cookie: cookie,
         Origin: baseUrl,
+        'X-CSRF-Token': 'session-test-csrf-token',
       },
       body: JSON.stringify({ limit: 1 }),
     });

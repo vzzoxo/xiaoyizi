@@ -23,8 +23,8 @@ function safeNode(n, extra) {
     is_active: n.is_active, region: n.region, remark: n.remark,
     min_level: n.min_level, group_name: n.group_name, tags: n.tags,
     ip_version: n.ip_version, is_manual: n.is_manual, fail_count: n.fail_count,
-    aws_instance_id: n.aws_instance_id, aws_type: n.aws_type, aws_region: n.aws_region,
-    aws_account_id: n.aws_account_id, agent_last_report: n.agent_last_report,
+    ulzix_order_id: n.ulzix_order_id,
+    agent_last_report: n.agent_last_report,
     last_check: n.last_check, last_rotated: n.last_rotated, created_at: n.created_at,
     ...extra,
   };
@@ -222,21 +222,7 @@ router.post('/nodes/:id/swap-ip', async (req, res) => {
     const node = db.getNodeById(id);
     if (!node) return res.status(404).json({ error: '节点不存在' });
 
-    if (!node.aws_instance_id) {
-      return res.status(400).json({ error: '节点未绑定 AWS 实例' });
-    }
-
-    db.addAuditLog(null, 'ops_swap_ip_start', `OPS API 换 IP: ${node.name}`, 'ops-api');
-    const aws = require('../services/aws');
-    const result = await aws.swapNodeIp(node, node.aws_instance_id, node.aws_type, node.aws_region, node.aws_account_id);
-
-    if (result.success) {
-      db.addAuditLog(null, 'ops_swap_ip_ok', `${node.name} 换 IP 成功: ${result.oldIp || '?'} → ${result.newIp}`, 'ops-api');
-    } else {
-      db.addAuditLog(null, 'ops_swap_ip_fail', `${node.name} 换 IP 失败: ${result.error}`, 'ops-api');
-    }
-
-    res.json(result);
+    return res.status(501).json({success:false,error:'Ulzix 的 VPS 换 IP 扩展 API 尚未核实，请在 Ulzix 控制台操作'});
   } catch (err) {
     logger.error({ err }, 'OPS API swap-ip 失败');
     res.status(500).json({ error: 'Internal server error' });
@@ -372,7 +358,7 @@ router.get('/audit-log', (req, res) => {
 // POST /ops/api/backup — 手动触发备份
 router.post('/backup', async (req, res) => {
   try {
-    const result = await performBackup(db.getDb());
+    const result = process.env.WORKERS_RUNTIME ? {ok:true, backup:require('../../workers/backups').createBackup()} : await performBackup(db.getDb());
     db.addAuditLog(null, 'ops_backup', `OPS API 手动备份: ${result.ok ? '成功' : '失败'}`, 'ops-api');
     res.json(result);
   } catch (err) {

@@ -94,6 +94,7 @@
       const navM = document.getElementById('invite-pagination-m');
       if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-500">加载中...</td></tr>';
       if (cards) cards.innerHTML = '<div class="text-center text-gray-500 text-sm py-8">加载中...</div>';
+      document.querySelectorAll('[data-action="retry-invites"]').forEach(button=>button.addEventListener('click',()=>window.loadInviteRelations(1)));
       if (pageInfo) pageInfo.textContent = '';
       if (pageInfoM) pageInfoM.textContent = '';
       if (nav) nav.innerHTML = '';
@@ -108,7 +109,7 @@
       const pageInfoM = document.getElementById('invite-page-info-m');
       const nav = document.getElementById('invite-pagination');
       const navM = document.getElementById('invite-pagination-m');
-      const retryBtn = '<button type="button" class="mt-3 px-3 py-1.5 rounded-lg text-xs bg-white/10 text-white hover:bg-white/15 transition" onclick="window.loadInviteRelations && window.loadInviteRelations(1)">重试</button>';
+      const retryBtn = '<button type="button" class="mt-3 px-3 py-1.5 rounded-lg text-xs bg-white/10 text-white hover:bg-white/15 transition" data-action="retry-invites">重试</button>';
       if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-red-300">${text}<div>${retryBtn}</div></td></tr>`;
       if (cards) cards.innerHTML = `<div class="text-center text-red-300 text-sm py-8">${text}<div>${retryBtn}</div></div>`;
       if (pageInfo) pageInfo.textContent = '';

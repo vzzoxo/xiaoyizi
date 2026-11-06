@@ -6,3 +6,10 @@ data/
 backups/*.db
 database.db
 .plan.md
+
+.wrangler/
+dist/
+.dev.vars*
+!.dev.vars.example
+workers/views.cjs
+workers/files.cjs

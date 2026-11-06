@@ -4,11 +4,11 @@ set -eo pipefail
 # ══════════════════════════════════════════════════════════════
 # 小姨子 一键部署 v4.2
 # 支持: Debian 11+ / Ubuntu 20.04+
-# 用法: bash <(curl -sL https://raw.githubusercontent.com/vzzoxo/xiaoyizi/main/install.sh)
+# 用法: bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/xiaoyizi/main/install.sh)
 # ══════════════════════════════════════════════════════════════
 
 INSTALL_DIR="/root/panel"
-REPO_URL="https://github.com/vzzoxo/xiaoyizi.git"
+REPO_URL="https://github.com/hekuo5310/xiaoyizi.git"
 NODE_MAJOR=22
 
 R='\033[0;31m'; G='\033[0;32m'; Y='\033[1;33m'; C='\033[0;36m'; B='\033[1;37m'; N='\033[0m'

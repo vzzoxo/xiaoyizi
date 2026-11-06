@@ -922,28 +922,7 @@ function updateFromAgentReport(nodeId, reportData) {
       logger.info({ nodeId, nodeName: node.name, failThreshold: FAIL_THRESHOLD, remark }, '[Agent] 节点连续失败达到阈值');
       bufferSystemAuditLog(remark.includes('被墙') ? 'node_blocked' : 'node_xray_down', `${node.name}: ${remark}（连续${FAIL_THRESHOLD}次）`);
 
-      // 被墙且绑 AWS：自动换 IP
-      if (remark.includes('被墙') && node.aws_instance_id) {
-        notify.nodeBlocked(node.name, '自动换 IP');
-        (async () => {
-          try {
-            bufferSystemAuditLog('auto_swap_ip_start', `被墙自动换 IP: ${node.name}`);
-            notify.ops(`🧱 <b>Agent 检测到疑似被墙</b>\n节点: ${node.name}\n动作: 自动换 IP`);
-            const aws = require('./aws'); // 延迟加载避免循环依赖
-            const swap = await aws.swapNodeIp(node, node.aws_instance_id, node.aws_type, node.aws_region, node.aws_account_id);
-            if (swap.success) {
-              bufferSystemAuditLog('auto_swap_ip_ok', `${node.name} 换 IP 成功: ${swap.oldIp || '?'} → ${swap.newIp}`);
-              notify.ops(`✅ <b>自动换 IP 成功</b>\n节点: ${node.name}\nIP: ${swap.oldIp || '未知'} → ${swap.newIp}`);
-            } else {
-              bufferSystemAuditLog('auto_swap_ip_fail', `${node.name} 换 IP 失败: ${swap.error}`);
-              notify.ops(`❌ <b>自动换 IP 失败</b>\n节点: ${node.name}\n原因: ${swap.error}`);
-            }
-          } catch (e) {
-            bufferSystemAuditLog('auto_swap_ip_fail', `${node.name} 换 IP 异常: ${e.message}`);
-            notify.ops(`❌ <b>自动换 IP 异常</b>\n节点: ${node.name}\n原因: ${e.message}`);
-          }
-        })();
-      } else if (remark.includes('被墙')) {
+      if (remark.includes('被墙')) {
         notify.nodeBlocked(node.name, '需手动处理');
       } else if (!serviceAlive) {
         // 服务离线：尝试自动重启（从 DB 读取配置）
@@ -1057,7 +1036,8 @@ function updateFromAgentReport(nodeId, reportData) {
 }
 
 // ─── 零流量疑似被墙检测 ───
-const _zeroTrafficNotified = new Set(); // 已通知的 nodeId，避免重复
+const {PersistentSet} = require('../../workers/persistent-map');
+const _zeroTrafficNotified = process.env.WORKERS_RUNTIME ? new PersistentSet('health-zero') : new Set(); // 已通知的 nodeId，避免重复
 
 function startZeroTrafficWatch() {
   const INTERVAL = 60 * 60 * 1000; // 每小时检查一次
@@ -1088,25 +1068,8 @@ function checkZeroTrafficNodes() {
     logger.info({ nodeId: node.id, nodeName: node.name }, '节点24小时零流量，疑似被墙');
     bufferSystemAuditLog('node_zero_traffic', `${node.name}: 24小时零流量，疑似被墙`);
 
-    if (node.aws_instance_id) {
-      // 绑定了 AWS，自动换 IP
-      notify.ops(`🧱 <b>疑似被墙（24h零流量）</b>\n节点: ${node.name}\n动作: 自动换 IP`);
-      (async () => {
-        try {
-          const aws = require('./aws');
-          const swap = await aws.swapNodeIp(node, node.aws_instance_id, node.aws_type, node.aws_region, node.aws_account_id);
-          if (swap.success) {
-            bufferSystemAuditLog('auto_swap_ip_ok', `${node.name} 零流量换IP: ${swap.oldIp || '?'} → ${swap.newIp}`);
-            notify.ops(`✅ <b>零流量自动换 IP 成功</b>\n节点: ${node.name}\nIP: ${swap.oldIp || '?'} → ${swap.newIp}`);
-          } else {
-            notify.ops(`❌ <b>零流量换 IP 失败</b>\n节点: ${node.name}\n原因: ${swap.error}`);
-          }
-        } catch (e) {
-          notify.ops(`❌ <b>零流量换 IP 异常</b>\n节点: ${node.name}\n原因: ${e.message}`);
-        }
-      })();
-    } else {
-      notify.ops(`🧱 <b>疑似被墙（24h零流量）</b>\n节点: ${node.name}\n未绑定 AWS，需手动处理`);
+    {
+      notify.ops(`🧱 <b>疑似被墙（24h零流量）</b>\n节点: ${node.name}\n请在 Ulzix 控制台检查实例与网络`);
     }
   }
 }
@@ -1151,7 +1114,7 @@ function checkStaleAgents() {
 const SUDDEN_ZERO_CHECK_INTERVAL = 10 * 60 * 1000; // 每 10 分钟检查一次
 const SUDDEN_ZERO_SILENCE_HOURS = parseFloat(process.env.SUDDEN_ZERO_SILENCE_HOURS || '3') || 3;
 const SUDDEN_ZERO_ACTIVE_HOURS = parseFloat(process.env.SUDDEN_ZERO_ACTIVE_HOURS || '12') || 12;
-const _suddenZeroNotified = new Set();
+const _suddenZeroNotified = process.env.WORKERS_RUNTIME ? new PersistentSet('health-sudden-zero') : new Set();
 
 function startSuddenZeroTrafficWatch() {
   setInterval(() => checkSuddenZeroTraffic(), SUDDEN_ZERO_CHECK_INTERVAL).unref();
@@ -1205,25 +1168,7 @@ function checkSuddenZeroTraffic() {
         notify.ops(`🧱 <b>疑似被墙（突然零流量）</b>\n节点: ${names}\n主机: ${host}\n静默: ${SUDDEN_ZERO_SILENCE_HOURS} 小时\n此前流量: ${prevMb} MB`);
         logger.info({ host, names, silenceHours: SUDDEN_ZERO_SILENCE_HOURS, prevMb }, '[巡检] 活跃节点突然零流量，疑似被墙');
 
-        // 绑了 AWS 的自动换 IP
-        const awsNode = group.find(n => n.aws_instance_id);
-        if (awsNode) {
-          (async () => {
-            try {
-              const aws = require('./aws');
-              const swap = await aws.swapNodeIp(awsNode, awsNode.aws_instance_id, awsNode.aws_type, awsNode.aws_region, awsNode.aws_account_id);
-              if (swap.success) {
-                bufferSystemAuditLog('auto_swap_ip_ok', `${awsNode.name} 零流量换IP: ${swap.oldIp || '?'} → ${swap.newIp}`);
-                notify.ops(`✅ <b>零流量自动换 IP 成功</b>\n节点: ${awsNode.name}\nIP: ${swap.oldIp || '?'} → ${swap.newIp}`);
-                _suddenZeroNotified.delete(host);
-              } else {
-                notify.ops(`❌ <b>零流量换 IP 失败</b>\n节点: ${awsNode.name}\n原因: ${swap.error}`);
-              }
-            } catch (e) {
-              notify.ops(`❌ <b>零流量换 IP 异常</b>\n节点: ${awsNode.name}\n原因: ${e.message}`);
-            }
-          })();
-        }
+
       }
     }
 
@@ -1265,4 +1210,4 @@ function cleanupNodeState(nodeId) {
   }
 }
 
-module.exports = { checkPort, getOnlineCache, updateFromAgentReport, getPeerNodes, mirrorPeerState, startZeroTrafficWatch, startStaleAgentWatch, startSuddenZeroTrafficWatch, cleanupNodeState };
+module.exports = { checkZeroTrafficNodes, checkSuddenZeroTraffic, checkStaleAgents, flushBufferedHealthWrites, checkPort, getOnlineCache, updateFromAgentReport, getPeerNodes, mirrorPeerState, startZeroTrafficWatch, startStaleAgentWatch, startSuddenZeroTrafficWatch, cleanupNodeState };

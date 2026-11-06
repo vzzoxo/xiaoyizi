@@ -540,6 +540,7 @@ function buildSshConnectOpts(sshInfo) {
     port: sshInfo.ssh_port || 22,
     username: sshInfo.ssh_user || 'root',
   };
+  if (process.env.WORKERS_RUNTIME) opts.algorithms = {cipher:['aes128-gcm@openssh.com','aes256-gcm@openssh.com','aes128-ctr','aes256-ctr']};
   if (sshInfo.ssh_key_path) opts.privateKeyPath = sshInfo.ssh_key_path;
   else if (sshInfo.ssh_password) opts.password = sshInfo.ssh_password;
   return opts;
@@ -1279,3 +1280,13 @@ async function deployHy2Node(sshInfo, db) {
 // syncAllNodesConfig 对外暴露去抖版本
 const syncAllNodesConfig = syncAllNodesConfigDebounced;
 module.exports = { deployNode, deploySsNode, deployDualNode, deployHy2Node, detectRegion, generateNodeName, syncNodeConfig, syncAllNodesConfig, pushConfigToNode, buildHy2Config };
+
+// Workers must retain the request while remote provisioning/configuration runs.
+if (process.env.WORKERS_RUNTIME) {
+  const { track } = require('../../workers/lifetime');
+  for (const [name, fn] of Object.entries(module.exports)) {
+    if (typeof fn === 'function' && fn.constructor.name === 'AsyncFunction') {
+      module.exports[name] = (...args) => track(fn(...args));
+    }
+  }
+}
