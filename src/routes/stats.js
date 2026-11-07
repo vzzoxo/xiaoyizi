@@ -81,7 +81,7 @@ function buildPanelSummary(user) {
       nodesTotal: totalActive,
       patrolDiary: patrolDiary.map(e => ({
         content: escapeHtml((e.content || '').slice(0, 120)),
-        mood: e.mood || '🐱',
+        mood: e.mood || '',
         time: formatDateTimeInTimeZone(e.created_at, 'Asia/Shanghai'),
       })),
     },

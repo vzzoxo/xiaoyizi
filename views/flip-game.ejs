@@ -96,6 +96,8 @@ body{
 .flash-lose{box-shadow:0 0 0 1px rgba(251,113,133,.28),0 0 26px rgba(251,113,133,.22)}
 .ghost-reveal{border-color:rgba(148,163,184,.26)}
 </style>
+  <link rel="stylesheet" href="/css/material-theme.css">
+  <script defer src="/js/material.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -126,7 +128,7 @@ body{
       <% for (let i = 1; i <= 9; i++) { %>
         <button class="card" type="button" data-index="<%= i - 1 %>">
           <div class="card-back">
-            <div class="card-back-icon">📶</div>
+            <div class="card-back-icon">?</div>
             <div class="card-back-label">流量盲盒</div>
           </div>
           <div class="card-face">?</div>

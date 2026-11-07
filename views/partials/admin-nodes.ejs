@@ -11,7 +11,7 @@
         <div class="flex items-center gap-1.5" data-status-cell="<%= n.id %>">
           <% if (n.remark && n.remark.includes('被墙')) { %>
             <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]"></span>
-            <span class="text-xs text-red-400">🧱 被墙</span>
+            <span class="text-xs text-red-400"> 被墙</span>
           <% } else if (n.remark && n.remark.includes('离线')) { %>
             <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]"></span>
             <span class="text-xs text-red-400">离线</span>
@@ -55,11 +55,11 @@
         <div><span class="text-gray-500">最后检测</span><span class="block text-gray-500 mt-0.5"><%= n.last_check || '-' %></span></div>
       </div>
       <div class="flex gap-2 pt-1 border-t border-white/5">
-        <button data-id="<%= n.id %>" data-name="<%= n.name %>" data-host="<%= n.host %>" class="js-open-node-edit text-rose-400 hover:text-rose-300 text-xs">编辑</button>
-        <button data-node-id="<%= n.id %>" class="js-restart-xray text-amber-400 hover:text-amber-300 text-xs">重启</button>
+        <md-filled-button data-id="<%= n.id %>" data-name="<%= n.name %>" data-host="<%= n.host %>" class="js-open-node-edit text-rose-400 hover:text-rose-300 text-xs">编辑</md-filled-button>
+        <md-filled-button data-node-id="<%= n.id %>" class="js-restart-xray text-amber-400 hover:text-amber-300 text-xs">重启</md-filled-button>
         <form method="POST" action="/admin/api/nodes/<%= n.id %>/delete" class="inline">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="button" class="js-delete-node-btn text-red-400 hover:text-red-300 text-xs">删除</button>
+          <md-filled-button type="button" class="js-delete-node-btn text-red-400 hover:text-red-300 text-xs">删除</md-filled-button>
         </form>
       </div>
     </div>
@@ -99,7 +99,7 @@
               <div class="flex items-center gap-1.5">
                 <% if (n.remark && n.remark.includes('被墙')) { %>
                   <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]"></span>
-                  <span class="text-xs text-red-400" title="<%= n.remark %>">🧱 被墙</span>
+                  <span class="text-xs text-red-400" title="<%= n.remark %>"> 被墙</span>
                 <% } else if (n.remark && n.remark.includes('离线')) { %>
                   <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]"></span>
                   <span class="text-xs text-red-400" title="<%= n.remark %>">离线</span>
@@ -127,11 +127,11 @@
             </td>
             <td class="py-3 px-4 text-xs text-gray-500 hidden md:table-cell"><%= n.last_check || '-' %></td>
             <td class="py-3 px-4 space-x-2">
-              <button data-id="<%= n.id %>" data-name="<%= n.name %>" data-host="<%= n.host %>" class="js-open-node-edit text-rose-400 hover:text-rose-300 text-xs">编辑</button>
-              <button data-node-id="<%= n.id %>" class="js-restart-xray text-amber-400 hover:text-amber-300 text-xs">重启</button>
+              <md-filled-button data-id="<%= n.id %>" data-name="<%= n.name %>" data-host="<%= n.host %>" class="js-open-node-edit text-rose-400 hover:text-rose-300 text-xs">编辑</md-filled-button>
+              <md-filled-button data-node-id="<%= n.id %>" class="js-restart-xray text-amber-400 hover:text-amber-300 text-xs">重启</md-filled-button>
               <form method="POST" action="/admin/api/nodes/<%= n.id %>/delete" class="inline">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button type="button" class="js-delete-node-btn text-red-400 hover:text-red-300 text-xs">删除</button>
+                <md-filled-button type="button" class="js-delete-node-btn text-red-400 hover:text-red-300 text-xs">删除</md-filled-button>
               </form>
             </td>
           </tr>
@@ -143,7 +143,7 @@
 
   <!-- 一键部署 -->
   <details class="glass rounded-2xl">
-    <summary class="text-rose-400 text-sm cursor-pointer hover:text-rose-300 p-4">🚀 一键部署节点</summary>
+    <summary class="text-rose-400 text-sm cursor-pointer hover:text-rose-300 p-4"> 一键部署节点</summary>
     <p class="px-4 pb-3 text-gray-400 text-xs">支持 Debian/Ubuntu（systemd）及 Alpine（OpenRC，x86_64/aarch64）。Ulzix NAT 请核实 SSH 映射地址、端口，并确保套餐有足够内存和磁盘。</p>
     <div id="ulzix-deploy-list" class="px-4 pb-3 space-y-2 text-sm text-gray-300" aria-live="polite"></div>
     <form id="smart-deploy-form" method="POST" action="/admin/api/nodes/deploy-smart" class="px-4 pb-4 grid grid-cols-2 gap-3">
@@ -192,7 +192,7 @@
       </div>
 
       <details class="col-span-2">
-        <summary class="text-gray-500 text-xs cursor-pointer hover:text-gray-300">🔗 Socks5 落地（可选，VLESS/SS/双协议都生效）</summary>
+        <summary class="text-gray-500 text-xs cursor-pointer hover:text-gray-300"> Socks5 落地（可选，VLESS/SS/双协议都生效）</summary>
         <div class="grid grid-cols-2 gap-3 mt-2">
           <input type="text" name="socks5_host" placeholder="Socks5 地址" class="bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
           <input type="number" name="socks5_port" placeholder="端口（默认 1080）" min="1" max="65535" class="bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
@@ -205,7 +205,7 @@
         <span class="text-gray-400">当前模式：</span>
         <span class="text-rose-400" id="deploy-mode-text">仅 VLESS（IPv4）</span>
       </p>
-      <button class="bg-rose-600 hover:bg-rose-500 text-white py-2.5 rounded-xl text-sm col-span-2 transition font-medium" id="deploy-btn">🚀 部署</button>
+      <md-filled-button class="bg-rose-600 hover:bg-rose-500 text-white py-2.5 rounded-xl text-sm col-span-2 transition font-medium" id="deploy-btn"> 部署</md-filled-button>
     </form>
   </details>
 
@@ -230,7 +230,7 @@
           <div class="flex items-center gap-2 mt-1">
             <input type="number" name="cap_tb" id="node-edit-cap" min="0" step="0.1" value="0" class="flex-1 bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
             <span class="text-gray-500 text-xs">TB</span>
-            <button type="button" id="btn-save-traffic-cap" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs">设置</button>
+            <md-filled-button type="button" id="btn-save-traffic-cap" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs">设置</md-filled-button>
           </div>
         </div>
         <div>
@@ -241,8 +241,8 @@
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-1">
-          <button type="button" class="js-close-node-edit px-3 py-1.5 rounded-lg text-xs text-gray-300 hover:text-white">取消</button>
-          <button id="node-edit-submit" class="px-3 py-1.5 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white">保存</button>
+          <md-filled-button type="button" class="js-close-node-edit px-3 py-1.5 rounded-lg text-xs text-gray-300 hover:text-white">取消</md-filled-button>
+          <md-filled-button id="node-edit-submit" class="px-3 py-1.5 rounded-lg text-xs bg-rose-600 hover:bg-rose-500 text-white">保存</md-filled-button>
         </div>
       </form>
     </div>
@@ -327,28 +327,28 @@ function updateDeployHint() {
   if (hy2) parts.push('Hy2');
 
   if (parts.length === 0) {
-    modeText.textContent = '⚠️ 请至少选择一个协议';
+    modeText.textContent = '请至少选择一个协议';
     modeText.style.color = '#f87171';
   } else if (parts.length >= 2) {
-    modeText.textContent = '⚡ 多协议（' + parts.join(' + ') + '）';
+    modeText.textContent = '多协议（' + parts.join(' + ') + '）';
     modeText.style.color = '#fbbf24';
     btn.style.background = '#d97706';
-    btn.textContent = '⚡ 多协议部署';
+    btn.textContent = '多协议部署';
   } else if (vless) {
     modeText.textContent = '仅 VLESS（IPv4）';
     modeText.style.color = '#fb7185';
     btn.style.background = '#e11d48';
-    btn.textContent = '🚀 部署 VLESS';
+    btn.textContent = '部署 VLESS';
   } else if (ss) {
     modeText.textContent = '仅 Shadowsocks（IPv6）';
     modeText.style.color = '#22d3ee';
     btn.style.background = '#0891b2';
-    btn.textContent = '🚀 部署 SS';
+    btn.textContent = '部署 SS';
   } else if (hy2) {
     modeText.textContent = '仅 Hysteria 2（UDP）';
     modeText.style.color = '#fbbf24';
     btn.style.background = '#d97706';
-    btn.textContent = '🚀 部署 Hy2';
+    btn.textContent = '部署 Hy2';
   }
 }
 
@@ -363,7 +363,7 @@ function validateSmartDeploy(form) {
   if (!host) { toast('请填写服务器 IP', 2500, 'error'); form.host.focus(); return false; }
   if (!pwd) { toast('请填写 SSH 密码', 2500, 'error'); form.ssh_password.focus(); return false; }
   const btn = document.getElementById('deploy-btn');
-  btn.textContent = '⏳ 部署中...';
+  btn.textContent = '部署中...';
   btn.classList.add('btn-loading');
   return true;
 }
@@ -371,7 +371,7 @@ function validateSmartDeploy(form) {
 // 重启 Xray
 async function restartXray(nodeId, btn) {
   const origText = btn.textContent;
-  btn.textContent = '⏳';
+  btn.textContent = '';
   btn.disabled = true;
   try {
     const resp = await fetch(`/admin/api/nodes/${nodeId}/restart-xray`, {
@@ -379,9 +379,9 @@ async function restartXray(nodeId, btn) {
       body: JSON.stringify({})
     });
     const data = await resp.json();
-    btn.textContent = data.success ? '✅' : '❌';
+    btn.textContent = data.success ? '成功' : '失败';
   } catch {
-    btn.textContent = '❌';
+    btn.textContent = '';
   }
   setTimeout(() => { btn.textContent = origText; btn.disabled = false; }, 2000);
 }
@@ -440,7 +440,7 @@ document.getElementById('btn-save-traffic-cap')?.addEventListener('click', async
   const id = document.getElementById('node-edit-id').value;
   const cap_tb = document.getElementById('node-edit-cap').value;
   const res = await fetch('/admin/api/nodes/' + id + '/traffic-cap', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ cap_tb }) });
-  toast(res.ok ? '✅ 流量上限已设置（同机节点已同步）' : '❌ 设置失败');
+  toast(res.ok ? '流量上限已设置（同机节点已同步）' : '设置失败');
 });
 
 </script>

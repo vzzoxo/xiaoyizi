@@ -1,4 +1,4 @@
-# 小姨子
+# Pоrпнub
 
 > 一个为个人和小团队打造的多协议代理管理面板。
 
@@ -46,7 +46,7 @@
 ### 旧版 Node 常驻部署
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/xiaoyizi/main/install.sh)
+bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/PornHub/main/install.sh)
 ```
 
 脚本会自动完成：系统依赖 → Node.js 22 → PM2 → 拉取代码 → 配置 .env → Nginx + Let's Encrypt SSL → PM2 启动 → 健康检查。
@@ -58,8 +58,8 @@ bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/xiaoyizi/main/instal
 ### 手动部署
 
 ```bash
-git clone https://github.com/hekuo5310/xiaoyizi.git
-cd xiaoyizi
+git clone https://github.com/hekuo5310/PornHub.git
+cd PornHub
 npm install --omit=dev
 cp .env.example .env
 # 编辑 .env，至少填 PANEL_DOMAIN 和 SESSION_SECRET
@@ -72,8 +72,8 @@ pm2 start ecosystem.config.js
 
 | 变量 | 必填 | 说明 |
 |---|---|---|
-| `PANEL_DOMAIN` | ✅ | 面板域名（用于 CSRF Origin 校验、订阅链接生成） |
-| `SESSION_SECRET` | ✅ | 会话密钥，建议 64 字符随机字符串 |
+| `PANEL_DOMAIN` |  | 面板域名（用于 CSRF Origin 校验、订阅链接生成） |
+| `SESSION_SECRET` |  | 会话密钥，建议 64 字符随机字符串 |
 | `PORT` | | 监听端口（默认 3000） |
 | `TG_BOT_TOKEN` | | Telegram Bot Token（不填则禁用 TG 功能） |
 | `OPS_API_KEY` | | OPS API Bearer Token（不填则 OPS API 不可用） |
@@ -163,4 +163,4 @@ npm test
 
 ## 致谢
 
-感谢所有使用过本项目并反馈问题的朋友 🍑
+感谢所有使用过本项目并反馈问题的朋友

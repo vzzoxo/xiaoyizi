@@ -82,7 +82,7 @@ router.post('/notify/config', (req, res) => {
 router.post('/notify/test', async (req, res) => {
   try {
     const { send } = require('../../services/notify');
-    await send('🔔 测试通知 - 来自小姨子の后台');
+    await send('测试通知 - 来自Pоrпнub 后台');
     res.json({ ok: true });
   } catch (e) { res.json({ ok: false, error: e.message }); }
 });

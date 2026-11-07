@@ -486,7 +486,7 @@ router.post('/diary', (req, res) => {
 
     const validCategories = ['ops', 'repair', 'swap_ip', 'deploy', 'scale', 'patrol', 'milestone'];
     const cat = validCategories.includes(category) ? category : 'ops';
-    const m = (mood && typeof mood === 'string') ? mood.slice(0, 4) : '🐱';
+    const m = (mood && typeof mood === 'string') ? mood.slice(0, 4) : '';
 
     db.addDiaryEntry(trimmedContent.slice(0, 5000), m, cat);
     db.addAuditLog(null, 'ops_diary_write', `OPS API 写入日记 [${cat}]`, 'ops-api');

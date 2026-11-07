@@ -68,7 +68,7 @@ function switchTab(name) {
 (function () {
   const _msg = new URLSearchParams(location.search).get('msg');
   if (_msg) {
-    const m = { deploying: '🚀 部署中，请稍后刷新查看', added: '✅ 节点已添加', dup: '⚠️ IP 已存在', dup_name: '⚠️ 节点名称已存在' };
+    const m = { deploying: '部署中，请稍后刷新查看', added: '节点已添加', dup: 'IP 已存在', dup_name: '节点名称已存在' };
     if (m[_msg]) showToast(m[_msg]);
     history.replaceState(null, '', location.pathname + location.hash);
   }

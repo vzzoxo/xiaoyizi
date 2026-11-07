@@ -7,14 +7,10 @@ const path = require('path');
 const dns = require('dns').promises;
 const { randomPort } = require('../utils/vless');
 const { BEAUTIFUL_NAMES } = require('../utils/names');
-const { getRegionEmoji, getCityCN } = require('../utils/regions');
+const { getCityCN } = require('../utils/regions');
 const { isPrivateOrLoopback } = require('../utils/clientIp');
 const { notify } = require('./notify');
 const logger = require('./logger');
-
-function getRegionEmojiFromGeo(city, country) {
-  return getRegionEmoji(`${city || ''} ${country || ''}`);
-}
 
 // AWS 区域代码 → 城市/国家
 const AWS_REGION_TO_GEO = {
@@ -68,7 +64,7 @@ async function detectRegionByAwsPtr(ip) {
         return {
           city: geo.city, region: geo.city, country: geo.country,
           cityCN: getCityCN(geo.city),
-          emoji: getRegionEmojiFromGeo(geo.city, geo.country),
+
         };
       }
     }
@@ -81,12 +77,12 @@ async function detectRegion(ip) {
   // 这些地址不应该出现在 detectRegion 的合法输入中（公网节点 IP），
   // 防止恶意输入诱导服务端探测内网或元数据服务。
   if (!ip || typeof ip !== 'string') {
-    return { city: 'Unknown', region: '', country: '', cityCN: '未知', emoji: '🌐' };
+    return { city: 'Unknown', region: '', country: '', cityCN: '未知' };
   }
   try {
     if (isPrivateOrLoopback(ip)) {
       logger.warn({ ip }, '地区检测拒绝：私有/内网/链路本地 IP');
-      return { city: 'Unknown', region: '', country: '', cityCN: '未知', emoji: '🌐' };
+      return { city: 'Unknown', region: '', country: '', cityCN: '未知' };
     }
   } catch (_) { /* 解析失败也视为非法 */ }
 
@@ -105,7 +101,7 @@ async function detectRegion(ip) {
         return {
           city: data.city, region: data.regionName, country: data.country,
           cityCN: getCityCN(data.city),
-          emoji: getRegionEmojiFromGeo(data.city, data.country)
+
         };
       }
     } finally { clearTimeout(timer); }
@@ -124,7 +120,7 @@ async function detectRegion(ip) {
         return {
           city: data.city, region: data.region || '', country: data.country || '',
           cityCN: getCityCN(data.city),
-          emoji: getRegionEmojiFromGeo(data.city, data.country),
+
         };
       }
     } finally { clearTimeout(timer); }
@@ -132,21 +128,21 @@ async function detectRegion(ip) {
     logger.warn({ err: e.message, ip }, '地区检测 ipinfo 失败');
   }
 
-  return { city: 'Unknown', region: '', country: '', cityCN: '未知', emoji: '🌐' };
+  return { city: 'Unknown', region: '', country: '', cityCN: '未知' };
 }
 
 function generateNodeName(geo, existingNodes, hasSocks5 = false) {
   const city = geo.cityCN;
-  // 命名规则：普通=小国旗；家宽落地=小国旗+小房子
-  const prefix = hasSocks5 ? `${geo.emoji}🏠` : geo.emoji;
+  // 家宽节点使用文字前缀，便于区分。
+  const prefix = hasSocks5 ? '家宽 ' : '';
   const existingNameSet = new Set(existingNodes.map(n => String(n?.name || '').trim()).filter(Boolean));
-  const available = BEAUTIFUL_NAMES.filter(word => !existingNameSet.has(`${prefix} ${city}-${word}`));
+  const available = BEAUTIFUL_NAMES.filter(word => !existingNameSet.has(`${prefix}${city}-${word}`));
   if (available.length > 0) {
     const name = available[Math.floor(Math.random() * available.length)];
-    return `${prefix} ${city}-${name}`;
+    return `${prefix}${city}-${name}`;
   }
 
-  const fallbackBase = `${prefix} ${city}-${BEAUTIFUL_NAMES[Math.floor(Math.random() * BEAUTIFUL_NAMES.length)]}`;
+  const fallbackBase = `${prefix}${city}-${BEAUTIFUL_NAMES[Math.floor(Math.random() * BEAUTIFUL_NAMES.length)]}`;
   let seq = 2;
   while (existingNameSet.has(`${fallbackBase} (${seq})`)) seq += 1;
   return `${fallbackBase} (${seq})`;
@@ -453,7 +449,7 @@ async function syncNodeConfig(node, db) {
   return await pushConfigToNode(node, config);
 }
 
-// 查找同机伙伴节点（仅 VLESS↔SS 双协议配对，hy2 独立运行不参与）
+// 查找同机伙伴节点（仅 VLESSSS 双协议配对，hy2 独立运行不参与）
 function findPeerNode(node, db) {
   if (node.protocol === 'hy2') return null; // hy2 不参与双协议配对
   const sshHost = node.ssh_host || node.host;
@@ -555,7 +551,7 @@ async function deployNode(sshInfo, db) {
 
   const { displayGeo, isHomeNetwork } = await resolveDeployGeo(sshInfo);
 
-  const region = `${displayGeo.emoji} ${displayGeo.cityCN}`;
+  const region = displayGeo.cityCN;
   const { name, result } = insertNodeWithGeneratedName(db, (generatedName) => ({
     name: generatedName, host: sshInfo.host, port, uuid,
     ulzix_order_id: sshInfo.ulzix_order_id || null,
@@ -569,7 +565,7 @@ async function deployNode(sshInfo, db) {
     socks5_user: sshInfo.socks5_user || null,
     socks5_pass: sshInfo.socks5_pass || null,
     region,
-    remark: '⏳ 部署中...',
+    remark: '部署中...',
     is_active: 0
   }), displayGeo, isHomeNetwork);
   const nodeId = result.lastInsertRowid;
@@ -625,7 +621,7 @@ async function deployNode(sshInfo, db) {
     const startResult = await ssh.execCommand(restartService('xray',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
-      db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
+      db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '家宽落地' : '' });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy', `部署成功: ${name} (${sshInfo.host}:${port}) [${clients.length}用户]`, 'system');
       logger.info({ nodeId, nodeName: name, host: sshInfo.host, port, userCount: clients.length }, '节点部署成功');
 
@@ -642,7 +638,7 @@ async function deployNode(sshInfo, db) {
       }
     } else {
       const errMsg = (startResult.stderr || startResult.stdout).substring(0, 200);
-      db.updateNode(nodeId, { remark: `❌ 部署失败: ${errMsg}` });
+      db.updateNode(nodeId, { remark: `部署失败: ${errMsg}` });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_fail', `部署失败: ${name} - ${errMsg}`, 'system');
       logger.error({ nodeId, nodeName: name, error: errMsg }, '节点部署失败');
       try { notify.deploy(name, false, errMsg); } catch (err) {
@@ -650,7 +646,7 @@ async function deployNode(sshInfo, db) {
       }
     }
   } catch (err) {
-    db.updateNode(nodeId, { remark: `❌ ${err.message}` });
+    db.updateNode(nodeId, { remark: `${err.message}` });
     db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_fail', `部署异常: ${name} - ${err.message}`, 'system');
     logger.error({ err, nodeId, nodeName: name }, '节点部署异常');
     try { notify.deploy(name, false, err.message); } catch (notifyErr) {
@@ -852,7 +848,7 @@ async function deploySsNode(sshInfo, db) {
   const ssMethod = sshInfo.ss_method || 'aes-256-gcm';
 
   const { displayGeo, isHomeNetwork: hasSocks5 } = await resolveDeployGeo(sshInfo);
-  const region = `${displayGeo.emoji} ${displayGeo.cityCN}`;
+  const region = displayGeo.cityCN;
   const { name, result } = insertNodeWithGeneratedName(db, (generatedName) => ({
     name: generatedName, host: sshInfo.host, port, uuid: '00000000-0000-0000-0000-000000000000',
     protocol: 'ss', ip_version: 6, ss_method: ssMethod, ss_password: ssPassword,
@@ -866,7 +862,7 @@ async function deploySsNode(sshInfo, db) {
     socks5_port: parseInt(sshInfo.socks5_port, 10) || 1080,
     socks5_user: sshInfo.socks5_user || null,
     socks5_pass: sshInfo.socks5_pass || null,
-    region, remark: '⏳ 部署中...', is_active: 0
+    region, remark: '部署中...', is_active: 0
   }), displayGeo, hasSocks5);
   const nodeId = result.lastInsertRowid;
 
@@ -922,7 +918,7 @@ async function deploySsNode(sshInfo, db) {
     const startResult = await ssh.execCommand(restartService('xray',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
-      db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
+      db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '家宽落地' : '' });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_ss', `SS部署成功: ${name} (IPv6: ${ipv6Addr}:${port})`, 'system');
       logger.info({ nodeId, nodeName: name, ipv6: ipv6Addr, port }, 'SS 部署成功');
       try { notify.deploy(name, true, `IPv6 SS | ${ipv6Addr}:${port}`); } catch (err) {
@@ -935,7 +931,7 @@ async function deploySsNode(sshInfo, db) {
       }
     } else {
       const errMsg = (startResult.stderr || startResult.stdout).substring(0, 200);
-      db.updateNode(nodeId, { remark: `❌ 部署失败: ${errMsg}` });
+      db.updateNode(nodeId, { remark: `部署失败: ${errMsg}` });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_ss_fail', `SS部署失败: ${name} - ${errMsg}`, 'system');
       logger.error({ nodeId, nodeName: name, error: errMsg }, 'SS 部署失败');
       try { notify.deploy(name, false, errMsg); } catch (err) {
@@ -943,7 +939,7 @@ async function deploySsNode(sshInfo, db) {
       }
     }
   } catch (err) {
-    db.updateNode(nodeId, { remark: `❌ ${err.message}` });
+    db.updateNode(nodeId, { remark: `${err.message}` });
     db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_ss_fail', `SS部署异常: ${name} - ${err.message}`, 'system');
     logger.error({ err, nodeId, nodeName: name }, 'SS 部署异常');
     try { notify.deploy(name, false, err.message); } catch (notifyErr) {
@@ -967,7 +963,7 @@ async function deployDualNode(sshInfo, db) {
 
   const { displayGeo, isHomeNetwork } = await resolveDeployGeo(sshInfo);
 
-  const region = `${displayGeo.emoji} ${displayGeo.cityCN}`;
+  const region = displayGeo.cityCN;
   const { vlessName, ssName, vlessResult, ssResult } = insertDualNodesWithGeneratedName(
     db,
     (generatedName) => ({
@@ -979,7 +975,7 @@ async function deployDualNode(sshInfo, db) {
       ssh_key_path: sshInfo.ssh_key_path,
       socks5_host: sshInfo.socks5_host || null, socks5_port: parseInt(sshInfo.socks5_port) || 1080,
       socks5_user: sshInfo.socks5_user || null, socks5_pass: sshInfo.socks5_pass || null,
-      region, remark: '⏳ 部署中...', is_active: 0
+      region, remark: '部署中...', is_active: 0
     }),
     (generatedName) => ({
       name: generatedName, host: sshInfo.host, port: ssPort,
@@ -991,7 +987,7 @@ async function deployDualNode(sshInfo, db) {
       ssh_key_path: sshInfo.ssh_key_path,
       socks5_host: sshInfo.socks5_host || null, socks5_port: parseInt(sshInfo.socks5_port, 10) || 1080,
       socks5_user: sshInfo.socks5_user || null, socks5_pass: sshInfo.socks5_pass || null,
-      region, remark: '⏳ 部署中...', is_active: 0
+      region, remark: '部署中...', is_active: 0
     }),
     displayGeo,
     isHomeNetwork
@@ -1076,8 +1072,8 @@ async function deployDualNode(sshInfo, db) {
     const startResult = await ssh.execCommand(restartService('xray',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
-      db.updateNode(vlessNodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
-      db.updateNode(ssNodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
+      db.updateNode(vlessNodeId, { is_active: 1, remark: sshInfo.socks5_host ? '家宽落地' : '' });
+      db.updateNode(ssNodeId, { is_active: 1, remark: sshInfo.socks5_host ? '家宽落地' : '' });
       const msg = `双协议部署成功: ${vlessName} (VLESS ${sshInfo.host}:${vlessPort}) + ${ssName} (SS IPv6 ${ipv6Addr}:${ssPort})`;
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_dual', msg, 'system');
       logger.info({ vlessNodeId, ssNodeId, message: msg }, '双协议部署成功');
@@ -1091,8 +1087,8 @@ async function deployDualNode(sshInfo, db) {
       }
     } else {
       const errMsg = (startResult.stderr || startResult.stdout).substring(0, 200);
-      db.updateNode(vlessNodeId, { remark: `❌ 部署失败: ${errMsg}` });
-      db.updateNode(ssNodeId, { remark: `❌ 部署失败: ${errMsg}` });
+      db.updateNode(vlessNodeId, { remark: `部署失败: ${errMsg}` });
+      db.updateNode(ssNodeId, { remark: `部署失败: ${errMsg}` });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_dual_fail', `双协议部署失败: ${errMsg}`, 'system');
       logger.error({ vlessNodeId, ssNodeId, error: errMsg }, '双协议部署失败');
       try { notify.deploy(vlessName, false, errMsg); } catch (err) {
@@ -1100,8 +1096,8 @@ async function deployDualNode(sshInfo, db) {
       }
     }
   } catch (err) {
-    db.updateNode(vlessNodeId, { remark: `❌ ${err.message}` });
-    db.updateNode(ssNodeId, { remark: `❌ ${err.message}` });
+    db.updateNode(vlessNodeId, { remark: `${err.message}` });
+    db.updateNode(ssNodeId, { remark: `${err.message}` });
     db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_dual_fail', `双协议部署异常: ${err.message}`, 'system');
     logger.error({ err, vlessNodeId, ssNodeId }, '双协议部署异常');
     try { notify.deploy(vlessName, false, err.message); } catch (notifyErr) {
@@ -1180,7 +1176,7 @@ async function deployHy2Node(sshInfo, db) {
   const statsSecret = crypto.randomBytes(16).toString('hex');
 
   const { displayGeo, isHomeNetwork: hasSocks5 } = await resolveDeployGeo(sshInfo);
-  const region = `${displayGeo.emoji} ${displayGeo.cityCN}`;
+  const region = displayGeo.cityCN;
   const { name, result } = insertNodeWithGeneratedName(db, (generatedName) => ({
     name: generatedName, host: sshInfo.host, port, uuid: '00000000-0000-0000-0000-000000000000',
     protocol: 'hy2', ip_version: 4,
@@ -1200,7 +1196,7 @@ async function deployHy2Node(sshInfo, db) {
     socks5_port: parseInt(sshInfo.socks5_port, 10) || 1080,
     socks5_user: sshInfo.socks5_user || null,
     socks5_pass: sshInfo.socks5_pass || null,
-    region, remark: '⏳ 部署中...', is_active: 0
+    region, remark: '部署中...', is_active: 0
   }), displayGeo, hasSocks5);
   const nodeId = result.lastInsertRowid;
 
@@ -1256,7 +1252,7 @@ async function deployHy2Node(sshInfo, db) {
     const startResult = await ssh.execCommand(restartService('hysteria-server',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
-      db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
+      db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '家宽落地' : '' });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_hy2', `Hy2部署成功: ${name} (${sshInfo.host}:${port})`, 'system');
       logger.info({ nodeId, nodeName: name, host: sshInfo.host, port }, 'Hy2 部署成功');
       try { notify.deploy(name, true, `Hy2 | ${sshInfo.host}:${port}`); } catch (err) {
@@ -1269,7 +1265,7 @@ async function deployHy2Node(sshInfo, db) {
       }
     } else {
       const errMsg = (startResult.stderr || startResult.stdout).substring(0, 200);
-      db.updateNode(nodeId, { remark: `❌ 部署失败: ${errMsg}` });
+      db.updateNode(nodeId, { remark: `部署失败: ${errMsg}` });
       db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_hy2_fail', `Hy2部署失败: ${name} - ${errMsg}`, 'system');
       logger.error({ nodeId, nodeName: name, error: errMsg }, 'Hy2 部署失败');
       try { notify.deploy(name, false, errMsg); } catch (err) {
@@ -1277,7 +1273,7 @@ async function deployHy2Node(sshInfo, db) {
       }
     }
   } catch (err) {
-    db.updateNode(nodeId, { remark: `❌ ${err.message}` });
+    db.updateNode(nodeId, { remark: `${err.message}` });
     db.addAuditLog(sshInfo.triggered_by || null, 'node_deploy_hy2_fail', `Hy2部署异常: ${name} - ${err.message}`, 'system');
     logger.error({ err, nodeId, nodeName: name }, 'Hy2 部署异常');
     try { notify.deploy(name, false, err.message); } catch (notifyErr) {

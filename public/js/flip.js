@@ -25,9 +25,8 @@ function setResult(title, sub, color) {
 }
 
 function iconForPrize(gb) {
-  if (gb >= 2) return '📡';
-  if (gb > 0) return '📶';
-  if (gb < 0) return '📉';
+  if (gb > 0) return '+';
+  if (gb < 0) return '−';
   return '○';
 }
 

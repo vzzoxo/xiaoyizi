@@ -104,7 +104,7 @@ test('panel summary reuses merged payload within ttl', async (t) => {
         if (sql.includes('FROM ops_diary')) return {
           all: () => {
             diaryCalls += 1;
-            return [{ content: 'ok', mood: '🐱', created_at: '2026-03-16 00:00:00' }];
+            return [{ content: 'ok', mood: '', created_at: '2026-03-16 00:00:00' }];
           },
         };
         return { get: () => ({}), all: () => [] };

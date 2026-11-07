@@ -8,12 +8,12 @@ const router = express.Router();
 const DAILY_FLIP_LIMIT = 3;
 const CARD_COUNT = 9;
 const FLIP_PRIZES = [
-  { label: '🎉 爆奖 +3GB', gb: 3, weight: 8 },
-  { label: '✨ 好运 +2GB', gb: 2, weight: 16 },
-  { label: '🎁 小奖 +1GB', gb: 1, weight: 24 },
-  { label: '🍬 安慰奖 +0.5GB', gb: 0.5, weight: 20 },
-  { label: '🙂 谢谢参与', gb: 0, weight: 20 },
-  { label: '😵 小失手 -0.5GB', gb: -0.5, weight: 12 },
+  { label: '爆奖 +3GB', gb: 3, weight: 8 },
+  { label: '好运 +2GB', gb: 2, weight: 16 },
+  { label: '小奖 +1GB', gb: 1, weight: 24 },
+  { label: '安慰奖 +0.5GB', gb: 0.5, weight: 20 },
+  { label: '谢谢参与', gb: 0, weight: 20 },
+  { label: '小失手 -0.5GB', gb: -0.5, weight: 12 },
 ];
 
 function createSeededRandom(seedText) {

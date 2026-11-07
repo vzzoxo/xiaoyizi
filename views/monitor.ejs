@@ -4,7 +4,7 @@
   <nav class="glass-solid sticky top-0 z-40 px-6 py-3">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-sm">📡</div>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-sm">P</div>
         <span class="text-white font-semibold hidden sm:block">探针监控</span>
       </div>
       <div class="flex items-center gap-3">
@@ -27,14 +27,14 @@
     <!-- 详情视图 -->
     <div id="monitor-detail" style="display:none">
       <div class="flex items-center gap-3 mb-4">
-        <button id="monitor-back" class="text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition">← 返回</button>
+        <md-filled-button id="monitor-back" class="text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition">← 返回</md-filled-button>
         <h2 class="text-lg font-semibold text-white" id="monitor-detail-title"></h2>
       </div>
       <div class="flex gap-2 mb-4" id="monitor-range-btns">
-        <button class="monitor-range-btn active text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="1h">1小时</button>
-        <button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="6h">6小时</button>
-        <button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="24h">24小时</button>
-        <button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="7d">7天</button>
+        <md-filled-button class="monitor-range-btn active text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="1h">1小时</md-filled-button>
+        <md-filled-button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="6h">6小时</md-filled-button>
+        <md-filled-button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="24h">24小时</md-filled-button>
+        <md-filled-button class="monitor-range-btn text-xs px-3 py-1.5 rounded-lg glass text-gray-300 hover:text-white transition" data-range="7d">7天</md-filled-button>
       </div>
       <div id="monitor-detail-status" class="mb-4"></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">

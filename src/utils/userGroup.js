@@ -1,9 +1,9 @@
 // 用户组定义：trust_level 0-3 映射
 const USER_GROUPS = [
   { level: 0, name: '普通用户', color: '#9ca3af', badge: '' },
-  { level: 1, name: 'VIP',     color: '#34d399', badge: '🌿' },
-  { level: 2, name: 'SVIP',    color: '#a78bfa', badge: '👑' },
-  { level: 3, name: 'SSVIP',   color: '#fbbf24', badge: '💎' },
+  { level: 1, name: 'VIP',     color: '#34d399', badge: '' },
+  { level: 2, name: 'SVIP',    color: '#a78bfa', badge: '' },
+  { level: 3, name: 'SSVIP',   color: '#fbbf24', badge: '' },
 ];
 
 function getGroup(level) {

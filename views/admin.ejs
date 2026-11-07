@@ -4,8 +4,8 @@
   <nav class="glass-solid sticky top-0 z-40 px-6 py-3">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-sm">🍑</div>
-        <span class="text-white font-semibold hidden sm:block">小姨子の后台</span>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-sm">P</div>
+        <span class="text-white font-semibold">Pоrпнub 后台</span>
       </div>
       <div class="flex items-center gap-3">
         <a href="/" class="text-xs px-3 py-1.5 rounded-full glass text-gray-300 hover:text-white transition">返回面板</a>
@@ -21,44 +21,44 @@
       <label class="text-[11px] text-gray-500 block mb-1">快速切换功能</label>
       <select id="tab-select" class="w-full bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
         <optgroup label="核心">
-          <option value="nodes">🌐 节点</option>
-          <option value="users">👥 用户</option>
-          <option value="invites">🎟 邀请</option>
-          <option value="traffic">📊 流量</option>
+          <option value="nodes"> 节点</option>
+          <option value="users"> 用户</option>
+          <option value="invites"> 邀请</option>
+          <option value="traffic"> 流量</option>
         </optgroup>
         <optgroup label="监控">
-          <option value="logs">📋 日志</option>
-          <option value="abuse">🛡️ 安全</option>
-          <option value="ops">🧠 运维</option>
-          <option value="diary">📔 运营日记</option>
+          <option value="logs"> 日志</option>
+          <option value="abuse"> 安全</option>
+          <option value="ops"> 运维</option>
+          <option value="diary"> 运营日记</option>
         </optgroup>
         <optgroup label="配置">
-          <option value="notify">🔔 通知</option>
-          <option value="ulzix">☁️ Ulzix</option>
-          <option value="settings">⚙️ 设置</option>
-          <option value="backup">💾 备份</option>
+          <option value="notify"> 通知</option>
+          <option value="ulzix"> Ulzix</option>
+          <option value="settings"> 设置</option>
+          <option value="backup"> 备份</option>
         </optgroup>
       </select>
     </div>
     <div class="relative">
       <div class="flex gap-1 glass-solid rounded-2xl p-1.5 overflow-x-auto scrollbar-hide tab-bar" style="-webkit-overflow-scrolling:touch" role="tablist" aria-label="后台功能标签">
         <!-- 核心 -->
-        <button class="tab-btn active text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="nodes" role="tab" aria-selected="true" aria-controls="tab-panel-nodes" id="tab-btn-nodes">🌐 节点</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="users" role="tab" aria-selected="false" aria-controls="tab-panel-users" id="tab-btn-users">👥 用户</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="invites" role="tab" aria-selected="false" aria-controls="tab-panel-invites" id="tab-btn-invites">🎟 邀请</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="traffic" role="tab" aria-selected="false" aria-controls="tab-panel-traffic" id="tab-btn-traffic">📊 流量</button>
+        <md-filled-button class="tab-btn active text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="nodes" role="tab" aria-selected="true" aria-controls="tab-panel-nodes" id="tab-btn-nodes"> 节点</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="users" role="tab" aria-selected="false" aria-controls="tab-panel-users" id="tab-btn-users"> 用户</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="invites" role="tab" aria-selected="false" aria-controls="tab-panel-invites" id="tab-btn-invites"> 邀请</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="traffic" role="tab" aria-selected="false" aria-controls="tab-panel-traffic" id="tab-btn-traffic"> 流量</md-filled-button>
         <span class="hidden sm:block w-px bg-white/10 my-1.5 mx-1 flex-shrink-0"></span>
         <!-- 监控 -->
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="logs" role="tab" aria-selected="false" aria-controls="tab-panel-logs" id="tab-btn-logs">📋 日志</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="abuse" role="tab" aria-selected="false" aria-controls="tab-panel-abuse" id="tab-btn-abuse">🛡️ 安全</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="ops" role="tab" aria-selected="false" aria-controls="tab-panel-ops" id="tab-btn-ops">🧠 运维</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="diary" role="tab" aria-selected="false" aria-controls="tab-panel-diary" id="tab-btn-diary">📔 日记</button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="logs" role="tab" aria-selected="false" aria-controls="tab-panel-logs" id="tab-btn-logs"> 日志</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="abuse" role="tab" aria-selected="false" aria-controls="tab-panel-abuse" id="tab-btn-abuse"> 安全</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="ops" role="tab" aria-selected="false" aria-controls="tab-panel-ops" id="tab-btn-ops"> 运维</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="diary" role="tab" aria-selected="false" aria-controls="tab-panel-diary" id="tab-btn-diary"> 日记</md-filled-button>
         <span class="hidden sm:block w-px bg-white/10 my-1.5 mx-1 flex-shrink-0"></span>
         <!-- 配置 -->
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="notify" role="tab" aria-selected="false" aria-controls="tab-panel-notify" id="tab-btn-notify">🔔 通知</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="ulzix" role="tab" aria-selected="false" aria-controls="tab-panel-ulzix" id="tab-btn-ulzix">☁️ Ulzix</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="settings" role="tab" aria-selected="false" aria-controls="tab-panel-settings" id="tab-btn-settings">⚙️ 设置</button>
-        <button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="backup" role="tab" aria-selected="false" aria-controls="tab-panel-backup" id="tab-btn-backup">💾 备份</button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="notify" role="tab" aria-selected="false" aria-controls="tab-panel-notify" id="tab-btn-notify"> 通知</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="ulzix" role="tab" aria-selected="false" aria-controls="tab-panel-ulzix" id="tab-btn-ulzix"> Ulzix</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="settings" role="tab" aria-selected="false" aria-controls="tab-panel-settings" id="tab-btn-settings"> 设置</md-filled-button>
+        <md-filled-button class="tab-btn text-sm px-3 sm:px-4 py-2 rounded-xl transition whitespace-nowrap" data-tab="backup" role="tab" aria-selected="false" aria-controls="tab-panel-backup" id="tab-btn-backup"> 备份</md-filled-button>
       </div>
       <div class="tab-fade-right pointer-events-none absolute right-0 top-0 bottom-0 w-12 rounded-r-2xl" style="background:linear-gradient(to right, transparent, rgba(15,11,30,0.95))"></div>
       <div class="sm:hidden text-[10px] text-gray-600 mt-1 text-right">可左右滑动查看更多功能</div>

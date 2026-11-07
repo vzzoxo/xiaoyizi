@@ -55,18 +55,18 @@ function withMockedAdminNodesRouter(mockDb, fn) {
 test('generateNodeName falls back to numbered suffix when city names are exhausted', () => {
   const { generateNodeName } = require('../src/services/deploy');
   const { BEAUTIFUL_NAMES } = require('../src/utils/names');
-  const geo = { emoji: '🇸🇬', cityCN: '新加坡' };
-  const existingNodes = BEAUTIFUL_NAMES.map((word) => ({ name: `🇸🇬 新加坡-${word}` }));
+  const geo = { cityCN: '新加坡' };
+  const existingNodes = BEAUTIFUL_NAMES.map((word) => ({ name: `新加坡-${word}` }));
 
   const name = generateNodeName(geo, existingNodes, false);
 
-  assert.match(name, /^🇸🇬 新加坡-.+ \(\d+\)$/);
+  assert.match(name, /^新加坡-.+ \(\d+\)$/);
   assert.ok(!existingNodes.some((node) => node.name === name));
 });
 
 test('POST /nodes/manual rejects duplicate node names', async (t) => {
   await withMockedAdminNodesRouter({
-    getNodeByName: (name) => (name === '🇸🇬 新加坡-万紫千红' ? { id: 2, name } : null),
+    getNodeByName: (name) => (name === '新加坡-万紫千红' ? { id: 2, name } : null),
     addNode: () => { throw new Error('should not insert duplicate name'); },
     updateNode: () => {},
     addAuditLog: () => {},
@@ -88,7 +88,7 @@ test('POST /nodes/manual rejects duplicate node names', async (t) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: '🇸🇬 新加坡-万紫千红',
+        name: '新加坡-万紫千红',
         host: '1.2.3.4',
         port: 443,
         protocol: 'vless',

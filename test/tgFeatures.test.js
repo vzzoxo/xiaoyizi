@@ -391,7 +391,7 @@ test('POST /api/lucky-spin returns current profile when weekly chance is used', 
   const initData = buildInitData(process.env.TG_BOT_TOKEN, Math.floor(Date.now() / 1000), { id: 5001, username: 'wheel-user' });
 
   await withMockedLuckyRoute(mockDb, async (route) => {
-    sqlite.prepare('INSERT INTO tg_lucky (user_id, week, prize, amount) VALUES (?, ?, ?, ?)').run(1, route._test.weekKey(), '🚀 大奖 50GB', 50 * 1073741824);
+    sqlite.prepare('INSERT INTO tg_lucky (user_id, week, prize, amount) VALUES (?, ?, ?, ?)').run(1, route._test.weekKey(), '大奖 50GB', 50 * 1073741824);
 
     const app = express();
     app.use('/', route);

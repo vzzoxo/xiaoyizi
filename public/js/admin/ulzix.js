@@ -21,7 +21,7 @@ async function loadUlzix() {
       const empty = document.createElement('option'); empty.value=''; empty.textContent='未绑定'; select.append(empty);
       for(const o of data.orders) {const option=document.createElement('option'); option.value=o.id; option.textContent=`#${o.id} ${o.title}`; select.append(option);}
       select.value=node.orderId || '';
-      const save = document.createElement('button'); save.textContent='保存绑定'; save.className='glass rounded-xl px-3 py-1 ml-2 text-white';
+      const save = document.createElement('md-filled-button'); save.textContent='保存绑定'; save.className='glass rounded-xl px-3 py-1 ml-2 text-white';
       save.addEventListener('click', async () => {
         save.disabled=true;
         try {
@@ -91,7 +91,7 @@ async function loadUlzixCatalog() {
         const pricing=product.pricing || {};
         const choices=pricing.type==='recurrent' ? Object.entries(pricing.recurrent || {}).filter(([,p])=>p.enabled) : [[pricing.type,pricing[pricing.type]]];
         for(const [key,price] of choices) {if(!price) continue;const option=ulzixElement('option',`${key} · 商品价 ${price.price} + 开通费 ${price.setup || 0}（币种及折扣以报价为准）`);option.value=key;period.append(option);}
-        const button=ulzixElement('button','获取购买报价','glass rounded-xl px-4 py-2 text-white');button.type='button';
+        const button=ulzixElement('md-filled-button','获取购买报价','glass rounded-xl px-4 py-2 text-white');button.type='button';
         button.disabled=!['lxdapi','vps','hosting'].includes(product.type) || Boolean(product.formId) || !period.options.length || product.stock===0;
         button.addEventListener('click',async()=>{
           button.disabled=true;
@@ -117,10 +117,10 @@ async function loadUlzixPurchases() {
       if(purchase.state==='quoted') {
         row.append(ulzixElement('p',`购物车合计：${purchase.total} ${purchase.currency}；最终税费以 Ulzix 账单为准。确认后可能直接扣除余额。`));
         for(const [action,label] of [['checkout','确认购买'],['cancel','取消报价']]) {
-          const button=ulzixElement('button',label,'glass rounded-xl px-4 py-2 text-white');button.type='button';
+          const button=ulzixElement('md-filled-button',label,'glass rounded-xl px-4 py-2 text-white');button.type='button';
           button.addEventListener('click',async()=>{
             if(action==='checkout' && !window.confirm(`确认购买 ${purchase.title}（${purchase.period}）？购物车合计 ${purchase.total} ${purchase.currency}，可能直接扣除余额。`)) return;
-            for(const b of row.querySelectorAll('button')) b.disabled=true;
+            for(const b of row.querySelectorAll('md-filled-button')) b.disabled=true;
             try {await ulzixRequest(`purchases/${purchase.token}/${action}`,{confirmed:true});showToast(action==='checkout' ? '订单已加入一键部署列表' : '报价已取消');}
             catch(e) {showToast(e.message);} finally {await loadUlzixPurchases();await loadUlzixDeployments();}
           });row.append(button);
@@ -129,7 +129,7 @@ async function loadUlzixPurchases() {
       if(['processing','unknown'].includes(purchase.state)) row.append(ulzixElement('p','结账结果待核对，可能已经扣款，请到 Ulzix 检查订单，切勿重复购买。'));
       if(purchase.state==='unknown') {
         const id=ulzixElement('input','');id.type='number';id.min='1';id.placeholder='核对后填写已生成的订单 ID';id.className='bg-gray-800 text-white p-2 rounded';
-        const bind=ulzixElement('button','关联已生成订单','glass rounded-xl px-4 py-2 text-white');bind.type='button';
+        const bind=ulzixElement('md-filled-button','关联已生成订单','glass rounded-xl px-4 py-2 text-white');bind.type='button';
         bind.addEventListener('click',async()=>{bind.disabled=true;try {await ulzixRequest(`purchases/${purchase.token}/reconcile`,{orderId:Number(id.value)});await loadUlzixPurchases();await loadUlzixDeployments();}catch(e){showToast(e.message);bind.disabled=false;}});row.append(id,bind);
       }
       container.append(row);
@@ -149,7 +149,7 @@ async function loadUlzixDeployments() {
       const bound=response.nodes.filter(n=>Number(n.orderId)===purchase.orderId);
       const row=ulzixElement('div','','flex flex-wrap items-center gap-2');
       row.append(ulzixElement('span',`Ulzix #${purchase.orderId} · ${order?.title || purchase.title} · ${order?.status || '等待同步'}${bound.length ? ' · 已绑定 '+bound.length+' 个节点' : ''}`));
-      const button=ulzixElement('button','填入部署表单','glass rounded-xl px-3 py-2 text-white');button.type='button';button.disabled=order?.status!=='active';
+      const button=ulzixElement('md-filled-button','填入部署表单','glass rounded-xl px-3 py-2 text-white');button.type='button';button.disabled=order?.status!=='active';
       button.addEventListener('click',()=>{
         const form=document.getElementById('smart-deploy-form');form.elements.ulzix_order_id.value=purchase.orderId;form.closest('details').open=true;form.scrollIntoView({behavior:'smooth'});form.elements.host.focus();showToast('已选择订单，请补填服务器 SSH 地址、端口和密码');
       });row.append(button);container.append(row);

@@ -6,14 +6,14 @@ const { verifyTgInitData, weightedRandom, weekKey, shiftIsoDate, TG_INITDATA_MAX
 const router = express.Router();
 
 const LUCKY_WHEEL_PRIZES = [
-  { label: '👑 头奖 88GB', gb: 88, weight: 1, tone: 'jackpot' },
-  { label: '🚀 大奖 50GB', gb: 50, weight: 4, tone: 'grand' },
-  { label: '🎯 豪礼 30GB', gb: 30, weight: 8, tone: 'major' },
-  { label: '🎁 好运 20GB', gb: 20, weight: 14, tone: 'major' },
-  { label: '✨ 小爆 10GB', gb: 10, weight: 22, tone: 'good' },
-  { label: '🍀 稳赚 10GB', gb: 10, weight: 20, tone: 'good' },
-  { label: '📶 保底 10GB', gb: 10, weight: 18, tone: 'base' },
-  { label: '🙂 幸运 10GB', gb: 10, weight: 13, tone: 'base' },
+  { label: '头奖 88GB', gb: 88, weight: 1, tone: 'jackpot' },
+  { label: '大奖 50GB', gb: 50, weight: 4, tone: 'grand' },
+  { label: '豪礼 30GB', gb: 30, weight: 8, tone: 'major' },
+  { label: '好运 20GB', gb: 20, weight: 14, tone: 'major' },
+  { label: '小爆 10GB', gb: 10, weight: 22, tone: 'good' },
+  { label: '稳赚 10GB', gb: 10, weight: 20, tone: 'good' },
+  { label: '保底 10GB', gb: 10, weight: 18, tone: 'base' },
+  { label: '幸运 10GB', gb: 10, weight: 13, tone: 'base' },
 ];
 
 function getNextLuckyOpenLabel(date = new Date()) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title === '节点面板' ? '小姨子的诱惑' : `${title} - 小姨子的诱惑` %></title>
+  <title><%= title === '节点面板' ? 'Pоrпнub' : `${title} - Pоrпнub` %></title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="alternate icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -47,57 +47,53 @@
     .marquee-wrap:hover .animate-marquee { animation-play-state:paused; }
     .animate-marquee { display:inline-block; padding-left:100%; animation: marquee 20s linear infinite; white-space:nowrap; }
   </style>
+  <link rel="stylesheet" href="/css/material-theme.css">
+  <script defer src="/js/material.js"></script>
 </head>
 <body>
-<!-- 全局自定义弹窗 -->
-<div id="modal-overlay" class="fixed inset-0 hidden items-center justify-center backdrop-blur-sm" style="display:none;z-index:999;background:rgba(0,0,0,0.6)">
-  <div class="border rounded-2xl p-6 max-w-sm w-full mx-4" style="background:#1a1520;border-color:rgba(255,255,255,0.1);box-shadow:0 25px 50px -12px rgba(0,0,0,0.5)">
-    <p id="modal-msg" class="text-gray-200 text-sm mb-5 text-center"></p>
-    <div id="modal-input-wrap" class="mb-4 hidden">
-      <input id="modal-input" class="w-full bg-black/30 text-white px-4 py-2.5 rounded-xl border border-white/10 text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" autocomplete="off">
-      <p id="modal-hint" class="text-gray-600 text-[11px] mt-2 text-center"></p>
+<md-dialog id="site-dialog">
+  <div slot="headline" id="modal-title">提示</div>
+  <div slot="content">
+    <p id="modal-msg"></p>
+    <div id="modal-input-wrap" hidden>
+      <md-outlined-text-field id="modal-input" label="输入值" autocomplete="off"></md-outlined-text-field>
+      <p id="modal-hint"></p>
     </div>
-    <div id="modal-btns" class="flex gap-3 justify-center"></div>
   </div>
-</div>
+  <div slot="actions">
+    <md-text-button id="modal-cancel" type="button">取消</md-text-button>
+    <md-filled-button id="modal-confirm" type="button">确定</md-filled-button>
+  </div>
+</md-dialog>
 <script nonce="<%= nonce %>">
-function _showModal(msg, showCancel, inputOpts) {
+/** Show the shared Material dialog while preserving the existing promise-based actions. */
+async function _showModal(msg, showCancel, inputOpts) {
+  await customElements.whenDefined('md-dialog');
+  const dialog = document.getElementById('site-dialog');
+  const input = document.getElementById('modal-input');
+  const inputWrap = document.getElementById('modal-input-wrap');
+  const cancel = document.getElementById('modal-cancel');
+  const confirm = document.getElementById('modal-confirm');
+  document.getElementById('modal-title').textContent = showCancel ? '确认操作' : '提示';
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('modal-hint').textContent = inputOpts?.hint || '';
+  inputWrap.hidden = !inputOpts;
+  input.value = inputOpts?.value ?? '';
+  input.placeholder = inputOpts?.placeholder || '';
+  cancel.hidden = !showCancel;
+  let result = inputOpts ? null : false;
   return new Promise(resolve => {
-    const o = document.getElementById('modal-overlay');
-    document.getElementById('modal-msg').textContent = msg;
-    const inputWrap = document.getElementById('modal-input-wrap');
-    const input = document.getElementById('modal-input');
-    const hint = document.getElementById('modal-hint');
-    if (inputOpts) {
-      inputWrap.classList.remove('hidden');
-      input.value = inputOpts.value || '';
-      input.placeholder = inputOpts.placeholder || '';
-      hint.textContent = inputOpts.hint || '';
-      hint.classList.toggle('hidden', !inputOpts.hint);
-    } else {
-      inputWrap.classList.add('hidden');
-    }
-    const btns = document.getElementById('modal-btns');
-    btns.innerHTML = '';
-    const close = (val) => { o.style.display='none'; inputWrap.classList.add('hidden'); resolve(val); };
-    if (showCancel) {
-      const cb = document.createElement('button');
-      cb.textContent = '取消';
-      cb.className = 'flex-1 py-2 rounded-xl text-sm text-gray-400 border border-white/10 hover:bg-white/5 transition';
-      cb.onclick = () => close(inputOpts ? null : false);
-      btns.appendChild(cb);
-    }
-    const ob = document.createElement('button');
-    ob.textContent = '确定';
-    ob.className = 'flex-1 py-2 rounded-xl text-sm text-white bg-rose-600 hover:bg-rose-500 transition';
-    ob.onclick = () => close(inputOpts ? input.value : true);
-    btns.appendChild(ob);
-    o.style.display = 'flex';
-    if (inputOpts) { input.focus(); input.select(); input.onkeydown = (e) => { if(e.key==='Enter') ob.click(); }; }
-    else ob.focus();
+    dialog.addEventListener('closed', () => resolve(result), {once:true});
+    cancel.onclick = () => dialog.close();
+    confirm.onclick = () => {
+      result = inputOpts ? input.value : true;
+      dialog.close();
+    };
+    input.onkeydown = event => { if (event.key === 'Enter') confirm.click(); };
+    dialog.show();
   });
 }
-window._confirm = (msg) => _showModal(msg, true);
-window._alert = (msg) => _showModal(msg, false);
+window._confirm = msg => _showModal(msg, true);
+window._alert = msg => _showModal(msg, false);
 window._prompt = (msg, opts) => _showModal(msg, true, opts || {});
 </script>

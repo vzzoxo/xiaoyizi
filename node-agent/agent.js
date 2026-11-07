@@ -34,7 +34,7 @@ const SELF_HEAL_INTERVAL = config.selfHealInterval || 60_000;
 // ─── TLS 配置 ───
 const INSECURE_TLS = config.insecureTls === true;
 if (INSECURE_TLS) {
-  log('WARN', '⚠️  TLS 证书校验已禁用 (config.insecureTls=true)，存在中间人攻击风险，仅限调试使用！请在调试完成后立即关闭！');
+  log('WARN', 'TLS 证书校验已禁用 (config.insecureTls=true)，存在中间人攻击风险，仅限调试使用！请在调试完成后立即关闭！');
 }
 
 // ─── exec 指令白名单 ───
@@ -557,7 +557,7 @@ async function handleCommand(msg) {
 
       // 基础防护：拒绝危险 shell 元字符（防止管道、命令拼接、命令替换）
       if (DANGEROUS_SHELL_PATTERN.test(cmd)) {
-        log('WARN', `⚠️  exec 指令含危险字符，已拒绝: ${cmd}`);
+        log('WARN', `exec 指令含危险字符，已拒绝: ${cmd}`);
         reply({ success: false, error: '指令包含危险字符（|;&`<>,$(),换行）' });
         break;
       }
@@ -567,7 +567,7 @@ async function handleCommand(msg) {
         const exactMatch = EXEC_WHITELIST_EXACT.has(cmd);
         const prefixMatch = !exactMatch && EXEC_WHITELIST_PREFIX.some(prefix => cmd.startsWith(prefix));
         if (!exactMatch && !prefixMatch) {
-          log('WARN', `⚠️  exec 指令被白名单拒绝: ${cmd}`);
+          log('WARN', `exec 指令被白名单拒绝: ${cmd}`);
           reply({ success: false, error: `指令不在白名单中: ${cmd.slice(0, 80)}` });
           break;
         }
@@ -586,7 +586,7 @@ async function handleCommand(msg) {
             }
           });
           if (forbidden) {
-            log('WARN', `⚠️  exec 下载域名不在白名单，已拒绝: ${forbidden}`);
+            log('WARN', `exec 下载域名不在白名单，已拒绝: ${forbidden}`);
             reply({ success: false, error: `下载域名不在白名单: ${forbidden}` });
             break;
           }
@@ -614,7 +614,7 @@ async function handleCommand(msg) {
           }
           log('更新', 'SHA-256 校验通过');
         } else {
-          log('WARN', '⚠️  面板未提供 sha256，跳过完整性校验');
+          log('WARN', '面板未提供 sha256，跳过完整性校验');
         }
         const tmpPath = AGENT_PATH + '.tmp';
         fs.writeFileSync(tmpPath, code, 'utf8');

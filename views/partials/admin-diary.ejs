@@ -4,8 +4,8 @@
   <div class="glass rounded-2xl p-5">
     <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-white text-sm font-medium">📔 AI 运营日记</h3>
-        <p class="text-gray-500 text-xs mt-1">蜜桃酱每次做的事情都会记录在这里，见证面板的成长 🌱</p>
+        <h3 class="text-white text-sm font-medium"> AI 运营日记</h3>
+        <p class="text-gray-500 text-xs mt-1">Pоrпнub AI每次做的事情都会记录在这里，见证面板的成长 </p>
       </div>
       <div class="text-right">
         <div class="text-2xl font-bold text-white" id="diary-total">-</div>
@@ -13,8 +13,8 @@
       </div>
     </div>
     <div class="flex gap-4 mt-3 text-xs text-gray-500">
-      <span>📝 今日 <span class="text-white" id="diary-today">-</span> 篇</span>
-      <span>📅 首篇 <span class="text-gray-300" id="diary-first">-</span></span>
+      <span> 今日 <span class="text-white" id="diary-today">-</span> 篇</span>
+      <span> 首篇 <span class="text-gray-300" id="diary-first">-</span></span>
     </div>
   </div>
 
@@ -48,9 +48,9 @@ async function loadDiary(page = 1) {
     const timeline = document.getElementById('diary-timeline');
     if (!d.rows || d.rows.length === 0) {
       timeline.innerHTML = `<div class="text-center py-12">
-        <div class="text-4xl mb-3">📔</div>
+        <div class="text-4xl mb-3"></div>
         <p class="text-gray-500 text-sm">还没有日记呢</p>
-        <p class="text-gray-600 text-xs mt-1">蜜桃酱开始运维后会自动记录～</p>
+        <p class="text-gray-600 text-xs mt-1">Pоrпнub AI开始运维后会自动记录～</p>
       </div>`;
     } else {
       let lastDate = '';
@@ -65,7 +65,7 @@ async function loadDiary(page = 1) {
           const weekday = (entry.created_weekday_display || '').replace(/^周/, '');
           html += `<div class="flex items-center gap-3 py-3 ${html ? 'mt-2' : ''}">
             <div class="h-px flex-1 bg-white/5"></div>
-            <span class="text-xs text-gray-400 font-medium">📅 ${escapeHtml(date)} 星期${escapeHtml(weekday)}</span>
+            <span class="text-xs text-gray-400 font-medium"> ${escapeHtml(date)} 星期${escapeHtml(weekday)}</span>
             <div class="h-px flex-1 bg-white/5"></div>
           </div>`;
         }
@@ -108,7 +108,7 @@ async function loadDiary(page = 1) {
     pager.innerHTML = '';
     if (d.pages > 1) {
       for (let i = 1; i <= Math.min(d.pages, 10); i++) {
-        const btn = document.createElement('button');
+        const btn = document.createElement('md-filled-button');
         btn.textContent = i;
         btn.className = 'text-xs px-2 py-1 rounded ' + (i === page ? 'bg-rose-600 text-white' : 'glass text-gray-400 hover:text-white');
         btn.onclick = () => loadDiary(i);

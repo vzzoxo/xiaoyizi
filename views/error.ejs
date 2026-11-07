@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title><%= status %> · 小姨子的诱惑</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍑</text></svg>">
+  <title><%= status %> · Pоrпнub</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -23,11 +23,12 @@
     a:hover { text-decoration: underline; }
     .icon { font-size: 64px; margin-bottom: 8px; }
   </style>
+  <link rel="stylesheet" href="/css/material-theme.css">
+  <script defer src="/js/material.js"></script>
 </head>
 <body>
   <div class="wrap">
-    <p class="icon">🍑</p>
-    <p class="icon"><%= status === 404 ? '🫥' : '💥' %></p>
+    <p class="icon"><%= status %></p>
     <h1>
       <%= status === 404 ? '页面不存在' : '服务器开小差了' %>
     </h1>

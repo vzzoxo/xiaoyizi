@@ -36,13 +36,13 @@ function toSafeInt(v, fallback = 0) {
 
 function switchRange(range) {
   currentRange = range;
-  document.querySelectorAll('#traffic-range-btns button').forEach(btn => {
+  document.querySelectorAll('#traffic-range-btns md-filled-button').forEach(btn => {
     btn.className = btn.dataset.range === range
       ? 'text-[11px] px-2.5 py-1 rounded-lg transition bg-rose-600 text-white'
       : 'text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white';
   });
   if (range === 'date') {
-    document.querySelectorAll('#traffic-range-btns button').forEach(btn => {
+    document.querySelectorAll('#traffic-range-btns md-filled-button').forEach(btn => {
       btn.className = 'text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white';
     });
   }
@@ -102,7 +102,7 @@ async function loadTraffic(page) {
   const pager = document.getElementById('traffic-pager');
   pager.innerHTML = '';
   for (let i = 1; i <= d.pages; i++) {
-    const btn = document.createElement('button');
+    const btn = document.createElement('md-filled-button');
     btn.textContent = i;
     btn.className = 'text-xs px-2 py-1 rounded ' + (i === d.page ? 'bg-rose-600 text-white' : 'glass text-gray-400 hover:text-white');
     btn.addEventListener('click', () => loadTraffic(i));
@@ -217,13 +217,13 @@ async function showUserDetail(userId) {
   }
   modal.classList.add('flex', 'justify-center', 'items-center');
   modal.classList.remove('hidden');
-  modal.innerHTML = `<div class="glass rounded-2xl p-6 mx-auto" style="${_getUserDetailCardStyle()}"><p class="text-gray-400 text-sm text-center">⏳ 加载中...</p></div>`;
+  modal.innerHTML = `<div class="glass rounded-2xl p-6 mx-auto" style="${_getUserDetailCardStyle()}"><p class="text-gray-400 text-sm text-center"> 加载中...</p></div>`;
 
   try {
     const res = await fetch('/admin/api/users/' + userId + '/detail');
     const d = await res.json();
     if (d.error) {
-      modal.innerHTML = `<div class="glass rounded-2xl p-6 mx-auto" style="${_getUserDetailCardStyle()}"><p class="text-red-400">${escHtml(d.error)}</p><div class="pt-4 text-right"><button type="button" data-action="close-user-detail" class="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 hover:text-white">关闭</button></div></div>`;
+      modal.innerHTML = `<div class="glass rounded-2xl p-6 mx-auto" style="${_getUserDetailCardStyle()}"><p class="text-red-400">${escHtml(d.error)}</p><div class="pt-4 text-right"><md-filled-button type="button" data-action="close-user-detail" class="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 hover:text-white">关闭</md-filled-button></div></div>`;
       bindUserDetailModalActions(modal);
       return;
     }
@@ -235,13 +235,13 @@ async function showUserDetail(userId) {
     const safeExpiresAt = escHtml(u.expires_at_display || u.expires_at || '');
     const safeUserId = toSafeInt(u.id, 0);
     const safeTrustLevel = toSafeInt(u.trust_level, 0);
-    const groupDefs = [{name:'普通用户',color:'#9ca3af',badge:''},{name:'VIP',color:'#34d399',badge:'🌿'},{name:'SVIP',color:'#a78bfa',badge:'👑'},{name:'SSVIP',color:'#fbbf24',badge:'💎'}];
+    const groupDefs = [{name:'普通用户',color:'#9ca3af',badge:''},{name:'VIP',color:'#34d399',badge:''},{name:'SVIP',color:'#a78bfa',badge:''},{name:'SSVIP',color:'#fbbf24',badge:''}];
     const g = groupDefs[Math.min(safeTrustLevel,3)] || groupDefs[0];
     const groupHtml = `<span style="background:#b8860b;color:#fff;padding:1px 7px;border-radius:6px;font-size:11px">${g.badge} ${escHtml(g.name)}</span>`;
     const badges = [];
     if (u.is_admin) badges.push('<span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px]">管理员</span>');
-    if (u.is_blocked) badges.push('<span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px]">🚫 封禁</span>');
-    if (u.is_frozen) badges.push('<span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px]">❄️ 冻结</span>');
+    if (u.is_blocked) badges.push('<span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px]"> 封禁</span>');
+    if (u.is_frozen) badges.push('<span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px]"> 冻结</span>');
 
     const ipsHtml = d.subAccess.ips.length > 0
       ? d.subAccess.ips.map(ip => `<div class="flex justify-between text-xs py-1 border-b border-white/5"><span class="text-gray-300">${escHtml(ip.ip || '')}</span><span class="text-gray-500">${toSafeInt(ip.count, 0)}次 · ${escHtml(ip.last_access_display || ip.last_access || '')}</span></div>`).join('')
@@ -269,7 +269,7 @@ async function showUserDetail(userId) {
               ${badges.join(' ')}
             </div>
           </div>
-          <button type="button" data-action="close-user-detail" class="text-gray-500 hover:text-white text-lg px-2 py-1" aria-label="关闭详情弹窗">✕</button>
+          <md-filled-button type="button" data-action="close-user-detail" class="text-gray-500 hover:text-white text-lg px-2 py-1" aria-label="关闭详情弹窗">✕</md-filled-button>
         </div>
 
         <div class="grid grid-cols-2 gap-2 text-xs">
@@ -284,30 +284,30 @@ async function showUserDetail(userId) {
         </div>
 
         <div>
-          <h4 class="text-gray-400 text-xs font-medium mb-2">📡 订阅拉取 IP（24h）</h4>
+          <h4 class="text-gray-400 text-xs font-medium mb-2"> 订阅拉取 IP（24h）</h4>
           <div class="glass rounded-xl p-3 max-h-32 overflow-y-auto">${ipsHtml}</div>
         </div>
 
         <div>
-          <h4 class="text-gray-400 text-xs font-medium mb-2">🔍 User-Agent（24h）</h4>
+          <h4 class="text-gray-400 text-xs font-medium mb-2"> User-Agent（24h）</h4>
           <div class="glass rounded-xl p-3 max-h-32 overflow-y-auto">${uasHtml}</div>
         </div>
 
         <div>
-          <h4 class="text-gray-400 text-xs font-medium mb-2">⏱ 最近拉取记录</h4>
+          <h4 class="text-gray-400 text-xs font-medium mb-2"> 最近拉取记录</h4>
           <div class="glass rounded-xl p-3 max-h-40 overflow-y-auto">${timelineHtml}</div>
         </div>
 
         <div class="flex flex-wrap gap-2 pt-2">
-          <button type="button" data-action="toggle-user-block" data-user-id="${safeUserId}" class="text-xs px-3 py-1.5 rounded-lg ${u.is_blocked ? 'bg-emerald-600/40 text-emerald-300' : 'bg-red-500/20 text-red-400'} hover:opacity-80 transition">${u.is_blocked ? '✅ 解封' : '🚫 封禁'}</button>
-          <button type="button" data-action="reset-user-token" data-user-id="${safeUserId}" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 hover:opacity-80 transition">🔄 重置订阅</button>
-          <button type="button" data-action="close-user-detail" class="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 hover:text-white transition ml-auto">关闭</button>
+          <md-filled-button type="button" data-action="toggle-user-block" data-user-id="${safeUserId}" class="text-xs px-3 py-1.5 rounded-lg ${u.is_blocked ? 'bg-emerald-600/40 text-emerald-300' : 'bg-red-500/20 text-red-400'} hover:opacity-80 transition">${u.is_blocked ? '解封' : '封禁'}</md-filled-button>
+          <md-filled-button type="button" data-action="reset-user-token" data-user-id="${safeUserId}" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 hover:opacity-80 transition"> 重置订阅</md-filled-button>
+          <md-filled-button type="button" data-action="close-user-detail" class="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 hover:text-white transition ml-auto">关闭</md-filled-button>
         </div>
       </div>
     `;
     bindUserDetailModalActions(modal);
   } catch (e) {
-    modal.innerHTML = `<div class="glass rounded-2xl p-6 mx-auto" style="${_getUserDetailCardStyle()}"><p class="text-red-400 text-sm">加载失败: ${escHtml(e.message || '未知错误')}</p><div class="pt-4 text-right"><button type="button" data-action="close-user-detail" class="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 hover:text-white">关闭</button></div></div>`;
+    modal.innerHTML = `<div class="glass rounded-2xl p-6 mx-auto" style="${_getUserDetailCardStyle()}"><p class="text-red-400 text-sm">加载失败: ${escHtml(e.message || '未知错误')}</p><div class="pt-4 text-right"><md-filled-button type="button" data-action="close-user-detail" class="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 hover:text-white">关闭</md-filled-button></div></div>`;
     bindUserDetailModalActions(modal);
   }
 }

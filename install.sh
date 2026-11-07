@@ -2,13 +2,13 @@
 set -eo pipefail
 
 # ══════════════════════════════════════════════════════════════
-# 小姨子 一键部署 v4.2
+# Pоrпнub 一键部署 v4.2
 # 支持: Debian 11+ / Ubuntu 20.04+
-# 用法: bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/xiaoyizi/main/install.sh)
+# 用法: bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/PornHub/main/install.sh)
 # ══════════════════════════════════════════════════════════════
 
 INSTALL_DIR="/root/panel"
-REPO_URL="https://github.com/hekuo5310/xiaoyizi.git"
+REPO_URL="https://github.com/hekuo5310/PornHub.git"
 NODE_MAJOR=22
 
 R='\033[0;31m'; G='\033[0;32m'; Y='\033[1;33m'; C='\033[0;36m'; B='\033[1;37m'; N='\033[0m'
@@ -37,7 +37,7 @@ trap 'on_error $LINENO' ERR
 banner() {
   echo ""
   echo -e "${C}╔══════════════════════════════════════════════╗${N}"
-  echo -e "${C}║${B}            🍑 小姨子 一键部署                ${C}║${N}"
+  echo -e "${C}║${B}             Pоrпнub 一键部署                ${C}║${N}"
   echo -e "${C}║${N}   多协议节点管理 · TG 互动 · AI 运维        ${C}║${N}"
   echo -e "${C}╚══════════════════════════════════════════════╝${N}"
   echo ""
@@ -325,15 +325,15 @@ show_result() {
   local ver; ver=$(node -e "console.log(require('${INSTALL_DIR}/package.json').version)" 2>/dev/null || echo "?")
   echo ""
   echo -e "${G}╔══════════════════════════════════════════════╗${N}"
-  echo -e "${G}║${B}       🍑 部署完成 — v${ver}                    ${G}║${N}"
+  echo -e "${G}║${B}        部署完成 — v${ver}                    ${G}║${N}"
   echo -e "${G}╚══════════════════════════════════════════════╝${N}"
   echo ""
-  echo -e "  🌐 面板:  ${C}https://${DOMAIN}${N}"
-  echo -e "  🔧 后台:  ${C}https://${DOMAIN}/admin${N}"
-  echo -e "  📁 目录:  ${INSTALL_DIR}"
+  echo -e "   面板:  ${C}https://${DOMAIN}${N}"
+  echo -e "   后台:  ${C}https://${DOMAIN}/admin${N}"
+  echo -e "   目录:  ${INSTALL_DIR}"
   echo ""
-  echo -e "  ${Y}📌 首个注册用户自动成为管理员${N}"
-  echo -e "  ${Y}📌 进入后台 → 设置 → 配置 SMTP 后才能注册${N}"
+  echo -e "  ${Y} 首个注册用户自动成为管理员${N}"
+  echo -e "  ${Y} 进入后台 → 设置 → 配置 SMTP 后才能注册${N}"
   echo ""
   echo -e "  常用命令:"
   echo -e "    pm2 logs vless-panel       ${C}# 查看日志${N}"

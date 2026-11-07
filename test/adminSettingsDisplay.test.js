@@ -37,7 +37,7 @@ test('GET /diary returns *_display fields', async (t) => {
       rows: [{
         id: 1,
         content: 'entry',
-        mood: '🐱',
+        mood: '',
         category: 'ops',
         created_at: '2026-02-27 16:30:45',
       }],

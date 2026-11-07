@@ -214,7 +214,7 @@ let server;
 if (!process.env.WORKERS_RUNTIME) {
 // 启动
 server = app.listen(PORT, () => {
-  logger.info({ port: PORT, env: process.env.NODE_ENV || 'development' }, '🚀 VLESS 节点面板已启动');
+  logger.info({ port: PORT, env: process.env.NODE_ENV || 'development' }, 'VLESS 节点面板已启动');
 
   // 启动 TG Bot
   try { require('./services/tgbot').init(); } catch (e) { logger.warn({ err: e.message }, 'TG Bot 启动失败'); }

@@ -169,9 +169,9 @@
           <td class="py-3 px-4 text-xs text-gray-500">${safeLastLogin}</td>
           <td class="py-3 px-4"><span class="text-[10px] px-2 py-0.5 rounded-full ${statusClass}">${statusText}</span></td>
           <td class="py-3 px-4 space-x-2">
-            <form method="POST" action="/admin/api/users/${safeUserId}/toggle-block" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><button class="text-xs ${blockBtnClass} hover:underline">${blockBtnText}</button></form>
-            <form method="POST" action="/admin/api/users/${safeUserId}/reset-token" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><button type="button" class="text-xs text-amber-400 hover:underline js-reset-token-btn">重置</button></form>
-            ${u.is_admin ? '' : `<button class="text-xs text-gray-500 hover:text-red-400 hover:underline js-delete-user" data-user-id="${safeUserId}" data-username="${safeUsername}">删除</button>`}
+            <form method="POST" action="/admin/api/users/${safeUserId}/toggle-block" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><md-filled-button class="text-xs ${blockBtnClass} hover:underline">${blockBtnText}</md-filled-button></form>
+            <form method="POST" action="/admin/api/users/${safeUserId}/reset-token" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><md-filled-button type="button" class="text-xs text-amber-400 hover:underline js-reset-token-btn">重置</md-filled-button></form>
+            ${u.is_admin ? '' : `<md-filled-button class="text-xs text-gray-500 hover:text-red-400 hover:underline js-delete-user" data-user-id="${safeUserId}" data-username="${safeUsername}">删除</md-filled-button>`}
           </td>
         </tr>`;
       }).join('');
@@ -195,9 +195,9 @@
             <div class="col-span-2"><span class="text-gray-500">最后活跃</span><span class="text-gray-500 ml-2">${safeLastLogin}</span></div>
           </div>
           <div class="flex gap-3 pt-1.5 border-t border-white/5">
-            <form method="POST" action="/admin/api/users/${safeUserId}/toggle-block" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><button class="text-xs ${blockBtnClass} hover:underline">${blockBtnText}</button></form>
-            <form method="POST" action="/admin/api/users/${safeUserId}/reset-token" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><button type="button" class="text-xs text-amber-400 hover:underline js-reset-token-btn">重置</button></form>
-            ${u.is_admin ? '' : `<button class="text-xs text-gray-500 hover:text-red-400 hover:underline js-delete-user" data-user-id="${safeUserId}" data-username="${safeUsername}">删除</button>`}
+            <form method="POST" action="/admin/api/users/${safeUserId}/toggle-block" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><md-filled-button class="text-xs ${blockBtnClass} hover:underline">${blockBtnText}</md-filled-button></form>
+            <form method="POST" action="/admin/api/users/${safeUserId}/reset-token" class="inline"><input type="hidden" name="_csrf" value="${csrfToken}"><md-filled-button type="button" class="text-xs text-amber-400 hover:underline js-reset-token-btn">重置</md-filled-button></form>
+            ${u.is_admin ? '' : `<md-filled-button class="text-xs text-gray-500 hover:text-red-400 hover:underline js-delete-user" data-user-id="${safeUserId}" data-username="${safeUsername}">删除</md-filled-button>`}
           </div>
         </div>`;
       }).join('');
@@ -217,7 +217,7 @@
       navM.innerHTML = '';
       if (pages <= 1) return;
       const mkBtn = (text, p, active) => {
-        const b = document.createElement('button');
+        const b = document.createElement('md-filled-button');
         b.textContent = text;
         b.className = active ? 'px-2.5 py-1 rounded-lg text-xs bg-rose-600 text-white' : 'px-2.5 py-1 rounded-lg text-xs glass text-gray-400 hover:text-white hover:bg-white/10 transition';
         if (!active) b.onclick = () => loadUsers(p);
@@ -308,11 +308,11 @@
 <div class="tab-panel" data-tab="logs">
   <!-- 子 Tab 切换 -->
   <div class="flex gap-2 mb-4">
-    <button class="text-xs px-3 py-1.5 rounded-lg transition bg-rose-600 text-white js-log-type-btn" data-logtype="system">🖥️ 系统日志</button>
-    <button class="text-xs px-3 py-1.5 rounded-lg transition glass text-gray-400 hover:text-white js-log-type-btn" data-logtype="user">👤 操作日志</button>
-    <button class="text-xs px-3 py-1.5 rounded-lg transition glass text-gray-400 hover:text-white js-log-type-btn" data-logtype="all">📋 全部</button>
+    <md-filled-button class="text-xs px-3 py-1.5 rounded-lg transition bg-rose-600 text-white js-log-type-btn" data-logtype="system"> 系统日志</md-filled-button>
+    <md-filled-button class="text-xs px-3 py-1.5 rounded-lg transition glass text-gray-400 hover:text-white js-log-type-btn" data-logtype="user"> 操作日志</md-filled-button>
+    <md-filled-button class="text-xs px-3 py-1.5 rounded-lg transition glass text-gray-400 hover:text-white js-log-type-btn" data-logtype="all"> 全部</md-filled-button>
     <div class="flex-1"></div>
-    <button id="btn-clear-logs" class="text-red-400 hover:text-red-300 text-xs">🗑 清空</button>
+    <md-filled-button id="btn-clear-logs" class="text-red-400 hover:text-red-300 text-xs"> 清空</md-filled-button>
   </div>
 
   <div class="glass rounded-2xl overflow-hidden">
@@ -343,7 +343,7 @@
 <!-- 安全中心 Tab -->
 <div class="tab-panel space-y-4" data-tab="abuse">
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">⚙️ 风控配置</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> 风控配置</h3>
     <p class="text-gray-600 text-xs mb-3">订阅防护参数，保存后立即生效无需重启</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
       <div>
@@ -386,15 +386,15 @@
       <input type="text" id="guard-ua-allowlist" placeholder="clash,v2rayn,shadowrocket..." class="w-full bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
     </div>
     <p class="text-gray-600 text-xs mb-3">示例：设为 <code>2</code> 时，同一用户 24 小时内出现第 3 个不同 UA，会自动重置订阅链接和该用户全部节点 UUID；旧订阅和旧节点配置都会失效，并清空该用户最近 24 小时的订阅访问记录重新计数。</p>
-    <button id="btn-save-guard" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存</button>
+    <md-filled-button id="btn-save-guard" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存</md-filled-button>
   </div>
 
   <div class="glass rounded-2xl p-5">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-white text-sm font-medium">🛡️ 安全中心</h3>
+      <h3 class="text-white text-sm font-medium"> 安全中心</h3>
       <div class="flex items-center gap-2 flex-wrap">
-        <button id="security-view-substats" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg transition">订阅访问统计</button>
-        <button id="security-view-multinode" class="glass text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded-lg transition">并发多节点观察</button>
+        <md-filled-button id="security-view-substats" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg transition">订阅访问统计</md-filled-button>
+        <md-filled-button id="security-view-multinode" class="glass text-gray-300 hover:text-white text-xs px-3 py-1.5 rounded-lg transition">并发多节点观察</md-filled-button>
       </div>
     </div>
     <div id="security-substats-panel">
@@ -406,7 +406,7 @@
           <option value="request">总请求</option><option value="success">成功数</option><option value="deny">拒绝数</option><option value="ok_rate">成功率</option><option value="ip">IP数量</option><option value="ua">UA数量</option><option value="last">最近拉取</option>
         </select>
         <label class="flex items-center gap-1 text-gray-400 text-xs"><input type="checkbox" id="substats-high" class="accent-rose-500"> 仅高风险用户</label>
-        <button id="btn-load-substats" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg transition">查询</button>
+        <md-filled-button id="btn-load-substats" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg transition">查询</md-filled-button>
       </div>
       <div id="substats-overview" class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3"></div>
       <div id="substats-result">
@@ -419,7 +419,7 @@
         <select id="multinode-hours" class="bg-black/30 text-gray-300 text-xs px-2 py-1 rounded-lg border border-white/10">
           <option value="1">1小时</option><option value="24" selected>24小时</option><option value="72">3天</option><option value="168">7天</option>
         </select>
-        <button id="btn-load-multinode" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg transition">查询</button>
+        <md-filled-button id="btn-load-multinode" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg transition">查询</md-filled-button>
       </div>
       <div id="multinode-overview" class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3"></div>
       <div id="multinode-result">
@@ -437,7 +437,7 @@
 <!-- 通知 Tab（仅 TG 配置和事件开关） -->
 <div class="tab-panel space-y-4" data-tab="notify">
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-4">🔔 Telegram 通知配置</h3>
+    <h3 class="text-white text-sm font-medium mb-4"> Telegram 通知配置</h3>
     <div class="grid grid-cols-2 gap-3 mb-4">
       <div>
         <label class="text-gray-500 text-xs block mb-1">Bot Token</label>
@@ -449,10 +449,10 @@
       </div>
     </div>
     <div class="flex gap-2 mb-6">
-      <button id="btn-save-tg" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-4 py-2 rounded-xl transition">保存</button>
-      <button id="btn-test-tg" class="glass text-gray-300 hover:text-white text-xs px-4 py-2 rounded-xl transition">发送测试</button>
+      <md-filled-button id="btn-save-tg" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-4 py-2 rounded-xl transition">保存</md-filled-button>
+      <md-filled-button id="btn-test-tg" class="glass text-gray-300 hover:text-white text-xs px-4 py-2 rounded-xl transition">发送测试</md-filled-button>
     </div>
-    <h3 class="text-white text-sm font-medium mb-3">📧 SMTP 邮件配置</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> SMTP 邮件配置</h3>
     <div class="space-y-3 mb-6">
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <span class="text-white text-sm">启用 SMTP 发信</span>
@@ -495,21 +495,21 @@
         </label>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button id="btn-save-smtp" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-4 py-2 rounded-xl transition">保存 SMTP</button>
+        <md-filled-button id="btn-save-smtp" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-4 py-2 rounded-xl transition">保存 SMTP</md-filled-button>
         <input type="email" id="smtp-test-to" placeholder="测试收件邮箱" class="flex-1 min-w-[200px] bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
-        <button id="btn-test-smtp" class="glass text-gray-300 hover:text-white text-xs px-4 py-2 rounded-xl transition">发送测试邮件</button>
+        <md-filled-button id="btn-test-smtp" class="glass text-gray-300 hover:text-white text-xs px-4 py-2 rounded-xl transition">发送测试邮件</md-filled-button>
       </div>
     </div>
     <h3 class="text-white text-sm font-medium mb-3">通知事件</h3>
     <div class="space-y-2">
       <% var events = [
-        { key: 'tg_on_node_down', label: '🔴 节点离线/恢复', desc: '节点上下线状态变化时通知' },
-        { key: 'tg_on_node_blocked', label: '🧱 节点被墙', desc: '检测到节点疑似被墙时通知' },
-        { key: 'tg_on_rotate', label: '🔄 自动轮换', desc: '每日轮换完成后通知' },
-        { key: 'tg_on_abuse', label: '⚠️ 订阅异常', desc: '检测到多IP拉取时通知' },
-        { key: 'tg_on_traffic', label: '📊 流量超标', desc: '用户流量超过设定阈值时通知' },
-        { key: 'tg_on_register', label: '👤 新用户注册', desc: '有新用户注册时通知' },
-        { key: 'tg_on_deploy', label: '🚀 节点部署', desc: '节点部署成功或失败时通知' }
+        { key: 'tg_on_node_down', label: '节点离线/恢复', desc: '节点上下线状态变化时通知' },
+        { key: 'tg_on_node_blocked', label: '节点被墙', desc: '检测到节点疑似被墙时通知' },
+        { key: 'tg_on_rotate', label: '自动轮换', desc: '每日轮换完成后通知' },
+        { key: 'tg_on_abuse', label: '订阅异常', desc: '检测到多IP拉取时通知' },
+        { key: 'tg_on_traffic', label: '流量超标', desc: '用户流量超过设定阈值时通知' },
+        { key: 'tg_on_register', label: '新用户注册', desc: '有新用户注册时通知' },
+        { key: 'tg_on_deploy', label: '节点部署', desc: '节点部署成功或失败时通知' }
       ]; events.forEach(function(ev) { %>
         <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
           <div>
@@ -530,15 +530,15 @@
 <!-- 设置 Tab -->
 <div class="tab-panel space-y-4" data-tab="settings">
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">📢 公告管理</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> 公告管理</h3>
     <div class="flex gap-2">
       <input type="text" id="announcement-text" value="<%= announcement %>" placeholder="输入公告内容（留空则不显示）" class="flex-1 bg-black/30 text-white px-4 py-2 rounded-xl border border-white/10 text-sm">
-      <button id="btn-save-announcement" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存</button>
+      <md-filled-button id="btn-save-announcement" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存</md-filled-button>
     </div>
   </div>
 
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">👥 注册管理</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> 注册管理</h3>
     <p class="text-gray-600 text-xs mb-3">当前已注册 <span class="text-rose-400"><%= userCount %></span> 人</p>
     <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
       <div>
@@ -566,19 +566,19 @@
       <label class="text-gray-500 text-xs block mb-1">允许注册的邮箱后缀</label>
       <div class="flex gap-2">
         <input type="text" id="allowed-email-domains" value="<%= allowedEmailDomains %>" placeholder="留空不限制，如 gmail.com,qq.com" class="flex-1 bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
-        <button id="btn-save-email-domains" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-xl text-sm transition">保存</button>
+        <md-filled-button id="btn-save-email-domains" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-xl text-sm transition">保存</md-filled-button>
       </div>
       <p class="text-gray-600 text-[11px] mt-1">多个后缀用逗号分隔，留空表示不限制</p>
     </div>
   </div>
 
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">📡 订阅协议展示</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> 订阅协议展示</h3>
     <p class="text-gray-600 text-xs mb-3">控制用户面板中展示哪些协议的订阅地址</p>
     <div class="space-y-2">
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">🌐 VLESS（IPv4）</span>
+          <span class="text-white text-sm"> VLESS（IPv4）</span>
         </div>
         <div class="relative">
           <input type="checkbox" id="sub-visible-vless" class="sr-only peer" <%= subVisibleVless ? 'checked' : '' %>>
@@ -588,7 +588,7 @@
       </label>
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">🌐 Shadowsocks（IPv6）</span>
+          <span class="text-white text-sm"> Shadowsocks（IPv6）</span>
         </div>
         <div class="relative">
           <input type="checkbox" id="sub-visible-ss" class="sr-only peer" <%= subVisibleSs ? 'checked' : '' %>>
@@ -598,7 +598,7 @@
       </label>
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">⚡ Hysteria 2</span>
+          <span class="text-white text-sm"> Hysteria 2</span>
         </div>
         <div class="relative">
           <input type="checkbox" id="sub-visible-hy2" class="sr-only peer" <%= subVisibleHy2 ? 'checked' : '' %>>
@@ -607,20 +607,20 @@
         </div>
       </label>
     </div>
-    <button id="btn-save-sub-visibility" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition mt-3">保存</button>
+    <md-filled-button id="btn-save-sub-visibility" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition mt-3">保存</md-filled-button>
   </div>
 
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">🔄 用户组重置周期</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> 用户组重置周期</h3>
     <p class="text-gray-600 text-xs mb-3">设置每个用户组的 UUID 和订阅 Token 重置间隔（天），0 = 不重置</p>
     <div id="group-reset-config" style="display:grid;grid-template-columns:80px 1fr 1fr;gap:8px 12px;align-items:center">
       <span class="text-xs text-gray-500">用户组</span><span class="text-xs text-gray-500">UUID 重置(天)</span><span class="text-xs text-gray-500">订阅重置(天)</span>
     </div>
-    <button id="btn-save-group-reset" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition mt-3">保存</button>
+    <md-filled-button id="btn-save-group-reset" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition mt-3">保存</md-filled-button>
     <div class="mt-4 pt-3 border-t border-white/10">
       <p class="text-gray-500 text-xs mb-2">端口轮换周期（天），0 = 不轮换，所有节点共享同一周期</p>
       <div class="flex items-center gap-2">
-        <span class="text-xs text-gray-300">🔌 端口轮换</span>
+        <span class="text-xs text-gray-300"> 端口轮换</span>
         <input type="number" id="port-rotate-days" min="0" max="365" value="1" class="w-20 bg-black/30 text-white px-3 py-1.5 rounded-xl border border-white/10 text-sm">
         <span class="text-xs text-gray-500">天</span>
       </div>
@@ -628,21 +628,21 @@
   </div>
 
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">📦 默认流量限额</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> 默认流量限额</h3>
     <p class="text-gray-600 text-xs mb-3">新用户注册时的默认流量上限（GB），-1 = 无限</p>
     <div class="flex flex-wrap gap-2">
       <input id="default-traffic-limit" value="<%= defaultTrafficLimit < 0 ? -1 : (defaultTrafficLimit / 1073741824).toFixed(2) %>" min="-1" step="any" placeholder="-1 = 无限" class="flex-1 min-w-[120px] bg-black/30 text-white px-4 py-2 rounded-xl border border-white/10 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
       <span class="text-gray-500 text-sm self-center">GB</span>
-      <button id="btn-save-default-traffic-limit" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存</button>
-      <button id="btn-apply-default-traffic-limit" class="glass text-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-white/10 transition whitespace-nowrap">应用到全部用户</button>
+      <md-filled-button id="btn-save-default-traffic-limit" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存</md-filled-button>
+      <md-filled-button id="btn-apply-default-traffic-limit" class="glass text-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-white/10 transition whitespace-nowrap">应用到全部用户</md-filled-button>
     </div>
   </div>
 
   <!-- 自动化运维配置 -->
   <div class="glass rounded-2xl p-5">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-white text-sm font-medium">🤖 自动化运维</h3>
-      <button id="btn-save-automation" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存配置</button>
+      <h3 class="text-white text-sm font-medium"> 自动化运维</h3>
+      <md-filled-button id="btn-save-automation" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-sm transition">保存配置</md-filled-button>
     </div>
 
     <!-- 流量超标策略 -->
@@ -742,7 +742,7 @@
             <span class="text-white text-sm">批量更新所有在线 Agent</span>
             <p class="text-gray-600 text-[11px] mt-0.5">向所有在线 Agent 下发 self_update 命令，自动下载最新代码并重启</p>
           </div>
-          <button id="btn-agent-update-all" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm transition whitespace-nowrap">🚀 一键更新</button>
+          <md-filled-button id="btn-agent-update-all" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm transition whitespace-nowrap"> 一键更新</md-filled-button>
         </div>
         <div id="agent-update-result" class="hidden mt-2 text-xs text-gray-400"></div>
       </div>
@@ -751,22 +751,22 @@
 </div>
 <div class="tab-panel space-y-4" data-tab="ulzix">
   <div class="glass rounded-2xl p-5 space-y-3">
-    <h3 class="text-white font-medium">☁️ Ulzix 集成</h3>
+    <h3 class="text-white font-medium"> Ulzix 集成</h3>
     <p class="text-gray-400 text-sm">通过服务端 Cookie 访问 FOSSBilling Client API。支持浏览器导出的 Cookie JSON；更新后立即生效，无需重新部署。</p>
     <p class="text-gray-400 text-sm">在此查看订单并绑定节点。开关机、重装、换 IP 等 VPS 扩展操作请到 Ulzix 控制台完成。</p>
     <a href="https://idc-new.ulzix.com/order" target="_blank" rel="noopener noreferrer" class="text-blue-400">打开 Ulzix 控制台</a>
-    <button type="button" id="ulzix-refresh" class="glass rounded-xl px-4 py-2 text-white">刷新订单</button>
+    <md-filled-button type="button" id="ulzix-refresh" class="glass rounded-xl px-4 py-2 text-white">刷新订单</md-filled-button>
     <form id="ulzix-cookie-form" class="space-y-2">
       <label for="ulzix-cookie-json" class="text-gray-300 text-sm">更新登录态 Cookie JSON</label>
       <textarea id="ulzix-cookie-json" rows="5" maxlength="65536" autocomplete="off" spellcheck="false" required class="w-full bg-black/30 text-white p-3 rounded-xl border border-white/10 text-sm" placeholder="粘贴浏览器导出的 Cookie JSON"></textarea>
       <p class="text-gray-400 text-sm">登录态加密保存在 D1，仅管理员可更新，保存后不回显。请勿更换 SESSION_SECRET，否则需重新保存 Cookie。</p>
-      <button id="ulzix-cookie-save" type="submit" class="glass rounded-xl px-4 py-2 text-white">保存登录态</button>
+      <md-filled-button id="ulzix-cookie-save" type="submit" class="glass rounded-xl px-4 py-2 text-white">保存登录态</md-filled-button>
       <p id="ulzix-cookie-status" class="text-gray-300 text-sm" aria-live="polite"></p>
     </form>
     <div class="space-y-3">
       <h4 class="text-white">购买服务器</h4>
       <p class="text-gray-400 text-sm">选择分组、商品和周期，先获取购物车报价，再确认购买。余额足够时 Ulzix 可能直接扣款；不足时请完成账单支付。不会自动清空已有购物车。购买期间请勿在 Ulzix 控制台同时修改购物车。</p>
-      <button type="button" id="ulzix-catalog-refresh" class="glass rounded-xl px-4 py-2 text-white">加载分组和商品</button>
+      <md-filled-button type="button" id="ulzix-catalog-refresh" class="glass rounded-xl px-4 py-2 text-white">加载分组和商品</md-filled-button>
       <div id="ulzix-catalog" class="space-y-3 text-gray-300 text-sm" aria-live="polite"></div>
       <div id="ulzix-purchases" class="space-y-3 text-gray-300 text-sm" aria-live="polite"></div>
     </div>
@@ -820,7 +820,7 @@
     };
     const res = await fetch('/admin/api/guard-config', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ config }) });
     const d = await res.json().catch(() => ({}));
-    showToast(d.ok ? '✅ 风控配置已保存' : '❌ 保存失败');
+    showToast(d.ok ? '风控配置已保存' : '保存失败');
   });
 
   document.getElementById('btn-save-tg')?.addEventListener('click', () => saveTG());
@@ -835,22 +835,22 @@
   document.getElementById('registration-open-toggle')?.addEventListener('change', async (e) => {
     const open = e.target.checked;
     const res = await fetch('/admin/api/registration-open', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ open }) });
-    if (res.ok) showToast(open ? '✅ 已开放注册' : '✅ 已关闭注册');
-    else { e.target.checked = !open; showToast('❌ 操作失败'); }
+    if (res.ok) showToast(open ? '已开放注册' : '已关闭注册');
+    else { e.target.checked = !open; showToast('操作失败'); }
   });
   document.getElementById('invite-registration-open-toggle')?.addEventListener('change', async (e) => {
     const open = e.target.checked;
     const res = await fetch('/admin/api/invite-registration-open', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ open }) });
-    if (res.ok) showToast(open ? '✅ 已开放邀请码注册' : '✅ 已关闭邀请码注册');
-    else { e.target.checked = !open; showToast('❌ 操作失败'); }
+    if (res.ok) showToast(open ? '已开放邀请码注册' : '已关闭邀请码注册');
+    else { e.target.checked = !open; showToast('操作失败'); }
   });
   document.getElementById('btn-save-email-domains')?.addEventListener('click', async () => {
     const domains = document.getElementById('allowed-email-domains')?.value?.trim() || '';
     const res = await fetch('/admin/api/allowed-email-domains', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ domains }) });
-    showToast(res.ok ? '✅ 已保存' : '❌ 保存失败');
+    showToast(res.ok ? '已保存' : '保存失败');
   });
   // 用户组重置周期
-  const _grpNames = ['普通用户','VIP 🌿','SVIP 👑','SSVIP 💎'];
+  const _grpNames = ['普通用户','VIP ','SVIP ','SSVIP '];
   async function loadGroupResetConfig() {
     const res = await fetch('/admin/api/group-reset-config', { headers: { 'X-CSRF-Token': window._csrf || '' } });
     const d = await res.json().catch(() => ({}));
@@ -883,7 +883,7 @@
     const port_rotate_days = parseInt(document.getElementById('port-rotate-days')?.value) || 0;
     const res = await fetch('/admin/api/group-reset-config', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ groups, port_rotate_days }) });
     const d = await res.json().catch(() => ({}));
-    showToast(d.ok ? '✅ 已保存' : '❌ 保存失败');
+    showToast(d.ok ? '已保存' : '保存失败');
   });
 
   document.getElementById('btn-save-default-traffic-limit')?.addEventListener('click', () => saveDefaultTrafficLimit());
@@ -894,7 +894,7 @@
     const ss = document.getElementById('sub-visible-ss')?.checked;
     const hy2 = document.getElementById('sub-visible-hy2')?.checked;
     const res = await fetch('/admin/api/sub-visibility', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' }, body: JSON.stringify({ vless, ss, hy2 }) });
-    showToast(res.ok ? '✅ 订阅可见性已保存' : '❌ 保存失败');
+    showToast(res.ok ? '订阅可见性已保存' : '保存失败');
   });
 
 
@@ -1001,7 +1001,7 @@
           for (const r of (data.results || [])) {
             const span = document.createElement('span');
             span.className = r.success ? 'text-emerald-400' : 'text-red-400';
-            span.textContent = `${r.success ? '✅' : '❌'} ${r.nodeName || r.nodeId}${r.error ? ': ' + r.error : ''}`;
+            span.textContent = `${r.success ? '成功' : '失败'} ${r.nodeName || r.nodeId}${r.error ? ': ' + r.error : ''}`;
             resultDiv.appendChild(span);
             resultDiv.appendChild(document.createElement('br'));
           }
@@ -1021,8 +1021,8 @@
 <div id="user-detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60" style="backdrop-filter:blur(4px)">
   <div class="glass rounded-2xl mx-4 overflow-hidden" style="width:100%;max-width:640px">
     <div class="flex items-center justify-between p-4 border-b border-white/5">
-      <h3 class="text-white text-sm font-medium" id="ud-title">👤 用户详情</h3>
-      <button id="ud-close" class="text-gray-500 hover:text-white text-sm">✕</button>
+      <h3 class="text-white text-sm font-medium" id="ud-title"> 用户详情</h3>
+      <md-filled-button id="ud-close" class="text-gray-500 hover:text-white text-sm">✕</md-filled-button>
     </div>
     <div class="overflow-y-auto max-h-[480px] p-4" id="ud-body">
       <p class="text-gray-500 text-sm text-center py-6">加载中...</p>
@@ -1112,16 +1112,16 @@
       const ts = d.trafficSources || {};
       const other = Math.max(0, (i.traffic_limit||0) - (ts.default||0) - (ts.checkin||0) - (ts.lucky||0));
       const srcItems = [
-        {label:'📦 注册赠送', val: ts.default||0},
-        {label:'📌 签到', val: ts.checkin||0},
-        {label:'🎰 抽奖', val: ts.lucky||0},
-        {label:'🎮 其他(猜拳等)', val: other},
+        {label:'注册赠送', val: ts.default||0},
+        {label:'签到', val: ts.checkin||0},
+        {label:'抽奖', val: ts.lucky||0},
+        {label:'其他(猜拳等)', val: other},
       ].filter(s => s.val > 0);
       const srcHtml = srcItems.length ? srcItems.map(s =>
         '<div class="flex justify-between text-xs"><span class="text-gray-400">' + s.label + '</span><span class="text-gray-300">' + fmtB(s.val) + '</span></div>'
       ).join('') : '<p class="text-gray-400 text-xs">无记录</p>';
 
-      const status = i.is_frozen ? '❄️ 冻结' : i.is_blocked ? '🚫 封禁' : '✅ 正常';
+      const status = i.is_frozen ? '冻结' : i.is_blocked ? '封禁' : '正常';
       const invitedBy = i.invited_by
         ? `${esc(i.invited_by.inviter_username || '-')}${i.invited_by.inviter_email ? ' <span class="text-gray-500">(' + esc(i.invited_by.inviter_email) + ')</span>' : ''} <span class="text-gray-600">· 码 ' + esc(i.invited_by.code || '-') + '</span>`
         : '<span class="text-gray-500">-</span>';
@@ -1137,11 +1137,11 @@
           </tbody>
         </table>
         <div class="mt-3 space-y-2">
-          <details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white">📊 7天流量趋势</summary><div class="px-3 pb-2 space-y-0.5">${trafficSrc}</div></details>
-          <details class="glass rounded-xl" open><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white">💰 流量来源</summary><div class="px-3 pb-2 space-y-0.5">${srcHtml}</div></details>
-          <details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white">📡 订阅拉取 IP（24h）</summary><div class="px-3 pb-2 space-y-0.5">${subInfo}</div></details>
-          ${uaInfo ? '<details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white">📱 客户端 UA</summary><div class="px-3 pb-2 space-y-0.5">' + uaInfo + '</div></details>' : ''}
-          <details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white">⚠️ 风险事件</summary><div class="px-3 pb-2">${riskInfo}</div></details>
+          <details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white"> 7天流量趋势</summary><div class="px-3 pb-2 space-y-0.5">${trafficSrc}</div></details>
+          <details class="glass rounded-xl" open><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white"> 流量来源</summary><div class="px-3 pb-2 space-y-0.5">${srcHtml}</div></details>
+          <details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white"> 订阅拉取 IP（24h）</summary><div class="px-3 pb-2 space-y-0.5">${subInfo}</div></details>
+          ${uaInfo ? '<details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white"> 客户端 UA</summary><div class="px-3 pb-2 space-y-0.5">' + uaInfo + '</div></details>' : ''}
+          <details class="glass rounded-xl"><summary class="px-3 py-2 text-xs text-gray-400 cursor-pointer hover:text-white"> 风险事件</summary><div class="px-3 pb-2">${riskInfo}</div></details>
         </div>
       `;
     } catch(e) {

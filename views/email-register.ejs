@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>邮箱注册 - 小姨子的诱惑</title>
+  <title>邮箱注册 - Pоrпнub</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="alternate icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/tailwind.min.css">
@@ -41,18 +41,20 @@
     .btn-secondary{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all .3s}
     .btn-secondary:hover{background:rgba(255,255,255,0.08);border-color:rgba(244,63,94,0.3)}
   </style>
+  <link rel="stylesheet" href="/css/material-theme.css">
+  <script defer src="/js/material.js"></script>
 </head>
 <body class="flex items-center justify-center px-4 py-8">
   <div class="stars" id="stars"></div>
   <main class="card rounded-3xl p-10 max-w-sm w-full text-center" role="main" aria-label="邮箱注册">
     <div class="logo-wrap">
-      <div class="logo w-18 h-18 mx-auto mb-6 rounded-2xl flex items-center justify-center text-4xl" style="width:72px;height:72px" aria-hidden="true">🍑</div>
+      <div class="logo w-18 h-18 mx-auto mb-6 rounded-2xl flex items-center justify-center text-4xl" style="width:72px;height:72px" aria-hidden="true">P</div>
     </div>
     <h1 class="text-2xl font-bold text-white mb-1">邮箱注册</h1>
     <p class="text-gray-500 text-xs mb-8 tracking-widest">CREATE ACCOUNT</p>
     <% if (registrationClosed) { %>
       <div class="rounded-xl p-5 mb-5" style="border:1px solid rgba(251,191,36,0.2);background:rgba(251,191,36,0.06)">
-        <p class="text-amber-300 text-sm">🚫 本站暂未开放注册</p>
+        <p class="text-amber-300 text-sm"> 本站暂未开放注册</p>
       </div>
       <a href="/auth/login" class="btn-secondary block w-full text-gray-300 font-medium py-3 px-6 rounded-xl text-sm text-center">返回登录</a>
     <% } else { %>
@@ -81,7 +83,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
           <input type="email" name="email" id="reg-email" required autocomplete="email" class="inp" value="<%= email %>">
         </div>
-        <button type="button" id="btn-send-code" class="btn-code shrink-0 px-4 py-2 rounded-xl text-xs font-medium">发送验证码</button>
+        <md-filled-button type="button" id="btn-send-code" class="btn-code shrink-0 px-4 py-2 rounded-xl text-xs font-medium">发送验证码</md-filled-button>
       </div>
       <% if (allowedDomains) { %>
         <p class="text-gray-600 text-[11px] mb-4 ml-1">仅支持 <span class="text-rose-400"><%= allowedDomains.split(',').map(d => '@' + d).join('、') %></span> 邮箱注册</p>
@@ -103,7 +105,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
         <input type="password" name="passwordConfirm" minlength="8" required autocomplete="new-password" class="inp" placeholder="再次输入密码">
       </div>
-      <button type="submit" class="btn-primary w-full text-white font-semibold py-3 px-6 rounded-xl text-sm">注册并登录</button>
+      <md-filled-button type="submit" class="btn-primary w-full text-white font-semibold py-3 px-6 rounded-xl text-sm">注册并登录</md-filled-button>
     </form>
     <a href="/auth/login" class="btn-secondary block w-full text-gray-300 font-medium py-3 px-6 rounded-xl text-sm text-center mt-3">
       返回登录
@@ -165,7 +167,7 @@
         });
         el.innerHTML = `<div style="background:rgba(20,18,28,0.95);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px 28px;max-width:320px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,0.5)">
           <p id="_toast_msg" style="color:#e5e7eb;font-size:14px;margin:0 0 18px"></p>
-          <button id="_toast_btn" style="background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff;border:none;border-radius:10px;padding:8px 32px;font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(244,63,94,0.3)">确定</button>
+          <md-filled-button id="_toast_btn" style="background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff;border:none;border-radius:10px;padding:8px 32px;font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(244,63,94,0.3)">确定</md-filled-button>
         </div>`;
         document.body.appendChild(el);
         document.getElementById('_toast_btn').addEventListener('click', function(){ el.style.display='none'; });

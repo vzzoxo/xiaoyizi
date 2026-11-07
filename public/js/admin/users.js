@@ -11,8 +11,8 @@ async function setTrafficLimit(userId, username, currentLimit) {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' },
     body: JSON.stringify({ limit: limitGB })
   });
-  if (res.ok) { showToast(limitGB < 0 ? '✅ 已设为无限' : '✅ 已设为 ' + limitGB + ' GB'); setTimeout(() => location.reload(), 500); }
-  else showToast('❌ 设置失败');
+  if (res.ok) { showToast(limitGB < 0 ? '已设为无限' : '已设为 ' + limitGB + ' GB'); setTimeout(() => location.reload(), 500); }
+  else showToast('设置失败');
 }
 
 async function setExpiry(userId, username, currentExpiry) {
@@ -23,8 +23,8 @@ async function setExpiry(userId, username, currentExpiry) {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' },
     body: JSON.stringify({ expires_at })
   });
-  if (res.ok) { showToast(input.trim() ? '✅ 已设为 ' + input.trim() : '✅ 已设为永不过期'); loadUsers(); }
-  else showToast('❌ 设置失败');
+  if (res.ok) { showToast(input.trim() ? '已设为 ' + input.trim() : '已设为永不过期'); loadUsers(); }
+  else showToast('设置失败');
 }
 
 async function saveDefaultTrafficLimit() {
@@ -33,8 +33,8 @@ async function saveDefaultTrafficLimit() {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' },
     body: JSON.stringify({ limit: limitGB })
   });
-  if (res.ok) showToast(limitGB < 0 ? '✅ 默认限额已设为无限' : '✅ 默认限额已设为 ' + limitGB + ' GB');
-  else showToast('❌ 保存失败');
+  if (res.ok) showToast(limitGB < 0 ? '默认限额已设为无限' : '默认限额已设为 ' + limitGB + ' GB');
+  else showToast('保存失败');
 }
 
 async function applyDefaultTrafficLimit() {
@@ -42,9 +42,9 @@ async function applyDefaultTrafficLimit() {
   const res = await fetch('/admin/api/default-traffic-limit/apply', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' } });
   const d = await res.json().catch(() => ({}));
   if (res.ok && d.ok) {
-    showToast('✅ 已覆盖应用到 ' + (d.updated || 0) + ' 个用户');
+    showToast('已覆盖应用到 ' + (d.updated || 0) + ' 个用户');
     setTimeout(() => location.reload(), 600);
   } else {
-    showToast('❌ 应用失败');
+    showToast('应用失败');
   }
 }

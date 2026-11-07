@@ -42,7 +42,7 @@ function errorHandler(err, req, res, _next) {
   if (req.app?.get('view engine')) {
     return res.status(status).render('error', { status, message: safeMessage });
   }
-  const title = `${status} · 小姨子的诱惑`;
+  const title = `${status} · Pоrпнub`;
   const heading = status === 404 ? '页面不存在' : '服务器开小差了';
   const body = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${title}</title></head><body><h1>${heading}</h1><p>${safeMessage}</p></body></html>`;
   return res.status(status).type('html').send(body);

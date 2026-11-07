@@ -26,7 +26,7 @@ test('errorHandler sanitizes non-numeric status for html response', async (t) =>
   const resp = await fetch(`${baseUrl}/boom`);
   assert.equal(resp.status, 500);
   const body = await resp.text();
-  assert.ok(body.includes('<title>500 · 小姨子的诱惑</title>'));
+  assert.ok(body.includes('<title>500 · Pоrпнub</title>'));
   assert.equal(body.includes('<script>alert(1)</script>'), false);
 });
 

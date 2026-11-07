@@ -102,7 +102,7 @@ WebApp 通过 Telegram `initData` 验证（含过期检查）。
 | POST | `/ops/api/users/:id/unfreeze` | 解冻用户 |
 | POST | `/ops/api/backup` | 创建备份 |
 | POST | `/ops/api/agents/update-all` | 批量更新 Agent |
-| POST | `/ops/api/diary` | 写运营日记（蜜桃酱巡检用） |
+| POST | `/ops/api/diary` | 写运营日记（Pоrпнub AI巡检用） |
 
 ## 管理 API
 
@@ -134,6 +134,6 @@ curl -s -H "Authorization: Bearer $OPS_API_KEY" http://127.0.0.1:3000/ops/api/no
 # 写日记
 curl -s -X POST -H "Authorization: Bearer $OPS_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"category":"patrol","mood":"🍑","content":"巡检完成"}' \
+  -d '{"category":"patrol","mood":"","content":"巡检完成"}' \
   http://127.0.0.1:3000/ops/api/diary
 ```

@@ -53,7 +53,7 @@ async function loadLogs(page) {
   const pager = document.getElementById('log-pager');
   pager.innerHTML = '';
   for (let i = 1; i <= d.pages; i++) {
-    const btn = document.createElement('button');
+    const btn = document.createElement('md-filled-button');
     btn.textContent = i;
     btn.className = 'text-xs px-2 py-1 rounded ' + (i === d.page ? 'bg-rose-600 text-white' : 'glass text-gray-400 hover:text-white');
     btn.onclick = () => loadLogs(i);

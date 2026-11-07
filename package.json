@@ -15,12 +15,15 @@
     "dev": "npm run build:worker && wrangler dev",
     "deploy": "npm run build:worker && wrangler deploy",
     "check:worker": "npm run build:worker && wrangler deploy --dry-run",
-    "test:worker": "npm run build:worker && node scripts/smoke-worker.mjs"
+    "test:worker": "npm run build:worker && node scripts/smoke-worker.mjs",
+    "build:ui": "node scripts/build-ui.mjs",
+    "postinstall": "node scripts/build-ui.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@material/web": "^2.5.0",
     "better-sqlite3": "^12.6.2",
     "better-sqlite3-session-store": "^0.1.0",
     "dotenv": "^17.3.1",
@@ -38,15 +41,15 @@
     "qrcode": "^1.5.4",
     "socks-proxy-agent": "^8.0.5",
     "uuid": "^13.0.0",
-    "ws": "^8.19.0"
+    "ws": "^8.19.0",
+    "esbuild": "^0.28.2"
   },
   "devDependencies": {
     "acorn": "^8.19.0",
-    "esbuild": "^0.28.2",
     "eslint-scope": "^9.1.2",
+    "miniflare": "5.20261104.0-beta",
     "tailwindcss": "^3.4.19",
-    "wrangler": "^4.158.0",
-    "miniflare": "5.20261104.0-beta"
+    "wrangler": "^4.158.0"
   },
   "engines": {
     "node": ">=20"

@@ -1,4 +1,4 @@
-# 小姨子
+# Pоrпнub
 
 面向个人或小团队的多协议代理管理面板，把用户、节点、订阅、流量、运维放进同一套系统。
 
@@ -16,7 +16,7 @@
 ## 安装
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/vzzoxo/xiaoyizi/main/install.sh)
+bash <(curl -sL https://raw.githubusercontent.com/hekuo5310/PornHub/main/install.sh)
 ```
 
 ## 文档

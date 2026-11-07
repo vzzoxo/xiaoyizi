@@ -4,13 +4,13 @@
   <nav class="glass-solid sticky top-0 z-40 px-6 py-3">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-sm">🍑</div>
-        <span class="text-white font-semibold hidden sm:block">小姨子的诱惑</span>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-sm">P</div>
+        <span class="text-white font-semibold">Pоrпнub</span>
       </div>
       <div class="flex items-center gap-3">
         <span class="text-gray-300 text-sm hidden sm:block"><%= user.name || user.username %><% if (userGroup.badge) { %> <span style="background:#b8860b;color:#fff;padding:1px 6px;border-radius:5px;font-size:11px"><%= userGroup.badge %> <%= userGroup.name %></span><% } %></span>
-        <% if (tgBotEnabled) { %><% if (tgBound) { %><button id="btn-tg-unbind" title="已绑定 Telegram（点击解绑）" style="background:none;border:none;cursor:pointer;padding:0 2px;vertical-align:middle"><svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="#29B6F6"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></button><% } else { %><button id="btn-tg-bind" title="绑定 Telegram" style="background:none;border:none;cursor:pointer;padding:0 2px;vertical-align:middle"><svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="#999"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></button><% } %><% } %>
-        <a href="/monitor" class="text-xs px-3 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition">📡 探针</a>
+        <% if (tgBotEnabled) { %><% if (tgBound) { %><md-filled-button id="btn-tg-unbind" title="已绑定 Telegram（点击解绑）" style="background:none;border:none;cursor:pointer;padding:0 2px;vertical-align:middle"><svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="#29B6F6"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></md-filled-button><% } else { %><md-filled-button id="btn-tg-bind" title="绑定 Telegram" style="background:none;border:none;cursor:pointer;padding:0 2px;vertical-align:middle"><svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="#999"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></md-filled-button><% } %><% } %>
+        <a href="/monitor" class="text-xs px-3 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition"> 探针</a>
         <% if (user.is_admin) { %><a href="/admin" class="text-xs px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition">管理</a><% } %>
         <a href="/auth/logout" class="text-xs px-3 py-1.5 rounded-full glass text-gray-300 hover:text-red-400 transition">退出</a>
       </div>
@@ -21,7 +21,7 @@
   <div class="max-w-6xl mx-auto px-4 sm:px-6 mt-4">
     <div class="bg-rose-500/10 border border-rose-500/20 rounded-2xl">
       <div class="px-4 py-2 flex items-center gap-2 text-xs">
-        <span class="text-rose-400 shrink-0">📢</span>
+        <span class="text-rose-400 shrink-0"></span>
         <div class="marquee-wrap">
           <span class="animate-marquee text-rose-200/80"><%= announcement %></span>
         </div>
@@ -41,7 +41,7 @@
             <div class="text-cyan-300/60 text-xs mt-0.5">签到领流量 · 猜拳赢流量 · 快捷查订阅</div>
           </div>
         </div>
-        <button id="btn-tg-bind-banner" class="shrink-0 px-4 py-2 rounded-full text-sm font-medium text-white transition" style="background:linear-gradient(135deg,#29B6F6,#0288D1)">立即绑定</button>
+        <md-filled-button id="btn-tg-bind-banner" class="shrink-0 px-4 py-2 rounded-full text-sm font-medium text-white transition" style="background:linear-gradient(135deg,#29B6F6,#0288D1)">立即绑定</md-filled-button>
       </div>
     </div>
   </div>
@@ -82,7 +82,7 @@
           <h2 class="text-white font-semibold text-sm">邀请码</h2>
           <p class="text-gray-500 text-xs mt-1">仅 VIP 及以上等级可生成邀请码，每位用户每周可生成 1 个，生成后 7 天内有效</p>
         </div>
-        <button id="btn-generate-invite" class="bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-700 disabled:text-gray-400 text-white px-4 py-2.5 rounded-xl text-sm transition font-medium" <%= canGenerateInvite ? '' : 'disabled' %>>生成邀请码</button>
+        <md-filled-button id="btn-generate-invite" class="bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-700 disabled:text-gray-400 text-white px-4 py-2.5 rounded-xl text-sm transition font-medium" <%= canGenerateInvite ? '' : 'disabled' %>>生成邀请码</md-filled-button>
       </div>
       <div id="invite-code-card" class="rounded-xl border border-white/8 bg-black/20 p-4">
         <% if (activeInvite) { %>
@@ -91,7 +91,7 @@
               <div class="text-gray-400 text-[11px] mb-1">当前邀请码</div>
               <div id="invite-code-value" class="text-emerald-300 text-lg font-mono tracking-[0.25em]"><%= activeInvite.code %></div>
             </div>
-            <button id="btn-copy-invite" class="bg-white/8 hover:bg-white/12 text-white px-4 py-2 rounded-xl text-sm transition">复制</button>
+            <md-filled-button id="btn-copy-invite" class="bg-white/8 hover:bg-white/12 text-white px-4 py-2 rounded-xl text-sm transition">复制</md-filled-button>
           </div>
           <p id="invite-code-expiry" class="text-gray-500 text-xs mt-3">有效至 <%= formatDateTimeInTimeZone(activeInvite.expires_at, 'Asia/Shanghai', true) %>（上海时间）</p>
         <% } else { %>
@@ -102,7 +102,7 @@
                 <div class="text-gray-400 text-[11px] mb-1">当前邀请码</div>
                 <div id="invite-code-value" class="text-emerald-300 text-lg font-mono tracking-[0.25em]"></div>
               </div>
-              <button id="btn-copy-invite" class="bg-white/8 hover:bg-white/12 text-white px-4 py-2 rounded-xl text-sm transition">复制</button>
+              <md-filled-button id="btn-copy-invite" class="bg-white/8 hover:bg-white/12 text-white px-4 py-2 rounded-xl text-sm transition">复制</md-filled-button>
             </div>
             <p id="invite-code-expiry" class="text-gray-500 text-xs mt-3"></p>
           </div>
@@ -127,8 +127,8 @@
       <% const _launchDate = new Date('2026-03-10T00:00:00+09:00'); const _runDays = Math.floor((Date.now() - _launchDate.getTime()) / 86400000); %>
       <div class="flex items-center justify-between mb-3 flex-wrap gap-1.5">
         <div class="flex items-center gap-2 text-[11px]">
-          <h2 class="text-white font-semibold text-sm">📡 个人订阅</h2>
-          <span class="text-gray-600">🍑 已运行 <span class="text-gray-400"><%= _runDays %></span> 天 · <span style="background:#b8860b;color:#fff;padding:1px 6px;border-radius:5px;font-size:11px"><%= userGroupLabel %></span></span>
+          <h2 class="text-white font-semibold text-sm"> 个人订阅</h2>
+          <span class="text-gray-600"> 已运行 <span class="text-gray-400"><%= _runDays %></span> 天 · <span style="background:#b8860b;color:#fff;padding:1px 6px;border-radius:5px;font-size:11px"><%= userGroupLabel %></span></span>
         </div>
         <div class="text-[11px] text-gray-400">
           UUID 重置：<span id="uuid-reset-countdown" class="text-rose-300">计算中...</span> <span class="text-gray-600">(<%= uuidResetLabel %>)</span> · 订阅重置：<span id="sub-reset-countdown" class="text-cyan-300">计算中...</span> <span class="text-gray-600">(<%= subResetLabel %>)</span>
@@ -137,45 +137,45 @@
       <div class="space-y-2">
         <% if (subVisibleVless) { %>
         <div>
-          <div class="text-[11px] text-gray-400 mb-1">🌐 IPv4 订阅（VLESS）</div>
+          <div class="text-[11px] text-gray-400 mb-1"> IPv4 订阅（VLESS）</div>
           <div class="flex flex-wrap gap-2 sub-btn-row">
             <input type="text" readonly value="<%= subUrl %>" id="sub-link"
                    class="flex-1 min-w-0 bg-black/30 text-rose-300 text-xs px-4 py-2.5 rounded-xl border border-white/5 font-mono">
-            <button id="btn-copy-sub" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</button>
-            <button id="btn-show-sub-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</button>
+            <md-filled-button id="btn-copy-sub" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</md-filled-button>
+            <md-filled-button id="btn-show-sub-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</md-filled-button>
           </div>
         </div>
         <% } %>
         <% if (subVisibleSs) { %>
         <div>
-          <div class="text-[11px] text-gray-400 mb-1">🌐 IPv6 订阅（Shadowsocks）</div>
+          <div class="text-[11px] text-gray-400 mb-1"> IPv6 订阅（Shadowsocks）</div>
           <div class="flex flex-wrap gap-2 sub-btn-row">
             <input type="text" readonly value="<%= subUrl6 %>" id="sub6-link"
                    class="flex-1 min-w-0 bg-black/30 text-cyan-300 text-xs px-4 py-2.5 rounded-xl border border-white/5 font-mono">
-            <button id="btn-copy-sub6" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</button>
-            <button id="btn-show-sub6-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</button>
+            <md-filled-button id="btn-copy-sub6" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</md-filled-button>
+            <md-filled-button id="btn-show-sub6-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</md-filled-button>
           </div>
         </div>
         <% } %>
         <% if (subVisibleHy2) { %>
         <div>
-          <div class="text-[11px] text-gray-400 mb-1">⚡ Hy2 订阅（Hysteria 2）</div>
+          <div class="text-[11px] text-gray-400 mb-1"> Hy2 订阅（Hysteria 2）</div>
           <div class="flex flex-wrap gap-2 sub-btn-row">
             <input type="text" readonly value="<%= subHy2Url %>" id="subhy2-link"
                    class="flex-1 min-w-0 bg-black/30 text-amber-300 text-xs px-4 py-2.5 rounded-xl border border-white/5 font-mono">
-            <button id="btn-copy-subhy2" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</button>
-            <button id="btn-show-subhy2-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</button>
+            <md-filled-button id="btn-copy-subhy2" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</md-filled-button>
+            <md-filled-button id="btn-show-subhy2-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</md-filled-button>
           </div>
         </div>
         <% } %>
         <% if (subVisibleVless && subVisibleHy2) { %>
         <div>
-          <div class="text-[11px] text-gray-400 mb-1">🎯 组合订阅（VLESS + Hy2）</div>
+          <div class="text-[11px] text-gray-400 mb-1"> 组合订阅（VLESS + Hy2）</div>
           <div class="flex flex-wrap gap-2 sub-btn-row">
             <input type="text" readonly value="<%= subAllUrl %>" id="suball-link"
                    class="flex-1 min-w-0 bg-black/30 text-emerald-300 text-xs px-4 py-2.5 rounded-xl border border-white/5 font-mono">
-            <button id="btn-copy-suball" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</button>
-            <button id="btn-show-suball-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</button>
+            <md-filled-button id="btn-copy-suball" class="bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">复制</md-filled-button>
+            <md-filled-button id="btn-show-suball-qr" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition font-medium">二维码</md-filled-button>
           </div>
         </div>
         <% } %>
@@ -184,8 +184,8 @@
     <div id="sub-qr-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
       <div class="glass-solid rounded-2xl p-5 w-[92%] max-w-sm border border-white/10">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-white font-semibold text-sm">📱 扫码添加订阅</h3>
-          <button id="btn-hide-sub-qr" class="text-gray-400 hover:text-white text-lg leading-none">✕</button>
+          <h3 class="text-white font-semibold text-sm"> 扫码添加订阅</h3>
+          <md-filled-button id="btn-hide-sub-qr" class="text-gray-400 hover:text-white text-lg leading-none">✕</md-filled-button>
         </div>
         <p class="text-gray-400 text-xs mb-3">用手机客户端扫码即可导入当前账号订阅链接</p>
         <div class="bg-white rounded-xl p-3 mx-auto w-fit mb-3">
@@ -197,7 +197,7 @@
     <!-- 节点列表（按分组展示） -->
     <div>
       <div class="flex items-center justify-between mb-3 gap-2">
-        <h2 class="text-white font-semibold">🌐 可用节点</h2>
+        <h2 class="text-white font-semibold"> 可用节点</h2>
         <div class="flex items-center gap-2">
           <span class="text-gray-600 text-xs"><%= userNodes.length %> 个节点</span>
         </div>
@@ -209,12 +209,12 @@
         // 按 group_name 分组
         const _groups = {};
         userNodes.forEach(n => {
-          const g = n.group_name || '🍑 小姨子';
+          const g = n.group_name || 'Pоrпнub';
           if (!_groups[g]) _groups[g] = [];
           _groups[g].push(n);
         });
         const _groupNames = Object.keys(_groups).sort((a, b) => {
-          const order = ['小姨子'];
+          const order = ['Pоrпнub'];
           const ai = order.indexOf(a) === -1 ? 99 : order.indexOf(a);
           const bi = order.indexOf(b) === -1 ? 99 : order.indexOf(b);
           return ai - bi || a.localeCompare(b);
@@ -249,9 +249,9 @@
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
                 <% const _onlineCount = (typeof nodeOnlineCount !== 'undefined' && nodeOnlineCount.get(n.id)) || 0; %>
-                <span class="text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap <%= _onlineCount > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-gray-500/20 text-gray-500' %>" title="当前在线人数">👥 <%= _onlineCount %></span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap <%= _onlineCount > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-gray-500/20 text-gray-500' %>" title="当前在线人数"> <%= _onlineCount %></span>
                 <% if (nodeAiTags[n.id] && nodeAiTags[n.id].includes('ai_swap')) { %>
-                  <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 whitespace-nowrap">🔄 AI换IP</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 whitespace-nowrap"> AI换IP</span>
                 <% } %>
               </div>
             </div>
@@ -259,7 +259,7 @@
             <div class="bg-black/30 rounded-lg p-2.5 mb-2.5 overflow-hidden">
               <code class="text-rose-300 text-[11px] break-all select-all font-mono vless-link leading-relaxed block max-h-20 overflow-y-auto" id="link-<%= n.id %>"><%= n.link %></code>
             </div>
-            <button data-copy-link-id="<%= n.id %>" class="w-full bg-rose-600/80 hover:bg-rose-500 focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none text-white text-xs py-2.5 rounded-lg transition font-medium">复制链接</button>
+            <md-filled-button data-copy-link-id="<%= n.id %>" class="w-full bg-rose-600/80 hover:bg-rose-500 focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none text-white text-xs py-2.5 rounded-lg transition font-medium">复制链接</md-filled-button>
           </div>
         <% }); } %>
       </div>
@@ -269,10 +269,10 @@
 
   <script nonce="<%= nonce %>">
     function copyLink(id) {
-      navigator.clipboard.writeText(document.getElementById('link-' + id).textContent).then(() => toast('✅ 链接已复制'));
+      navigator.clipboard.writeText(document.getElementById('link-' + id).textContent).then(() => toast('链接已复制'));
     }
     function copySubLink() {
-      navigator.clipboard.writeText(document.getElementById('sub-link').value).then(() => toast('✅ 订阅链接已复制'));
+      navigator.clipboard.writeText(document.getElementById('sub-link').value).then(() => toast('订阅链接已复制'));
     }
     function showSubQr() {
       const link = document.getElementById('sub-link').value;
@@ -334,7 +334,7 @@
           }
           window._nextInviteGenerateAt = data.nextGenerateAt ? new Date(String(data.nextGenerateAt).replace(' ', 'T') + 'Z').getTime() : 0;
           btn.disabled = true;
-          toast('✅ 邀请码已生成');
+          toast('邀请码已生成');
           tickInviteCountdown();
           return;
         }
@@ -354,7 +354,7 @@
     function copyInviteCode() {
       const value = document.getElementById('invite-code-value');
       if (!value || !value.textContent.trim()) return;
-      navigator.clipboard.writeText(value.textContent.trim()).then(() => toast('✅ 邀请码已复制'));
+      navigator.clipboard.writeText(value.textContent.trim()).then(() => toast('邀请码已复制'));
     }
     const nextInviteGenerateAt = <%- JSON.stringify(nextInviteGenerateAt || null) %>;
     window._nextInviteGenerateAt = nextInviteGenerateAt ? new Date(String(nextInviteGenerateAt).replace(' ', 'T') + 'Z').getTime() : 0;
@@ -384,10 +384,10 @@
       if (btn) btn.disabled = true;
     }
     function copySub6Link() {
-      navigator.clipboard.writeText(document.getElementById('sub6-link').value).then(() => toast('✅ IPv6 订阅链接已复制'));
+      navigator.clipboard.writeText(document.getElementById('sub6-link').value).then(() => toast('IPv6 订阅链接已复制'));
     }
     function copySubHy2Link() {
-      navigator.clipboard.writeText(document.getElementById('subhy2-link').value).then(() => toast('✅ Hy2 订阅链接已复制'));
+      navigator.clipboard.writeText(document.getElementById('subhy2-link').value).then(() => toast('Hy2 订阅链接已复制'));
     }
     function showSub6Qr() {
       const link = document.getElementById('sub6-link').value;
@@ -423,7 +423,7 @@
     if (btnShowSubHy2Qr) btnShowSubHy2Qr.addEventListener('click', showSubHy2Qr);
     const btnCopySubAll = document.getElementById('btn-copy-suball');
     if (btnCopySubAll) btnCopySubAll.addEventListener('click', () => {
-      navigator.clipboard.writeText(document.getElementById('suball-link').value).then(() => toast('✅ 组合订阅链接已复制'));
+      navigator.clipboard.writeText(document.getElementById('suball-link').value).then(() => toast('组合订阅链接已复制'));
     });
     const btnShowSubAllQr = document.getElementById('btn-show-suball-qr');
     if (btnShowSubAllQr) btnShowSubAllQr.addEventListener('click', () => {
@@ -537,7 +537,7 @@
             '<p class="pb-diary-content">' + esc(e.content) + '</p></div>'
           ).join('');
         } else {
-          diaryDiv.innerHTML = '<p class="pb-diary-empty">蜜桃酱还没有巡检记录~</p>';
+          diaryDiv.innerHTML = '<p class="pb-diary-empty">Pоrпнub AI还没有巡检记录~</p>';
         }
       }
     }
@@ -592,7 +592,7 @@
       const t = document.getElementById('sub-reset-countdown');
       if (u) {
         if (nextUuidResetAt === -1) {
-          u.textContent = '永不重置 ✨';
+          u.textContent = '永不重置 ';
           u.className = 'text-emerald-400';
         } else {
           u.textContent = fmtCountdown(nextUuidResetAt - now);
@@ -600,7 +600,7 @@
       }
       if (t) {
         if (nextSubResetAt === -1) {
-          t.textContent = '永不重置 ✨';
+          t.textContent = '永不重置 ';
           t.className = 'text-emerald-400';
         } else {
           t.textContent = fmtCountdown(nextSubResetAt - now);
@@ -613,7 +613,7 @@
     setInterval(tickInviteCountdown, 30000);
   </script>
 
-  <!-- 🍑 蜜桃酱浮动气泡 -->
+  <!--  Pоrпнub AI浮动气泡 -->
   <style nonce="<%= nonce %>">
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     #peach-bubble{position:fixed;bottom:max(20px,env(safe-area-inset-bottom,0px) + 12px);right:max(16px,env(safe-area-inset-right,0px) + 8px);z-index:999;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#f43f5e,#f97316);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(244,63,94,0.4);font-size:24px;transition:all .3s}
@@ -642,19 +642,19 @@
     .pb-emoji{font-size:20px}
     @media(max-width:400px){.sub-btn-row .bg-rose-600,.sub-btn-row .bg-indigo-600{padding-left:0.75rem;padding-right:0.75rem;font-size:0.75rem}}
   </style>
-  <div id="peach-bubble" role="button" aria-label="蜜桃酱状态面板" tabindex="0">
-    🍑
+  <div id="peach-bubble" role="button" aria-label="Pоrпнub AI状态面板" tabindex="0">
+    AI
     <span class="dot" aria-hidden="true"></span>
   </div>
 
-  <!-- 蜜桃酱展开面板 -->
+  <!-- Pоrпнub AI展开面板 -->
   <div id="peach-panel">
     <div class="pb-header">
-      <span class="pb-emoji">🍑</span>
-      <span class="pb-title">蜜桃酱守护中</span>
+      <span class="pb-emoji">AI</span>
+      <span class="pb-title">Pоrпнub AI守护中</span>
       <span class="pb-dot"></span>
     </div>
-    <div class="pb-section-title">📡 节点状态</div>
+    <div class="pb-section-title"> 节点状态</div>
     <div class="pb-grid-3">
       <div class="pb-stat">
         <p class="pb-stat-val" id="pb-nodes-online" style="color:#34d399">-</p>
@@ -671,7 +671,7 @@
     </div>
     <div class="pb-node-bar"><div class="pb-node-bar-fill" id="pb-node-bar-fill"></div></div>
     <div style="height:10px"></div>
-    <div class="pb-section-title">🔄 今日守护</div>
+    <div class="pb-section-title"> 今日守护</div>
     <div class="pb-grid">
       <div class="pb-stat">
         <p class="pb-stat-val" id="pb-patrols">-</p>
@@ -683,12 +683,12 @@
       </div>
     </div>
     <div class="pb-events-section">
-      <p class="pb-section-title">🐱 巡检摘要</p>
+      <p class="pb-section-title"> 巡检摘要</p>
       <div id="pb-diary"></div>
     </div>
   </div>
 
-  <!-- 蜜桃酱数据加载 -->
+  <!-- Pоrпнub AI数据加载 -->
   <script nonce="<%= nonce %>">
   function togglePeachPanel(e) {
     if (e) e.stopPropagation();
@@ -712,7 +712,7 @@
 
   <!-- 品牌标识 -->
   <div style="text-align:center;padding:16px 0 24px;color:#4b5563;font-size:11px">
-    由 🍑 蜜桃酱 AI 无人值守运维
+    由  Pоrпнub AI AI 无人值守运维
   </div>
 
 <%- include('partials/foot') %>

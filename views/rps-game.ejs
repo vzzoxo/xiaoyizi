@@ -342,6 +342,8 @@ body::before{
   .stage{margin-top:10px}
 }
 </style>
+  <link rel="stylesheet" href="/css/material-theme.css">
+  <script defer src="/js/material.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -376,13 +378,13 @@ body::before{
       <div class="vs-area">
         <div class="fighter">
           <div class="fighter-label">你</div>
-          <div class="hand hand-user" id="hand-user">❓</div>
+          <div class="hand hand-user" id="hand-user">待选</div>
           <div class="fighter-note" id="fighter-user-note">还没决定</div>
         </div>
         <div class="vs-badge">VS</div>
         <div class="fighter">
           <div class="fighter-label">系统</div>
-          <div class="hand hand-sys" id="hand-sys">❓</div>
+          <div class="hand hand-sys" id="hand-sys">待选</div>
           <div class="fighter-note" id="fighter-sys-note">等待应战</div>
         </div>
       </div>
@@ -396,17 +398,17 @@ body::before{
 
     <div class="choices" id="choices">
       <button class="choice-btn" data-c="0" type="button">
-        <div class="choice-icon">✊</div>
+        <div class="choice-icon">石</div>
         <div class="choice-name">石头</div>
         <div class="choice-tip">稳，正面压制剪刀</div>
       </button>
       <button class="choice-btn" data-c="1" type="button">
-        <div class="choice-icon">✌️</div>
+        <div class="choice-icon">剪</div>
         <div class="choice-name">剪刀</div>
         <div class="choice-tip">快，专门切开布</div>
       </button>
       <button class="choice-btn" data-c="2" type="button">
-        <div class="choice-icon">✋</div>
+        <div class="choice-icon">布</div>
         <div class="choice-name">布</div>
         <div class="choice-tip">柔，反手包住石头</div>
       </button>

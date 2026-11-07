@@ -1,4 +1,4 @@
-# 小姨子：Cloudflare Workers 部署
+# Pоrпнub：Cloudflare Workers 部署
 
 项目名称、原有界面和协议保持不变。管理面板运行于 Workers；SQLite、会话、验证码、备份持久化在一个 SQLite Durable Object 中；静态文件使用 Workers Assets。VLESS / Shadowsocks / Hysteria 服务及 Agent 仍运行在你的 VPS 上，Workers 负责管理与订阅分发。
 
@@ -27,7 +27,7 @@ npm run deploy
 
 ## GitHub 自动构建部署
 
-已通过 Cloudflare Workers Builds 连接 `hekuo5310/xiaoyizi`。当前监听 `work/cloudflare-ulzix` 的推送。迁移 PR 尚未合并，因此暂不监听仍为旧 Node 版本的 `main`；合并后在构建设置中将生产分支切换为 `main` 即可，仓库连接和部署凭据无需重建。
+已通过 Cloudflare Workers Builds 连接 `hekuo5310/PornHub`。当前监听 `work/cloudflare-ulzix` 的推送。迁移 PR 尚未合并，因此暂不监听仍为旧 Node 版本的 `main`；合并后在构建设置中将生产分支切换为 `main` 即可，仓库连接和部署凭据无需重建。
 
 - 构建检查：`npm test && npm run test:worker && npm run check:worker`
 - 发布命令：`npx wrangler deploy`

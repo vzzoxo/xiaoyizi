@@ -583,7 +583,7 @@ function checkUserTrafficLimit(userId) {
     if (user.is_frozen && user.freeze_reason === 'traffic_limit') {
       db.unfreezeUser(userId);
       db.addAuditLog(null, 'traffic_limit_unfreeze', `流量限额恢复自动解冻: ${user.username}`, 'system');
-      notify.ops(`🔓 <b>流量限额恢复</b>\n用户: ${user.username}\n动作: 自动解冻`);
+      notify.ops(`<b>流量限额恢复</b>\n用户: ${user.username}\n动作: 自动解冻`);
       try { require('./configEvents').emitSyncAll(); } catch (_) {}
     }
     return;
@@ -593,7 +593,7 @@ function checkUserTrafficLimit(userId) {
   const usedGb = ((db.getUserTraffic(userId).total_up || 0) + (db.getUserTraffic(userId).total_down || 0)) / 1073741824;
   const limitGb = (user.traffic_limit / 1073741824).toFixed(2);
   db.addAuditLog(null, 'traffic_limit_freeze', `流量限额用完自动冻结: ${user.username} (${usedGb.toFixed(2)}/${limitGb} GB)`, 'system');
-  notify.ops(`🔒 <b>流量限额用完</b>\n用户: ${user.username}\n已用: ${usedGb.toFixed(2)} GB\n限额: ${limitGb} GB\n动作: 自动冻结`);
+  notify.ops(`<b>流量限额用完</b>\n用户: ${user.username}\n已用: ${usedGb.toFixed(2)} GB\n限额: ${limitGb} GB\n动作: 自动冻结`);
   try { require('./configEvents').emitSyncAll(); } catch (_) {}
 }
 
@@ -632,14 +632,14 @@ function checkNodeTrafficCap(nodeId) {
   let agentNodeId = null;
   for (const p of peers) {
     if (p.is_active) {
-      db.updateNode(p.id, { is_active: 0, remark: '🚫 流量超限自动停用' });
+      db.updateNode(p.id, { is_active: 0, remark: '流量超限自动停用' });
       names.push(p.name);
     }
     if (!agentNodeId) agentNodeId = p.id;
   }
   if (names.length) {
     db.addAuditLog(null, 'node_traffic_cap', `流量超限停用: ${names.join(', ')} (${sshHost})`, 'system');
-    notify.ops(`🚫 <b>节点流量超限</b>\n主机: ${sshHost}\n停用: ${names.join(', ')}`).catch(() => {});
+    notify.ops(`<b>节点流量超限</b>\n主机: ${sshHost}\n停用: ${names.join(', ')}`).catch(() => {});
     // 远程停掉 Xray 和 Hysteria 服务，防止已连接用户继续跑流量
     if (agentNodeId) {
       const agentWs = require('./agent-ws');
@@ -681,7 +681,7 @@ function checkResourceThresholds(nodeId, nodeName, reportData) {
     if (now - lastAlert < cooldownMs) continue;
     _resourceAlertCache.set(cacheKey, now);
     bufferSystemAuditLog(`resource_${c.type}_high`, `${nodeName}: ${c.label}使用率 ${c.value}${c.unit}`);
-    notify.ops(`⚠️ <b>资源告警</b>\n节点: ${nodeName}\n${c.label}: ${c.value}${c.unit}`);
+    notify.ops(`<b>资源告警</b>\n节点: ${nodeName}\n${c.label}: ${c.value}${c.unit}`);
   }
 }
 
@@ -746,7 +746,7 @@ function checkTrafficExceed() {
           needSync = true;
           const limitGb = action === 'freeze' ? thresholdGb : hardLimitGb;
           bufferSystemAuditLog('traffic_exceed_freeze', `流量超标自动冻结: ${u.username} (${gb} GB)`);
-          notify.ops(`🔒 <b>流量超标自动冻结</b>\n用户: ${u.username}\n今日流量: ${gb} GB\n阈值: ${limitGb} GB`);
+          notify.ops(`<b>流量超标自动冻结</b>\n用户: ${u.username}\n今日流量: ${gb} GB\n阈值: ${limitGb} GB`);
         } catch (err) {
           logger.debug({ err, userId: u.user_id }, '流量超标冻结用户失败');
         }
@@ -868,10 +868,10 @@ function updateFromAgentReport(nodeId, reportData) {
   let status, remark;
   if (!serviceAlive) {
     status = 0;
-    remark = `🔴 ${serviceName} 离线 (Agent)`;
+    remark = `${serviceName} 离线 (Agent)`;
   } else if (cnReachable === false || cnReachable === 0) {
     status = 0;
-    remark = '🧱 疑似被墙 (Agent)';
+    remark = '疑似被墙 (Agent)';
   } else if (node.remark && node.remark.includes('零流量')) {
     // 被零流量巡检标记为疑似被墙的节点，不能仅凭 Agent 上报恢复
     // 需要有实际用户流量才能解除（由 checkSuddenZeroTraffic 的清理逻辑处理）
@@ -895,15 +895,15 @@ function updateFromAgentReport(nodeId, reportData) {
   if (status === 1 && (ipv6Reachable === false || ipv6Reachable === 0)) {
     const newIpv6Fail = prevIpv6Fail + 1;
     _nodeFailCount.set(ipv6FailKey, newIpv6Fail);
-    remark = remark ? `${remark} | 🌐 IPv6 不通` : '🌐 IPv6 不通';
+    remark = remark ? `${remark} |  IPv6 不通` : 'IPv6 不通';
     if (newIpv6Fail === 3) {
       bufferSystemAuditLog('node_ipv6_down', `${node.name}: IPv6 连通性异常（连续3次）`);
-      notify.ops(`🌐 <b>IPv6 连通性异常</b>\n节点: ${node.name}\nIPv4 正常，但 IPv6 不通\nSS 用户可能受影响`);
+      notify.ops(`<b>IPv6 连通性异常</b>\n节点: ${node.name}\nIPv4 正常，但 IPv6 不通\nSS 用户可能受影响`);
     }
   } else if (ipv6Reachable === true || ipv6Reachable === 1) {
     if (prevIpv6Fail >= 3) {
       bufferSystemAuditLog('node_ipv6_recovered', `${node.name}: IPv6 恢复正常`);
-      notify.ops(`✅ <b>IPv6 恢复</b>\n节点: ${node.name}`);
+      notify.ops(`<b>IPv6 恢复</b>\n节点: ${node.name}`);
     }
     _nodeFailCount.set(ipv6FailKey, 0);
   }
@@ -934,7 +934,7 @@ function updateFromAgentReport(nodeId, reportData) {
         if (autoRestartEnabled && restartCount <= maxRestarts && agentWs.isAgentOnline(nodeId)) {
           agentWs.sendCommand(nodeId, { type: restartCmd }).catch(() => {});
           bufferSystemAuditLog('xray_auto_restart', `自动重启 ${serviceName} (${restartCount}/${maxRestarts}): ${node.name}`);
-          notify.ops(`🔄 <b>${serviceName} 自动重启</b>\n节点: ${node.name}\n第 ${restartCount} 次尝试`);
+          notify.ops(`<b>${serviceName} 自动重启</b>\n节点: ${node.name}\n第 ${restartCount} 次尝试`);
           // 重置失败计数，等下一轮 Agent 上报确认是否恢复
           _nodeFailCount.set(nodeId, 0);
         } else {
@@ -1007,7 +1007,7 @@ function updateFromAgentReport(nodeId, reportData) {
       bufferSystemAuditLog('node_auto_remove_manual', detail);
       db.deleteNode(nodeId);
       // notify already imported at top
-      notifySend(`🗑️ <b>手动节点已自动移除</b>\n节点: ${node.name}\n地址: ${node.host}:${node.port}\n原因: 连续 ${nextFailCount} 次检测失败 (${remark})\n时间: ${formatDateTimeInTimeZone(new Date(), 'Asia/Shanghai', true)}`).catch(() => {});
+      notifySend(`<b>手动节点已自动移除</b>\n节点: ${node.name}\n地址: ${node.host}:${node.port}\n原因: 连续 ${nextFailCount} 次检测失败 (${remark})\n时间: ${formatDateTimeInTimeZone(new Date(), 'Asia/Shanghai', true)}`).catch(() => {});
       return;
     }
   }
@@ -1070,7 +1070,7 @@ function checkZeroTrafficNodes() {
     bufferSystemAuditLog('node_zero_traffic', `${node.name}: 24小时零流量，疑似被墙`);
 
     {
-      notify.ops(`🧱 <b>疑似被墙（24h零流量）</b>\n节点: ${node.name}\n请在 Ulzix 控制台检查实例与网络`);
+      notify.ops(`<b>疑似被墙（24h零流量）</b>\n节点: ${node.name}\n请在 Ulzix 控制台检查实例与网络`);
     }
   }
 }
@@ -1101,7 +1101,7 @@ function checkStaleAgents() {
 
     // 超时，标记离线
     const agoMin = Math.round((now - lastReport) / 60000);
-    const remark = '🔴 Agent 失联';
+    const remark = 'Agent 失联';
     db.updateNode(node.id, { is_active: 0, remark, last_check: toSqlUtc() });
     mirrorPeerState(peers, 0, remark, nowUtcIso());
     bufferSystemAuditLog('agent_stale', `${node.name}: Agent 上报超时 (${agoMin}分钟)，标记离线`);
@@ -1163,11 +1163,11 @@ function checkSuddenZeroTraffic() {
         const prevMb = (activeTotal / 1048576).toFixed(1);
 
         for (const n of group) {
-          db.updateNode(n.id, { is_active: 0, remark: '🧱 疑似被墙 (零流量)', last_check: toSqlUtc() });
+          db.updateNode(n.id, { is_active: 0, remark: '疑似被墙 (零流量)', last_check: toSqlUtc() });
         }
 
         bufferSystemAuditLog('node_sudden_zero', `${names}: ${SUDDEN_ZERO_SILENCE_HOURS}h 零流量（此前 ${prevMb}MB），疑似被墙`);
-        notify.ops(`🧱 <b>疑似被墙（突然零流量）</b>\n节点: ${names}\n主机: ${host}\n静默: ${SUDDEN_ZERO_SILENCE_HOURS} 小时\n此前流量: ${prevMb} MB`);
+        notify.ops(`<b>疑似被墙（突然零流量）</b>\n节点: ${names}\n主机: ${host}\n静默: ${SUDDEN_ZERO_SILENCE_HOURS} 小时\n此前流量: ${prevMb} MB`);
         logger.info({ host, names, silenceHours: SUDDEN_ZERO_SILENCE_HOURS, prevMb }, '[巡检] 活跃节点突然零流量，疑似被墙');
 
 

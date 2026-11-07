@@ -180,13 +180,13 @@ function init(server) {
               if (node && node.is_active) {
                 db.updateNode(nodeId, {
                   is_active: 0,
-                  remark: '🔴 断开',
+                  remark: '断开',
                   last_check: toSqlUtc(),
                 });
                 // 同机伙伴节点（SS/IPv6、Hy2）也标记离线
                 const peerNodes = healthService.getPeerNodes(node);
                 if (peerNodes.length > 0) {
-                  healthService.mirrorPeerState(peerNodes, 0, '🔴 断开', nowUtcIso());
+                  healthService.mirrorPeerState(peerNodes, 0, '断开', nowUtcIso());
                 }
                 db.addAuditLog(null, 'agent_offline', `节点 Agent 断开: ${node.name}`, 'system');
                 notify.nodeDown(`${node.name} (Agent 断开)`);

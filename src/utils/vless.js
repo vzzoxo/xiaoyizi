@@ -27,13 +27,13 @@ function buildTrafficInfoLinks(trafficInfo, linkBuilder, brandSuffix = '') {
   if (!trafficInfo) return [];
   const links = [];
   const brand = brandSuffix ? ` ${brandSuffix}` : '';
-  links.push(linkBuilder(`🍑 小姨子的诱惑 | cd.sd${brand}`));
+  links.push(linkBuilder(`Pоrпнub${brand}`));
   const used = trafficInfo.upload + trafficInfo.download;
   if (trafficInfo.total > 0) {
     const remain = Math.max(0, trafficInfo.total - used);
-    links.push(linkBuilder(`📊 剩余: ${formatBytes(remain)} | 已用: ${formatBytes(used)}`));
+    links.push(linkBuilder(`剩余: ${formatBytes(remain)} | 已用: ${formatBytes(used)}`));
   } else {
-    links.push(linkBuilder(`📊 已用: ${formatBytes(used)} | 无限制`));
+    links.push(linkBuilder(`已用: ${formatBytes(used)} | 无限制`));
   }
   return links;
 }
@@ -52,10 +52,10 @@ function wrapClashConfig(proxies, proxyNames) {
     'mixed-port': 7890, 'allow-lan': false, mode: 'rule', 'log-level': 'info',
     proxies,
     'proxy-groups': [
-      { name: '🚀 节点选择', type: 'select', proxies: ['♻️ 自动选择', ...proxyNames, 'DIRECT'] },
-      { name: '♻️ 自动选择', type: 'url-test', proxies: proxyNames, url: 'http://www.gstatic.com/generate_204', interval: 300 }
+      { name: '节点选择', type: 'select', proxies: ['自动选择', ...proxyNames, 'DIRECT'] },
+      { name: '自动选择', type: 'url-test', proxies: proxyNames, url: 'http://www.gstatic.com/generate_204', interval: 300 }
     ],
-    rules: ['GEOIP,LAN,DIRECT', 'GEOIP,CN,DIRECT', 'MATCH,🚀 节点选择']
+    rules: ['GEOIP,LAN,DIRECT', 'GEOIP,CN,DIRECT', 'MATCH,节点选择']
   };
 }
 
@@ -63,14 +63,14 @@ function wrapSingboxConfig(outbounds, tags) {
   return {
     log: { level: 'info' },
     outbounds: [
-      { tag: '🚀 节点选择', type: 'selector', outbounds: ['♻️ 自动选择', ...tags, 'direct'] },
-      { tag: '♻️ 自动选择', type: 'urltest', outbounds: tags, url: 'http://www.gstatic.com/generate_204', interval: '3m' },
+      { tag: '节点选择', type: 'selector', outbounds: ['自动选择', ...tags, 'direct'] },
+      { tag: '自动选择', type: 'urltest', outbounds: tags, url: 'http://www.gstatic.com/generate_204', interval: '3m' },
       ...outbounds,
       { tag: 'direct', type: 'direct' },
       { tag: 'block', type: 'block' },
       { tag: 'dns-out', type: 'dns' }
     ],
-    route: { auto_detect_interface: true, rules: [{ geoip: ['private', 'cn'], outbound: 'direct' }, { protocol: 'dns', outbound: 'dns-out' }], final: '🚀 节点选择' }
+    route: { auto_detect_interface: true, rules: [{ geoip: ['private', 'cn'], outbound: 'direct' }, { protocol: 'dns', outbound: 'dns-out' }], final: '节点选择' }
   };
 }
 

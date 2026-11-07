@@ -106,7 +106,7 @@ async function rotateAll() {
 
   const result = { ...core, tokenCount };
   logger.info({ syncSuccess: core.success, syncFailed: core.failed, uuidCount: core.uuidCount, tokenCount }, '[轮换完成] 自动轮换结束');
-  db.addAuditLog(null, 'auto_rotate', `自动轮换完成 同步✅${core.success} ❌${core.failed} 端口:${core.portRotated ? '✅' : '⏭️'} UUID:${core.uuidCount} 订阅:${tokenCount} (${detailStr} 免:${skipCount})`, 'system');
+  db.addAuditLog(null, 'auto_rotate', `自动轮换完成 同步成功 ${core.success}，失败 ${core.failed}，端口 ${core.portRotated ? '已轮换' : '已跳过'} UUID:${core.uuidCount} 订阅:${tokenCount} (${detailStr} 免:${skipCount})`, 'system');
   notify.rotate(result);
   return result;
 }
@@ -116,7 +116,7 @@ async function rotateManual() {
   const core = await rotateCore();
   const result = { ...core, tokenCount: 0 };
   logger.info({ syncSuccess: core.success, syncFailed: core.failed, uuidCount: core.uuidCount }, '[手动轮换] 执行完成');
-  db.addAuditLog(null, 'manual_rotate', `手动轮换完成 同步✅${core.success} ❌${core.failed} 端口:${core.portRotated ? '✅' : '⏭️'} UUID:${core.uuidCount}`, 'system');
+  db.addAuditLog(null, 'manual_rotate', `手动轮换完成 同步成功 ${core.success}，失败 ${core.failed}，端口 ${core.portRotated ? '已轮换' : '已跳过'} UUID:${core.uuidCount}`, 'system');
   notify.rotate(result);
   return result;
 }

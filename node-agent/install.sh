@@ -51,7 +51,7 @@ SYSCTL_EOF
   for iface in $(ls /sys/class/net | grep -E '^(eth|ens|enp)'); do
     sysctl -w net.ipv6.conf.${iface}.accept_ra=2 >/dev/null 2>&1 || true
   done
-  echo "✅ IPv6 accept_ra 已配置为 2（转发模式下接受 RA 默认路由）"
+  echo "IPv6 accept_ra 已配置为 2（转发模式下接受 RA 默认路由）"
 fi
 
 # 创建配置（使用 node 安全生成 JSON，防止变量注入）
@@ -66,13 +66,13 @@ node -e "
   require('fs').writeFileSync(process.argv[5], JSON.stringify(cfg, null, 2));
 " "$SERVER_URL" "$TOKEN" "$NODE_ID" "$CHECK_IPV6" "${CONFIG_DIR}/config.json"
 chmod 600 "${CONFIG_DIR}/config.json"
-echo "✅ 配置写入 ${CONFIG_DIR}/config.json"
+echo "配置写入 ${CONFIG_DIR}/config.json"
 
 # 复制 agent
 mkdir -p "$AGENT_DIR"
 cp "${SCRIPT_DIR}/agent.js" "${AGENT_DIR}/agent.js"
 chmod 755 "${AGENT_DIR}/agent.js"
-echo "✅ agent.js 复制到 ${AGENT_DIR}/"
+echo "agent.js 复制到 ${AGENT_DIR}/"
 
 if command -v rc-service >/dev/null 2>&1 && [ ! -d /run/systemd/system ]; then
   cat > /etc/init.d/vless-agent <<EOF_OPENRC
@@ -125,13 +125,13 @@ SyslogIdentifier=vless-agent
 [Install]
 WantedBy=multi-user.target
 EOF
-echo "✅ systemd 服务已创建"
+echo "systemd 服务已创建"
 
 # 启动服务
 systemctl daemon-reload
 systemctl enable vless-agent
 systemctl restart vless-agent
-echo "✅ 服务已启动并设为开机自启"
+echo "服务已启动并设为开机自启"
 
 echo ""
 echo "=== 安装完成 ==="

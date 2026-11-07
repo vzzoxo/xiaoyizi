@@ -40,7 +40,7 @@
 - 多节点并发使用观察
 - 节点健康汇总
 - Agent WebSocket 状态监控
-- 运维诊断与 AI 运营日记（蜜桃酱）
+- 运维诊断与 AI 运营日记（Pоrпнub AI）
 - Agent 批量自更新
 
 ### Ulzix

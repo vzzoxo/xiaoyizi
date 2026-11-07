@@ -13,3 +13,7 @@ dist/
 !.dev.vars.example
 workers/views.cjs
 workers/files.cjs
+
+public/js/material.js
+public/js/material.js.LEGAL.txt
+public/js/material-web-LICENSE.txt

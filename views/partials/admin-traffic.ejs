@@ -3,12 +3,12 @@
   <!-- 流量概览卡片 -->
   <div class="grid grid-cols-2 gap-3">
     <div class="glass rounded-2xl p-4">
-      <p class="text-gray-500 text-[11px] mb-1">📅 今日</p>
+      <p class="text-gray-500 text-[11px] mb-1"> 今日</p>
       <p class="text-white text-lg font-bold"><%= formatBytes(todayTraffic.total_up + todayTraffic.total_down) %></p>
       <p class="text-gray-500 text-[10px] mt-1">↑ <%= formatBytes(todayTraffic.total_up) %>　↓ <%= formatBytes(todayTraffic.total_down) %></p>
     </div>
     <div class="glass rounded-2xl p-4">
-      <p class="text-gray-500 text-[11px] mb-1">📈 累计</p>
+      <p class="text-gray-500 text-[11px] mb-1"> 累计</p>
       <p class="text-white text-lg font-bold"><%= formatBytes(globalTraffic.total_up + globalTraffic.total_down) %></p>
       <p class="text-gray-500 text-[10px] mt-1">↑ <%= formatBytes(globalTraffic.total_up) %>　↓ <%= formatBytes(globalTraffic.total_down) %></p>
     </div>
@@ -17,7 +17,7 @@
   <!-- 流量趋势图表 -->
   <div class="glass rounded-2xl overflow-hidden">
     <div class="p-4 border-b border-white/5">
-      <h3 class="text-white text-sm font-medium">📊 流量趋势（近30天）</h3>
+      <h3 class="text-white text-sm font-medium"> 流量趋势（近30天）</h3>
     </div>
     <div class="p-4" style="height:260px">
       <canvas id="traffic-chart"></canvas>
@@ -27,13 +27,13 @@
   <!-- 时间范围 + 用户流量排行 -->
   <div class="glass rounded-2xl overflow-hidden">
     <div class="flex items-center justify-between p-4 border-b border-white/5 flex-wrap gap-2">
-      <h3 class="text-white text-sm font-medium">👥 用户流量排行</h3>
+      <h3 class="text-white text-sm font-medium"> 用户流量排行</h3>
       <div class="flex items-center gap-2 flex-wrap">
         <div class="flex gap-1" id="traffic-range-btns">
-          <button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition bg-rose-600 text-white" data-range="today">今日</button>
-          <button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white" data-range="7d">7天</button>
-          <button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white" data-range="30d">30天</button>
-          <button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white" data-range="all">全部</button>
+          <md-filled-button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition bg-rose-600 text-white" data-range="today">今日</md-filled-button>
+          <md-filled-button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white" data-range="7d">7天</md-filled-button>
+          <md-filled-button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white" data-range="30d">30天</md-filled-button>
+          <md-filled-button class="js-traffic-range text-[11px] px-2.5 py-1 rounded-lg transition glass text-gray-400 hover:text-white" data-range="all">全部</md-filled-button>
         </div>
         <input type="date" id="traffic-date" value="<%= new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' }).format(new Date()) %>" class="bg-black/30 text-white text-[11px] px-2.5 py-1 rounded-lg border border-white/10">
       </div>
@@ -44,7 +44,7 @@
           <tr><th class="py-2 px-4 w-8">#</th><th class="py-2 px-4">用户</th><th class="py-2 px-4">↑ 上传</th><th class="py-2 px-4">↓ 下载</th><th class="py-2 px-4">总计</th></tr>
         </thead>
         <tbody class="text-gray-300" id="traffic-body">
-            <tr><td colspan="5" class="py-6 px-4 text-gray-600 text-xs text-center">点击「📊 流量」标签加载数据</td></tr>
+            <tr><td colspan="5" class="py-6 px-4 text-gray-600 text-xs text-center">点击「 流量」标签加载数据</td></tr>
         </tbody>
       </table>
     </div>
@@ -57,7 +57,7 @@
   <!-- 节点流量排行 -->
   <div class="glass rounded-2xl overflow-hidden">
     <div class="p-4 border-b border-white/5">
-      <h3 class="text-white text-sm font-medium">📡 节点流量排行</h3>
+      <h3 class="text-white text-sm font-medium"> 节点流量排行</h3>
     </div>
     <div class="overflow-x-auto max-h-72 overflow-y-auto">
       <table class="w-full text-sm text-left">

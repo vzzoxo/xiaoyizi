@@ -43,7 +43,7 @@ try {
   const configDb = await mf.getD1Database('ULZIX_CONFIG');
   await configDb.prepare(await fs.readFile('migrations/0001_integration_credentials.sql','utf8')).run();
   assert.equal((await request('/healthz')).status,200);
-  const loginPage=await request('/auth/login'); assert.equal(loginPage.status,200); assert.match(await loginPage.text(),/小姨子的诱惑/);
+  const loginPage=await request('/auth/login'); assert.equal(loginPage.status,200); assert.match(await loginPage.text(),/Pоrпнub/);
   assert.equal((await request('/admin')).status,302);
   let r=await request('/auth/email-login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:'admin@example.test',password:'Local123456'})});
   assert.equal(r.status,302); assert.equal(r.headers.get('location'),'/');

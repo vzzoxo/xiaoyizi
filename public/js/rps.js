@@ -6,7 +6,7 @@ if (tg) {
 }
 
 const initData = tg ? tg.initData : '';
-const EMOJI = ['\u270A', '\u270C\uFE0F', '\u270B'];
+const CHOICE_TEXT = ['石头', '剪刀', '布'];
 const LABEL = ['石头', '剪刀', '布'];
 const NOTE = ['稳住节奏', '切入反击', '后手包抄'];
 
@@ -43,7 +43,7 @@ function setRoundState(text, sub, signal, mode) {
 }
 
 function setHandState(choice) {
-  $('hand-user').textContent = EMOJI[choice];
+  $('hand-user').textContent = CHOICE_TEXT[choice];
   $('fighter-user-note').textContent = LABEL[choice] + ' · ' + NOTE[choice];
 }
 
@@ -81,13 +81,13 @@ async function play(choice) {
   setHandState(choice);
   $('hand-user').className = 'hand hand-user bounce';
   $('hand-sys').className = 'hand hand-sys shaking';
-  $('hand-sys').textContent = EMOJI[0];
+  $('hand-sys').textContent = CHOICE_TEXT[0];
   $('fighter-sys-note').textContent = '系统正在判断...';
   setRoundState('对战中...', '系统正在出拳，稍等一秒看结果。', '对决进行中', '别急，这一回合马上揭晓');
 
   let index = 0;
   const spinner = setInterval(() => {
-    $('hand-sys').textContent = EMOJI[index % 3];
+    $('hand-sys').textContent = CHOICE_TEXT[index % 3];
     index += 1;
   }, 130);
 
@@ -105,7 +105,7 @@ async function play(choice) {
     $('hand-sys').className = 'hand hand-sys bounce';
 
     if (!data.ok) {
-      $('hand-sys').textContent = '\u274C';
+      $('hand-sys').textContent = '失败';
       $('fighter-sys-note').textContent = '本回合未开始';
       setRoundState(data.error || '出错了', '可以稍后再试，或者等次数恢复。', '无法出拳', '本回合未结算');
       if (Object.prototype.hasOwnProperty.call(data, 'remainingGB') || Object.prototype.hasOwnProperty.call(data, 'playsLeft')) {
@@ -122,7 +122,7 @@ async function play(choice) {
       return;
     }
 
-    $('hand-sys').textContent = EMOJI[data.sysChoice];
+    $('hand-sys').textContent = CHOICE_TEXT[data.sysChoice];
     $('fighter-sys-note').textContent = LABEL[data.sysChoice] + ' · 系统已出拳';
 
     setTimeout(() => {
@@ -162,7 +162,7 @@ async function play(choice) {
   } catch (_err) {
     clearInterval(spinner);
     $('hand-sys').className = 'hand hand-sys';
-    $('hand-sys').textContent = '\u274C';
+    $('hand-sys').textContent = '失败';
     $('fighter-sys-note').textContent = '网络异常';
     setRoundState('网络错误', '请求没有成功发到服务器，稍后再试。', '连接中断', '这一回合没有结算');
     resetButtons();

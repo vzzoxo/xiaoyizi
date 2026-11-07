@@ -4,8 +4,8 @@
   <!-- 节点健康总览 -->
   <div class="glass rounded-2xl p-5">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-white text-sm font-medium">📊 节点健康总览</h3>
-      <button id="ops-refresh-btn" class="text-[11px] px-3 py-1 rounded-full bg-white/5 text-gray-400 hover:bg-white/10 transition">🔄 刷新</button>
+      <h3 class="text-white text-sm font-medium"> 节点健康总览</h3>
+      <md-filled-button id="ops-refresh-btn" class="text-[11px] px-3 py-1 rounded-full bg-white/5 text-gray-400 hover:bg-white/10 transition"> 刷新</md-filled-button>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="ops-health-cards">
       <div class="rounded-xl bg-black/30 p-4 text-center border border-white/5">
@@ -27,9 +27,9 @@
     </div>
   </div>
 
-  <!-- 蜜桃酱巡检状态 -->
+  <!-- Pоrпнub AI巡检状态 -->
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-3">🍑 蜜桃酱巡检状态</h3>
+    <h3 class="text-white text-sm font-medium mb-3"> Pоrпнub AI巡检状态</h3>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
       <div class="rounded-xl bg-black/20 p-3 text-center">
         <div class="text-lg font-bold text-blue-400" id="ops-last-patrol">-</div>
@@ -52,7 +52,7 @@
 
   <!-- 运维配置 -->
   <div class="glass rounded-2xl p-5">
-    <h3 class="text-white text-sm font-medium mb-4">⚙️ 运维配置</h3>
+    <h3 class="text-white text-sm font-medium mb-4"> 运维配置</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="text-gray-500 text-xs block mb-1">目标节点数（0=不自动扩缩容）</label>
@@ -75,7 +75,7 @@
     <div class="mt-4 space-y-2">
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">🔄 被墙自动换 IP</span>
+          <span class="text-white text-sm"> 被墙自动换 IP</span>
         </div>
         <div class="relative flex-shrink-0">
           <input type="checkbox" id="ops-auto-swap-ip" class="sr-only peer">
@@ -85,7 +85,7 @@
       </label>
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">🔧 节点自动修复</span>
+          <span class="text-white text-sm"> 节点自动修复</span>
         </div>
         <div class="relative flex-shrink-0">
           <input type="checkbox" id="ops-auto-repair" class="sr-only peer">
@@ -95,7 +95,7 @@
       </label>
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">📈 自动扩缩容</span>
+          <span class="text-white text-sm"> 自动扩缩容</span>
         </div>
         <div class="relative flex-shrink-0">
           <input type="checkbox" id="ops-auto-scale" class="sr-only peer">
@@ -105,7 +105,7 @@
       </label>
       <label class="flex items-center justify-between p-3 rounded-xl bg-black/20 cursor-pointer hover:bg-white/5 transition">
         <div>
-          <span class="text-white text-sm">🛡️ 面板守护</span>
+          <span class="text-white text-sm"> 面板守护</span>
         </div>
         <div class="relative flex-shrink-0">
           <input type="checkbox" id="ops-panel-guard" class="sr-only peer">
@@ -115,7 +115,7 @@
       </label>
     </div>
 
-    <button id="ops-save-btn" class="mt-4 w-full bg-rose-600 hover:bg-rose-500 text-white py-2 rounded-xl text-sm transition">保存配置</button>
+    <md-filled-button id="ops-save-btn" class="mt-4 w-full bg-rose-600 hover:bg-rose-500 text-white py-2 rounded-xl text-sm transition">保存配置</md-filled-button>
   </div>
 </div>
 
@@ -177,9 +177,9 @@
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._csrf || '' },
         body: JSON.stringify(data)
       });
-      if (res.ok) showToast('✅ 运维配置已保存');
-      else showToast('❌ 保存失败');
-    } catch (e) { showToast('❌ ' + e.message); }
+      if (res.ok) showToast('运维配置已保存');
+      else showToast('保存失败');
+    } catch (e) { showToast('' + e.message); }
   };
 
   window.loadOpsConfig = window.loadOpsDashboard;

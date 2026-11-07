@@ -25,7 +25,7 @@ function getAllDiagnoses(limit = 20) {
 }
 
 // AI 运营日记
-function addDiaryEntry(content, mood = '🐱', category = 'ops') {
+function addDiaryEntry(content, mood = '', category = 'ops') {
   return _getDb().prepare(
     "INSERT INTO ops_diary (content, mood, category, created_at) VALUES (?, ?, ?, datetime('now'))"
   ).run(content, mood, category);

@@ -3,7 +3,6 @@ const db = require('./database');
 const logger = require('./logger');
 const { formatBytes } = require('../utils/formatBytes');
 const { getGroupLabel } = require('../utils/userGroup');
-const { getRegionEmoji } = require('../utils/regions');
 const { getTzDateParts, shiftIsoDate, today, weekKey, TG_TIMEZONE } = require('../utils/tgGame');
 
 const TOKEN = process.env.TG_BOT_TOKEN;
@@ -12,15 +11,15 @@ const DOMAIN = process.env.PANEL_DOMAIN || 'vip.sd';
 let _botUsername = process.env.TG_BOT_USERNAME || null;
 
 const MENU = {
-  checkin: '📌 签到',
-  lucky: '🎰 大转盘',
-  flip: '🃏 翻卡',
-  rps: '✊ 猜拳',
-  me: '👤 我的',
-  sub: '🔗 订阅',
-  bind: '🔐 绑定账号',
-  help: 'ℹ️ 功能介绍',
-  support: '🧭 面板入口',
+  checkin: '签到',
+  lucky: '大转盘',
+  flip: '翻卡',
+  rps: '猜拳',
+  me: '我的',
+  sub: '订阅',
+  bind: '绑定账号',
+  help: '功能介绍',
+  support: '面板入口',
 };
 
 const MY_ACTIONS = {
@@ -29,10 +28,6 @@ const MY_ACTIONS = {
   sub: 'tg:my:sub',
   admin: 'tg:my:admin',
 };
-
-function getNodeEmoji(name) {
-  return getRegionEmoji(normalizeNodeName(name));
-}
 
 function getBotUsername() { return _botUsername; }
 /** Resolve the bot username from configuration, persistent cache or Telegram. */
@@ -80,7 +75,7 @@ function isPrivateChat(msg) {
 function sendPrivateOnly(msg) {
   return bot.sendMessage(
     msg.chat.id,
-    '🔒 该功能仅限私聊使用，请私聊我获取敏感信息。',
+    '该功能仅限私聊使用，请私聊我获取敏感信息。',
     { reply_to_message_id: msg.message_id }
   );
 }
@@ -102,11 +97,11 @@ function isAdminUser(user) {
 
 function myInlineKeyboard(user) {
   const rows = [
-    [{ text: '📊 7天流量', callback_data: MY_ACTIONS.traffic }, { text: '📡 节点状态', callback_data: MY_ACTIONS.nodes }],
-    [{ text: '🔗 我的订阅', callback_data: MY_ACTIONS.sub }],
+    [{ text: '7天流量', callback_data: MY_ACTIONS.traffic }, { text: '节点状态', callback_data: MY_ACTIONS.nodes }],
+    [{ text: '我的订阅', callback_data: MY_ACTIONS.sub }],
   ];
   if (isAdminUser(user)) {
-    rows.push([{ text: '🛠 管理总览', callback_data: MY_ACTIONS.admin }]);
+    rows.push([{ text: '管理总览', callback_data: MY_ACTIONS.admin }]);
   }
   return { inline_keyboard: rows };
 }
@@ -118,19 +113,19 @@ function getPanelUrl() {
 function normalizeNodeName(name) {
   return String(name || '')
     .replace(/[\u{1F1E6}-\u{1F1FF}]{2}/gu, '')
-    .replace(/🏠/g, '')
+    .replace(/\ud83c\udfe0/g, '')
     .trim();
 }
 
 function sendWelcome(msg, bound = !!getUserByTgId(getActorId(msg))) {
   const user = bound ? getUserByTgId(getActorId(msg)) : null;
   const base = bound
-    ? '👋 欢迎使用面板机器人！\n\n请选择下方菜单：\n📌 签到\n🎰 大转盘\n🃏 翻卡\n✊ 猜拳\n👤 我的\n🔗 订阅'
-    : '👋 欢迎使用面板机器人！\n\n先完成绑定后即可使用签到、大转盘、翻卡、猜拳和订阅查询。';
+    ? '欢迎使用面板机器人！\n\n请选择下方菜单：\n 签到\n 大转盘\n 翻卡\n 猜拳\n 我的\n 订阅'
+    : '欢迎使用面板机器人！\n\n先完成绑定后即可使用签到、大转盘、翻卡、猜拳和订阅查询。';
   const hint = bound
-    ? '\n\n🏠 累计签到满 7 天可解锁家宽。\n💡 点击左下角菜单可直接使用签到、大转盘、翻卡、猜拳、我的、订阅。'
-    : '\n\n🏠 累计签到满 7 天可解锁家宽。\n💡 点击左下角菜单，或从面板点击 Telegram 图标完成绑定。';
-  const adminHint = isAdminUser(user) ? '\n🛠 你是管理员，点“我的”里可以看今日运营总览。' : '';
+    ? '\n\n 累计签到满 7 天可解锁家宽。\n 点击左下角菜单可直接使用签到、大转盘、翻卡、猜拳、我的、订阅。'
+    : '\n\n 累计签到满 7 天可解锁家宽。\n 点击左下角菜单，或从面板点击 Telegram 图标完成绑定。';
+  const adminHint = isAdminUser(user) ? '\n 你是管理员，点“我的”里可以看今日运营总览。' : '';
   return bot.sendMessage(msg.chat.id, `${base}${hint}${adminHint}`, clearKeyboardOptions());
 }
 
@@ -186,12 +181,12 @@ function getAdminDailyStats() {
 function handleAdminStats(msg) {
   const user = getUserByTgId(getActorId(msg));
   if (!user) return sendBindPrompt(msg);
-  if (!isAdminUser(user)) return bot.sendMessage(msg.chat.id, '⛔ 仅管理员可查看这个入口', chatOptions(msg));
+  if (!isAdminUser(user)) return bot.sendMessage(msg.chat.id, '仅管理员可查看这个入口', chatOptions(msg));
 
   const stats = getAdminDailyStats();
   return bot.sendMessage(
     msg.chat.id,
-    `🛠 <b>管理总览</b>\n📅 日期：${stats.day}\n\n👥 TG 已绑定：${stats.bindUsers} 人\n\n📌 签到：${stats.checkinUsers} 人 · ${formatBytes(stats.checkinBytes)}\n🃏 翻卡：${stats.flipUsers} 人 · ${stats.flipPlays} 次 · ${formatGb(stats.flipNetGb)}\n✊ 猜拳：${stats.rpsUsers} 人 · ${stats.rpsPlays} 局 · ${formatGb(stats.rpsNetGb)}\n🎰 本周大转盘：${stats.luckyUsers} 人 · ${formatBytes(stats.luckyBytes)}`,
+    `<b>管理总览</b>\n 日期：${stats.day}\n\n TG 已绑定：${stats.bindUsers} 人\n\n 签到：${stats.checkinUsers} 人 · ${formatBytes(stats.checkinBytes)}\n 翻卡：${stats.flipUsers} 人 · ${stats.flipPlays} 次 · ${formatGb(stats.flipNetGb)}\n 猜拳：${stats.rpsUsers} 人 · ${stats.rpsPlays} 局 · ${formatGb(stats.rpsNetGb)}\n 本周大转盘：${stats.luckyUsers} 人 · ${formatBytes(stats.luckyBytes)}`,
     chatOptions(msg, { parse_mode: 'HTML' })
   );
 }
@@ -200,7 +195,7 @@ function sendBindPrompt(msg) {
   const panelUrl = getPanelUrl();
   return bot.sendMessage(
     msg.chat.id,
-    `🔐 请先绑定账号\n\n1. 登录面板：${panelUrl}\n2. 点击个人页里的 Telegram 图标\n3. 跳转机器人后完成绑定`,
+    `请先绑定账号\n\n1. 登录面板：${panelUrl}\n2. 点击个人页里的 Telegram 图标\n3. 跳转机器人后完成绑定`,
     clearKeyboardOptions()
   );
 }
@@ -274,11 +269,11 @@ function handleCheckin(msg) {
   if (!result.ok) {
     const luckyDone = db.getDb().prepare('SELECT 1 FROM tg_lucky WHERE user_id = ? AND week = ?').get(user.id, weekKey());
     const nextAction = luckyDone
-      ? '🃏 还可以去翻卡，✊ 还可以去猜拳'
-      : '🃏 还可以去翻卡，✊ 还可以去猜拳，🎰 本周还能转盘';
+      ? '还可以去翻卡， 还可以去猜拳'
+      : '还可以去翻卡， 还可以去猜拳， 本周还能转盘';
     return bot.sendMessage(
       msg.chat.id,
-      `📌 今天已经签到过了\n\n🔥 连续签到：${streakBefore} 天\n📦 累计签到：${totalCheckinsBefore} 天\n⏰ 明天再来，继续把签到天数往上叠\n🏠 累计满 7 天可解锁家宽\n${nextAction}`,
+      `今天已经签到过了\n\n 连续签到：${streakBefore} 天\n 累计签到：${totalCheckinsBefore} 天\n 明天再来，继续把签到天数往上叠\n 累计满 7 天可解锁家宽\n${nextAction}`,
       chatOptions(msg)
     );
   }
@@ -289,22 +284,22 @@ function handleCheckin(msg) {
   const remaining = updatedUser.traffic_limit < 0 ? -1 : Math.max(0, updatedUser.traffic_limit - used);
   const streak = countCurrentStreak(user.id, d);
   const luckyDone = db.getDb().prepare('SELECT 1 FROM tg_lucky WHERE user_id = ? AND week = ?').get(user.id, weekKey());
-  const upgradeMsg = result.newLevel > result.currentLevel ? `\n🎊 用户组升级：${getGroupLabel(result.newLevel)}` : '';
+  const upgradeMsg = result.newLevel > result.currentLevel ? `\n 用户组升级：${getGroupLabel(result.newLevel)}` : '';
 
   let progressLine = '';
   const effectiveLevel = result.newLevel > result.currentLevel ? result.newLevel : result.currentLevel;
-  if (effectiveLevel < 1) progressLine = `🏠 再签到 ${Math.max(0, 7 - result.totalCheckins)} 天解锁家宽`;
-  else if (effectiveLevel < 2) progressLine = `📅 再签到 ${Math.max(0, 15 - result.totalCheckins)} 天升级到 👑 SVIP`;
-  else if (effectiveLevel < 3) progressLine = `📅 再签到 ${Math.max(0, 30 - result.totalCheckins)} 天升级到 💎 SSVIP`;
-  else progressLine = '🏠 家宽资格已解锁';
+  if (effectiveLevel < 1) progressLine = `再签到 ${Math.max(0, 7 - result.totalCheckins)} 天解锁家宽`;
+  else if (effectiveLevel < 2) progressLine = `再签到 ${Math.max(0, 15 - result.totalCheckins)} 天升级到  SVIP`;
+  else if (effectiveLevel < 3) progressLine = `再签到 ${Math.max(0, 30 - result.totalCheckins)} 天升级到  SSVIP`;
+  else progressLine = '家宽资格已解锁';
 
   const nextAction = luckyDone
-    ? '🃏 现在还能翻卡，✊ 还能猜拳'
-    : '🃏 现在还能翻卡，✊ 还能猜拳，🎰 本周还能转盘';
+    ? '现在还能翻卡， 还能猜拳'
+    : '现在还能翻卡， 还能猜拳， 本周还能转盘';
 
   return bot.sendMessage(
     msg.chat.id,
-    `📌 今日签到成功\n\n🎁 获得流量：${gbRound.toFixed(2)} GB\n🔥 连续签到：${streak} 天\n📦 累计签到：${result.totalCheckins} 天\n💰 剩余流量：${remaining < 0 ? '∞' : formatBytes(remaining)}${upgradeMsg}\n\n${progressLine}\n${nextAction}`,
+    `今日签到成功\n\n 获得流量：${gbRound.toFixed(2)} GB\n 连续签到：${streak} 天\n 累计签到：${result.totalCheckins} 天\n 剩余流量：${remaining < 0 ? '∞' : formatBytes(remaining)}${upgradeMsg}\n\n${progressLine}\n${nextAction}`,
     chatOptions(msg)
   );
 }
@@ -317,7 +312,7 @@ function handleMe(msg) {
   const used = (traffic.total_up || 0) + (traffic.total_down || 0);
   const limit = user.traffic_limit;
   const remaining = limit < 0 ? -1 : Math.max(0, limit - used);
-  const status = user.is_frozen ? '❄️ 已冻结' : user.is_blocked ? '🚫 已封禁' : '✅ 正常';
+  const status = user.is_frozen ? '已冻结' : user.is_blocked ? '已封禁' : '正常';
   const expiry = user.expires_at ? user.expires_at.slice(0, 10) : '永不过期';
   const group = getGroupLabel(user.trust_level);
   const totalCheckins = db.getDb().prepare('SELECT COUNT(*) as c FROM tg_checkin WHERE user_id = ?').get(user.id).c;
@@ -326,13 +321,13 @@ function handleMe(msg) {
 
   let nextGoal = '';
   const level = user.trust_level || 0;
-  if (level < 1) nextGoal = `\n🏠 累计签到满 7 天可解锁家宽\n📅 再签 ${Math.max(0, 7 - totalCheckins)} 天升 🌿 VIP`;
-  else if (level < 2) nextGoal = `\n📅 再签 ${Math.max(0, 15 - totalCheckins)} 天升 👑 SVIP`;
-  else if (level < 3) nextGoal = `\n📅 再签 ${Math.max(0, 30 - totalCheckins)} 天升 💎 SSVIP`;
+  if (level < 1) nextGoal = `\n 累计签到满 7 天可解锁家宽\n 再签 ${Math.max(0, 7 - totalCheckins)} 天升  VIP`;
+  else if (level < 2) nextGoal = `\n 再签 ${Math.max(0, 15 - totalCheckins)} 天升  SVIP`;
+  else if (level < 3) nextGoal = `\n 再签 ${Math.max(0, 30 - totalCheckins)} 天升  SSVIP`;
 
   return bot.sendMessage(
     msg.chat.id,
-    `👤 <b>${user.username}</b>\n🏷️ 用户组: ${group}\n\n📊 状态: ${status}\n📅 到期: ${expiry}\n\n📈 已用流量: ${formatBytes(used)}\n💰 剩余流量: ${remaining < 0 ? '∞' : formatBytes(remaining)}\n\n📌 累计签到: ${totalCheckins} 次 · 连续 ${streak} 天\n🎁 签到获得: ${formatBytes(totalCheckinGB)}${nextGoal}`,
+    `<b>${user.username}</b>\n 用户组: ${group}\n\n 状态: ${status}\n 到期: ${expiry}\n\n 已用流量: ${formatBytes(used)}\n 剩余流量: ${remaining < 0 ? '∞' : formatBytes(remaining)}\n\n 累计签到: ${totalCheckins} 次 · 连续 ${streak} 天\n 签到获得: ${formatBytes(totalCheckinGB)}${nextGoal}`,
     chatOptions(msg, { parse_mode: 'HTML', reply_markup: myInlineKeyboard(user) })
   );
 }
@@ -343,12 +338,12 @@ function handleLucky(msg) {
 
   return bot.sendMessage(
     msg.chat.id,
-    '🎰 <b>每周大转盘</b>\n\n每周只有 1 次机会，指针停下的那一格就是本周奖励。\n最高可抽中 88GB。',
+    '<b>每周大转盘</b>\n\n每周只有 1 次机会，指针停下的那一格就是本周奖励。\n最高可抽中 88GB。',
     chatOptions(msg, {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [[{
-          text: '🎰 开始转盘',
+          text: '开始转盘',
           web_app: { url: `${getPanelUrl()}/lucky-wheel` },
         }]],
       },
@@ -361,7 +356,7 @@ function handleTraffic(msg) {
   if (!user) return sendBindPrompt(msg);
 
   const days = db.getUserTrafficDailyAgg(user.id, 7);
-  if (!days || days.length === 0) return bot.sendMessage(msg.chat.id, '📊 最近 7 天没有流量记录', chatOptions(msg));
+  if (!days || days.length === 0) return bot.sendMessage(msg.chat.id, '最近 7 天没有流量记录', chatOptions(msg));
 
   const maxBytes = Math.max(...days.map((d) => d.total_up + d.total_down), 1);
   const BAR_LEN = 12;
@@ -372,7 +367,7 @@ function handleTraffic(msg) {
     return `${d.date.slice(5)} ${bar} ${formatBytes(total)}`;
   });
 
-  return bot.sendMessage(msg.chat.id, `📊 <b>最近 7 天流量</b>\n\n<code>${lines.join('\n')}</code>`, chatOptions(msg, { parse_mode: 'HTML' }));
+  return bot.sendMessage(msg.chat.id, `<b>最近 7 天流量</b>\n\n<code>${lines.join('\n')}</code>`, chatOptions(msg, { parse_mode: 'HTML' }));
 }
 
 function handleNodes(msg) {
@@ -384,13 +379,12 @@ function handleNodes(msg) {
 
   const vlessNodes = nodes.filter((n) => n.protocol === 'vless');
   const lines = vlessNodes.map((n) => {
-    const icon = n.is_active ? '🟢' : '🔴';
-    const emoji = getNodeEmoji(n.name);
+    const status = n.is_active ? '在线' : '离线';
     const name = normalizeNodeName(n.name);
-    return `${icon} ${emoji} ${name}`;
+    return `${status} · ${name}`;
   });
 
-  return bot.sendMessage(msg.chat.id, `📡 <b>节点状态</b>\n\n${lines.join('\n')}`, chatOptions(msg, { parse_mode: 'HTML' }));
+  return bot.sendMessage(msg.chat.id, `<b>节点状态</b>\n\n${lines.join('\n')}`, chatOptions(msg, { parse_mode: 'HTML' }));
 }
 
 function handleSub(msg) {
@@ -399,7 +393,7 @@ function handleSub(msg) {
   if (!user) return sendBindPrompt(msg);
 
   const token = user.sub_token;
-  if (!token) return bot.sendMessage(msg.chat.id, '❌ 订阅令牌不存在，请联系管理员', chatOptions(msg));
+  if (!token) return bot.sendMessage(msg.chat.id, '订阅令牌不存在，请联系管理员', chatOptions(msg));
 
   const { appendSignature } = require('../utils/subSignature');
   const base = getPanelUrl();
@@ -410,11 +404,11 @@ function handleSub(msg) {
 
   // 仅当后台开启 IPv6 订阅可见时，才显示 IPv6 链接
   const showIpv6 = db.getSetting('sub_visible_ss') !== 'false';
-  const ipv6Section = showIpv6 ? `\n\n🌐 IPv6: <code>${sub6Url}</code>` : '';
+  const ipv6Section = showIpv6 ? `\n\n IPv6: <code>${sub6Url}</code>` : '';
 
   return bot.sendMessage(
     msg.chat.id,
-    `🔗 <b>订阅链接</b>\n\n🎯 组合: <code>${allUrl}</code>\n\n🌐 VLESS: <code>${vlessUrl}</code>${ipv6Section}\n\n⚡ Hysteria2: <code>${hy2Url}</code>\n\n⚠️ 请勿泄露，客户端会自动识别格式`,
+    `<b>订阅链接</b>\n\n 组合: <code>${allUrl}</code>\n\n VLESS: <code>${vlessUrl}</code>${ipv6Section}\n\n Hysteria2: <code>${hy2Url}</code>\n\n 请勿泄露，客户端会自动识别格式`,
     chatOptions(msg, { parse_mode: 'HTML' })
   );
 }
@@ -425,12 +419,12 @@ function handleRps(msg) {
 
   return bot.sendMessage(
     msg.chat.id,
-    '✊✌️✋ <b>猜拳赢流量</b>\n\n赢 +2GB · 平 0 · 输 -1GB\n点击下方按钮开始！',
+    '<b>猜拳赢流量</b>\n\n赢 +2GB · 平 0 · 输 -1GB\n点击下方按钮开始！',
     chatOptions(msg, {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [[{
-          text: '🎮 开始猜拳',
+          text: '开始猜拳',
           web_app: { url: `${getPanelUrl()}/rps-game` },
         }]],
       },
@@ -444,12 +438,12 @@ function handleFlip(msg) {
 
   return bot.sendMessage(
     msg.chat.id,
-    '🃏 <b>每日翻卡赢流量</b>\n\n每天 3 次机会，9 张卡任选 1 张翻开。\n可能翻出加流量，也可能只是谢谢参与。',
+    '<b>每日翻卡赢流量</b>\n\n每天 3 次机会，9 张卡任选 1 张翻开。\n可能翻出加流量，也可能只是谢谢参与。',
     chatOptions(msg, {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [[{
-          text: '🃏 开始翻卡',
+          text: '开始翻卡',
           web_app: { url: `${getPanelUrl()}/flip-game` },
         }]],
       },
@@ -486,12 +480,12 @@ bot.onText(/\/start(?:\s+(.+))?/, (msg, match) => {
     const token = param.slice(5);
     const tgId = String(msg.from.id);
     const existing = getUserByTgId(tgId);
-    if (existing) return bot.sendMessage(msg.chat.id, `✅ 已绑定账号: ${existing.username}`, chatOptions(msg));
+    if (existing) return bot.sendMessage(msg.chat.id, `已绑定账号: ${existing.username}`, chatOptions(msg));
     const user = db.getDb().prepare('SELECT * FROM users WHERE tg_bind_token = ?').get(token);
-    if (!user) return bot.sendMessage(msg.chat.id, '❌ 无效的绑定令牌，请从面板重新获取', chatOptions(msg));
-    if (user.telegram_id) return bot.sendMessage(msg.chat.id, '❌ 该账号已绑定其他 Telegram', chatOptions(msg));
+    if (!user) return bot.sendMessage(msg.chat.id, '无效的绑定令牌，请从面板重新获取', chatOptions(msg));
+    if (user.telegram_id) return bot.sendMessage(msg.chat.id, '该账号已绑定其他 Telegram', chatOptions(msg));
     db.getDb().prepare('UPDATE users SET telegram_id = ?, tg_bind_token = NULL WHERE id = ?').run(tgId, user.id);
-    return bot.sendMessage(msg.chat.id, `✅ 绑定成功！\n账号: ${user.username}\n\n现在可以直接使用下方菜单开始签到、大转盘、翻卡和猜拳了。`, chatOptions(msg));
+    return bot.sendMessage(msg.chat.id, `绑定成功！\n账号: ${user.username}\n\n现在可以直接使用下方菜单开始签到、大转盘、翻卡和猜拳了。`, chatOptions(msg));
   }
 
   return sendWelcome(msg);
@@ -501,17 +495,17 @@ bot.onText(/\/start(?:\s+(.+))?/, (msg, match) => {
 bot.onText(/\/bind(?:\s+(.+))?/, (msg, match) => {
   const tgId = String(msg.from.id);
   const existing = getUserByTgId(tgId);
-  if (existing) return bot.sendMessage(msg.chat.id, `✅ 已绑定账号: ${existing.username}`, chatOptions(msg));
+  if (existing) return bot.sendMessage(msg.chat.id, `已绑定账号: ${existing.username}`, chatOptions(msg));
 
   const token = (match[1] || '').trim();
   if (!token) return sendBindPrompt(msg);
 
   const user = db.getDb().prepare('SELECT * FROM users WHERE tg_bind_token = ?').get(token);
-  if (!user) return bot.sendMessage(msg.chat.id, '❌ 无效的绑定令牌', chatOptions(msg));
-  if (user.telegram_id) return bot.sendMessage(msg.chat.id, '❌ 该账号已绑定其他 Telegram', chatOptions(msg));
+  if (!user) return bot.sendMessage(msg.chat.id, '无效的绑定令牌', chatOptions(msg));
+  if (user.telegram_id) return bot.sendMessage(msg.chat.id, '该账号已绑定其他 Telegram', chatOptions(msg));
 
   db.getDb().prepare('UPDATE users SET telegram_id = ?, tg_bind_token = NULL WHERE id = ?').run(tgId, user.id);
-  return bot.sendMessage(msg.chat.id, `✅ 绑定成功！\n账号: ${user.username}`, chatOptions(msg));
+  return bot.sendMessage(msg.chat.id, `绑定成功！\n账号: ${user.username}`, chatOptions(msg));
 });
 
 // /checkin
@@ -558,7 +552,7 @@ bot.onText(/\/rps/, (msg) => {
 });
 
 bot.on('message', (msg) => {
-  const text = String(msg.text || '').trim();
+  const text = String(msg.text || '').replace(/^[\p{Extended_Pictographic}\uFE0F]+/u, '').trim();
   if (!text || text.startsWith('/')) return;
 
   if (text === MENU.checkin) return void handleCheckin(msg);
@@ -570,7 +564,7 @@ bot.on('message', (msg) => {
   if (text === MENU.bind) return void sendBindPrompt(msg);
   if (text === MENU.help) return void sendWelcome(msg);
   if (text === MENU.support) {
-    return void bot.sendMessage(msg.chat.id, `🧭 面板入口：${getPanelUrl()}`, chatOptions(msg));
+    return void bot.sendMessage(msg.chat.id, `面板入口：${getPanelUrl()}`, chatOptions(msg));
   }
 });
 

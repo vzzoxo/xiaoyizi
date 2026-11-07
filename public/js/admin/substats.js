@@ -112,7 +112,7 @@ async function loadSubStats(page) {
     renderOverview(json.overview, json.source);
 
     if (!json.data || json.data.length === 0) {
-      container.innerHTML = '<p class="text-emerald-400 text-sm text-center py-4">✅ 无数据</p>';
+      container.innerHTML = '<p class="text-emerald-400 text-sm text-center py-4"> 无数据</p>';
       return;
     }
 
@@ -130,7 +130,7 @@ async function loadSubStats(page) {
           '<td class="text-center text-gray-400">' + escapeHtml(u.last_access_display || u.last_access || '-') + '</td>' +
           '<td class="text-center">' + riskBadge(u.risk_level) + '</td>' +
           '<td class="text-center text-gray-400">' + escapeHtml(reasonLabel(u.top_deny_reason)) + '</td>' +
-          '<td class="text-right"><button type="button" class="js-substats-detail text-rose-400 hover:text-rose-300" data-user-id="' + parseInt(u.user_id, 10) + '" data-hours="' + parseInt(hours, 10) + '">详情</button></td>' +
+          '<td class="text-right"><md-filled-button type="button" class="js-substats-detail text-rose-400 hover:text-rose-300" data-user-id="' + parseInt(u.user_id, 10) + '" data-hours="' + parseInt(hours, 10) + '">详情</md-filled-button></td>' +
         '</tr>'
       ).join('') + '</tbody></table></div>';
 
@@ -139,7 +139,7 @@ async function loadSubStats(page) {
       let html = '';
       const end = Math.min(totalPages, 10);
       for (let i = 1; i <= end; i++) {
-        html += '<button type="button" class="js-substats-page text-xs px-2 py-1 rounded ' + (i === page ? 'bg-rose-600 text-white' : 'bg-white/10 text-gray-400') + '" data-page="' + i + '">' + i + '</button>';
+        html += '<md-filled-button type="button" class="js-substats-page text-xs px-2 py-1 rounded ' + (i === page ? 'bg-rose-600 text-white' : 'bg-white/10 text-gray-400') + '" data-page="' + i + '">' + i + '</md-filled-button>';
       }
       pager.innerHTML = html;
     }
@@ -184,7 +184,7 @@ async function loadMultiNodeObservations(page) {
     renderMultiNodeOverview(json.overview);
 
     if (!json.data || json.data.length === 0) {
-      container.innerHTML = '<p class="text-emerald-400 text-sm text-center py-4">✅ 当前窗口无并发多节点观察事件</p>';
+      container.innerHTML = '<p class="text-emerald-400 text-sm text-center py-4"> 当前窗口无并发多节点观察事件</p>';
       return;
     }
 
@@ -210,7 +210,7 @@ async function loadMultiNodeObservations(page) {
       let html = '';
       const end = Math.min(totalPages, 10);
       for (let i = 1; i <= end; i++) {
-        html += '<button type="button" class="js-multinode-page text-xs px-2 py-1 rounded ' + (i === page ? 'bg-rose-600 text-white' : 'bg-white/10 text-gray-400') + '" data-page="' + i + '">' + i + '</button>';
+        html += '<md-filled-button type="button" class="js-multinode-page text-xs px-2 py-1 rounded ' + (i === page ? 'bg-rose-600 text-white' : 'bg-white/10 text-gray-400') + '" data-page="' + i + '">' + i + '</md-filled-button>';
       }
       pager.innerHTML = html;
     }
