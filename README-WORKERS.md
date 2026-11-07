@@ -12,16 +12,16 @@ npx wrangler login
 npx wrangler secret put SESSION_SECRET
 npx wrangler secret put ADMIN_EMAIL
 npx wrangler secret put ADMIN_PASSWORD
-npx wrangler secret put ULZIX_COOKIES_JSON
+npx wrangler d1 migrations apply ULZIX_CONFIG --remote
 npm run deploy
 ```
 
 - `SESSION_SECRET`：至少 32 字符强随机值，可使用 `openssl rand -hex 32` 生成。它也用于加密敏感数据库字段，部署后应保持稳定。
-- `ADMIN_EMAIL`、`ADMIN_PASSWORD`：首次初始化管理员的邮箱和密码，密码至少 12 字符；已有用户时不会重置账号。初始化后可移除这两个 Secret。
-- `ULZIX_COOKIES_JSON`：Ulzix 客户区已登录会话导出的 Cookie JSON，直接粘贴完整 JSON 到 Wrangler 的输入提示中。Cookie 不进入网页、不写入仓库或日志。
+- `ADMIN_EMAIL`、`ADMIN_PASSWORD`：首次初始化管理员的邮箱和密码，密码至少 8 字符；已有用户时默认不会重置账号。需要明确更新已有管理员密码时，同时设置新的 `ADMIN_PASSWORD_REVISION` Secret；每个版本只应用一次，`ADMIN_EMAIL` 必须匹配现有管理员。
+- Ulzix Cookie：在后台「Ulzix」粘贴浏览器导出的 Cookie JSON 并保存。使用绑定 `ULZIX_CONFIG` 的 D1 数据库加密保存；更新立即生效，无需重新部署，不回显 Cookie 或写入日志。
 - 在 `wrangler.jsonc` 的 `vars` 中设置 `PANEL_DOMAIN` 为面板域名（不含 `https://`），用于派生 Agent 地址与 Telegram 链接。生产环境绑定自己的域名后再安装 Agent。
 - `wrangler.jsonc` 保留 Worker 名称 `xiaoyizi`。Durable Object 单例名称 `xiaoyizi` 与绑定 `PANEL` 是数据身份，不应随意改动，否则会创建另一套数据库。
-- 不需要单独创建 D1/KV/R2 数据资源。SQL 仓库继续使用同步事务，避免机械改成异步数据库后破坏判分、流量与邀请码事务。
+- Ulzix 登录态单独存储于 D1 `xiaoyizi-config`，表结构见 `migrations/0001_integration_credentials.sql`。主业务数据库继续使用 Durable Object 的同步 SQLite 事务；更新 Cookie 不影响节点、用户或备份。其他账号部署时请先创建自己的 D1 并修改 `database_id`。
 
 首次打开网站后，使用初始化管理员的邮箱和密码登录。进入后台设置 SMTP、注册规则和节点。
 
@@ -68,7 +68,7 @@ npm run check:worker
 
 也支持 `{"cookies":[...]}` 和 `{"COOKIE_NAME":"COOKIE_VALUE"}`。完整导出通常优于只选一个 Cookie；会自动过滤其他域名与已过期 Cookie。若存在 `fossbilling_csrf`，将其同步发送到请求头和请求体；否则使用相同会话读取首页 `meta[name="csrf-token"]`，与 Ulzix 现有 API.js 的方式保持一致。上游跳转不会自动跟随，避免 Cookie 被转发到其他站点。
 
-管理后台「Ulzix」中可查看订单状态、到期时间、服务类型，并将节点绑定到订单。Cookie 过期后更新 `ULZIX_COOKIES_JSON`。
+管理后台「Ulzix」中可查看订单状态、到期时间、服务类型，并将节点绑定到订单。Cookie 过期后直接在此粘贴新的 JSON 并保存。配置接口仅返回状态与更新时间，凭据使用 AES-256-GCM 加密，密钥由稳定的 `SESSION_SECRET` 派生；更换该 Secret 后需重新保存 Cookie。Node 常驻部署仍可使用环境变量 `ULZIX_COOKIES_JSON`，未绑定 D1 时不支持在线修改。
 
 **功能边界：** 标准 FOSSBilling 的订单 API 不等于 VPS 控制接口。目前没有核实 Ulzix 自定义 VPS 模块的开机、关机、重装、换 IP、创建实例接口，因此保留控制台入口，不猜测这些接口，也不会把旧 AWS 实例 ID 当作订单 ID。旧 AWS SDK、账号管理页面、自动换 IP 调用均已移除；旧数据库中的 AWS 列仅用于升级兼容，不再执行操作。OPS 换 IP 端点明确返回 501。
 
@@ -96,4 +96,4 @@ Workers 使用 webhook，不运行长期 polling。设置 Secret `TG_BOT_TOKEN`�
 
 ## 当前验证
 
-113 项 Node 测试通过，Workers 运行时测试与 Wrangler dry-run 通过。真实 Ulzix 登录态、VPS SSH、SMTP 和 Telegram webhook 需要对应凭据才能进行线上联调；未在这些外部服务创建或变更资源。
+127 项 Node 测试通过，Workers 运行时测试与 Wrangler dry-run 通过。真实 Ulzix 登录态、VPS SSH、SMTP 和 Telegram webhook 需要对应凭据才能进行线上联调；未在这些外部服务创建或变更资源。

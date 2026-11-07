@@ -1,13 +1,22 @@
-import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
+import { Miniflare, convertV4MiniflareOptions, Response as MiniflareResponse } from 'miniflare';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 const state=await fs.mkdtemp(path.join(os.tmpdir(),'xiaoyizi-worker-'));
+let expectedUlzixSession;
 const options=convertV4MiniflareOptions({
   workers:[{name:'xiaoyizi',scriptPath:'dist/worker.mjs',modules:true,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],
     durableObjects:{PANEL:{className:'Panel',useSQLite:true}},
-    bindings:{NODE_ENV:'production',SESSION_SECRET:'local-worker-smoke-test-secret-32-characters-minimum',ADMIN_EMAIL:'admin@example.test',ADMIN_PASSWORD:'Local-test-password-12345'},
+    d1Databases:['ULZIX_CONFIG'],
+    // Block real outbound traffic and verify credentials through the complete Worker path.
+    outboundService: async request => {
+      assert.equal(request.url,'https://idc-new.ulzix.com/api/client/order/get_list');
+      assert.ok(request.headers.get('cookie').includes('session='+expectedUlzixSession));
+      assert.equal(request.headers.get('x-csrf-token'),'smoke-csrf-token');
+      return MiniflareResponse.json({result:{list:[],pages:1},error:null});
+    },
+    bindings:{NODE_ENV:'production',SESSION_SECRET:'local-worker-smoke-test-secret-32-characters-minimum',ADMIN_EMAIL:'admin@example.test',ADMIN_PASSWORD:'Local123456',ADMIN_PASSWORD_REVISION:'local-revision-1'},
   }],cf:false,host:'127.0.0.1',port:0,inspectorPort:0,resourcePersistencePath:state,
 });
 let mf=new Miniflare(options), cookie='', csrf='';
@@ -16,10 +25,12 @@ const request=(route,init={})=>mf.dispatchFetch('https://panel.test'+route,{redi
 /** Send authenticated JSON to the local Worker with its session CSRF token. */
 const post=(route,body)=>request(route,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:JSON.stringify(body)});
 try {
+  const configDb = await mf.getD1Database('ULZIX_CONFIG');
+  await configDb.prepare(await fs.readFile('migrations/0001_integration_credentials.sql','utf8')).run();
   assert.equal((await request('/healthz')).status,200);
   const loginPage=await request('/auth/login'); assert.equal(loginPage.status,200); assert.match(await loginPage.text(),/小姨子的诱惑/);
   assert.equal((await request('/admin')).status,302);
-  let r=await request('/auth/email-login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:'admin@example.test',password:'Local-test-password-12345'})});
+  let r=await request('/auth/email-login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:'admin@example.test',password:'Local123456'})});
   assert.equal(r.status,302); assert.equal(r.headers.get('location'),'/');
   cookie=r.headers.get('set-cookie')?.split(';')[0]; assert.ok(cookie);
   r=await request('/admin'); const admin=await r.text(); assert.equal(r.status,200,admin.slice(0,500)); assert.match(admin,/Ulzix/);
@@ -28,7 +39,24 @@ try {
     const result=await request(route); assert.equal(result.status,200,await result.clone().text());
     if(route.startsWith('/admin/api/users')) assert.equal((await result.json()).total,1);
   }
-  assert.equal((await request('/admin/api/ulzix/config')).status,200);
+  assert.deepEqual(await (await request('/admin/api/ulzix/config')).json(),{configured:false,writable:true,updatedAt:null,baseUrl:'https://idc-new.ulzix.com'});
+  assert.equal((await post('/admin/api/ulzix/config',{cookies:'{'})).status,400);
+  assert.equal((await request('/admin/api/ulzix/config',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status,403);
+  const testCookie=JSON.stringify({session:'local-smoke-secret-cookie',fossbilling_csrf:'smoke-csrf-token'});
+  r=await post('/admin/api/ulzix/config',{cookies:testCookie}); assert.equal(r.status,200,await r.clone().text());
+  const saved=await r.text(); assert.ok(!saved.includes('local-smoke-secret-cookie'));
+  let stored=await configDb.prepare('SELECT encrypted_value FROM integration_credentials').first();
+  assert.ok(!stored.encrypted_value.includes('local-smoke-secret-cookie'),'D1 must store ciphertext');
+  expectedUlzixSession='local-smoke-secret-cookie';
+  r=await request('/admin/api/ulzix/orders'); assert.equal(r.status,200,await r.clone().text());
+  const previous=stored.encrypted_value;
+  r=await post('/admin/api/ulzix/config',{cookies:JSON.stringify({session:'updated-smoke-cookie',fossbilling_csrf:'smoke-csrf-token'})}); assert.equal(r.status,200);
+  stored=await configDb.prepare('SELECT encrypted_value FROM integration_credentials').first(); assert.notEqual(stored.encrypted_value,previous);
+  expectedUlzixSession='updated-smoke-cookie';
+  assert.equal((await request('/admin/api/ulzix/orders')).status,200,'Cookie replacement takes effect immediately');
+  assert.equal((await post('/admin/api/ulzix/config',{cookies:'{'})).status,400);
+  assert.equal((await configDb.prepare('SELECT encrypted_value FROM integration_credentials').first()).encrypted_value,stored.encrypted_value,'Invalid updates preserve the last credential');
+  await configDb.prepare('DELETE FROM integration_credentials').run();
   r=await request('/admin/api/ulzix/orders'); assert.equal(r.status,502); assert.match((await r.json()).error,/ULZIX_COOKIES_JSON/);
   assert.equal((await request('/admin/api/nodes/manual',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status,403);
   r=await post('/admin/api/nodes/manual',{name:'Worker smoke node',host:'203.0.113.10',port:443,protocol:'vless'}); assert.equal(r.status,200,await r.clone().text()); const nodeId=(await r.json()).id;
@@ -54,8 +82,12 @@ try {
   const backupCount=(await (await request('/admin/api/backups')).json()).backups.length;
   await stub.runScheduled(scheduledTime);
   assert.equal((await (await request('/admin/api/backups')).json()).backups.length,backupCount,'Cron retry must not duplicate backup');
+  r=await post('/admin/api/ulzix/config',{cookies:JSON.stringify({session:'persisted-smoke-cookie',fossbilling_csrf:'smoke-csrf-token'})}); assert.equal(r.status,200);
   await mf.dispose(); mf=new Miniflare(options);
   r=await request('/admin'); assert.equal(r.status,200,await r.clone().text());
+  assert.equal((await (await request('/admin/api/ulzix/config')).json()).configured,true,'D1 credential survives restart');
+  expectedUlzixSession='persisted-smoke-cookie';
+  assert.equal((await request('/admin/api/ulzix/orders')).status,200,'D1 cookie is usable after restart');
   r=await request(`/admin/api/nodes/${nodeId}/info`); assert.equal(r.status,200); assert.equal((await r.json()).traffic_cap,0);
   r=await post('/admin/api/backups/restore',{name:backup}); assert.equal(r.status,200,await r.clone().text());
   assert.equal((await request('/admin')).status,302,'Restore invalidates sessions');

@@ -17,6 +17,7 @@ export class Panel extends DurableObject {
       if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) throw new Error('Set SESSION_SECRET (at least 32 characters)');
       for (const [key, value] of Object.entries(env)) if (typeof value === 'string') process.env[key] = value;
       configureStorage(ctx.storage);
+      require('../src/services/ulzixSettings').configure(env.ULZIX_CONFIG, env.SESSION_SECRET);
       for (const [file, content] of Object.entries(files)) {
         fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content);
       }
@@ -26,9 +27,19 @@ export class Panel extends DurableObject {
       this.agent = require('../src/services/agent-ws.js');
       if (this.db.getUserCount() === 0) {
         if(!env.ADMIN_EMAIL || !env.ADMIN_PASSWORD) throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD to initialize the administrator');
-        if(env.ADMIN_PASSWORD.length < 12) throw new Error('ADMIN_PASSWORD must be at least 12 characters');
+        if(env.ADMIN_PASSWORD.length < 8) throw new Error('ADMIN_PASSWORD must be at least 8 characters');
         const passwordHash=require('../src/utils/password.js').hashPassword(env.ADMIN_PASSWORD);
         this.db.createEmailUser({username:'admin', email:env.ADMIN_EMAIL, passwordHash, displayName:'管理员'});
+      }
+      // Apply an explicitly requested credential revision once, preserving later password changes.
+      if (env.ADMIN_PASSWORD_REVISION && await ctx.storage.get('admin-password-revision') !== env.ADMIN_PASSWORD_REVISION) {
+        if (!env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8 || env.ADMIN_PASSWORD.length > 128) throw new Error('ADMIN_PASSWORD must be 8 to 128 characters');
+        const admin = this.db.getUserByEmail(env.ADMIN_EMAIL);
+        if (!admin?.is_admin) throw new Error('ADMIN_EMAIL must identify an existing administrator');
+        const hash = require('../src/utils/password').hashPassword(env.ADMIN_PASSWORD);
+        this.db.getDb().prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash,admin.id);
+        this.db.addAuditLog(admin.id,'password_reset','通过部署配置更新管理员密码',null);
+        await ctx.storage.put('admin-password-revision',env.ADMIN_PASSWORD_REVISION);
       }
       this.handler = httpServerHandler(createServer(app));
     });

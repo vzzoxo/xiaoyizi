@@ -27,8 +27,8 @@ function parseCookies(input, now = Date.now()) {
 }
 class UlzixClient {
   /** Create a fixed-origin Ulzix client using validated server-side session cookies. */
-  constructor(cookieJson = process.env.ULZIX_COOKIES_JSON, fetcher = fetch) {
-    if (!cookieJson) throw new Error('请配置服务端 Secret ULZIX_COOKIES_JSON');
+  constructor(cookieJson = process.env.ULZIX_COOKIES_JSON, fetcher = (...args) => fetch(...args)) {
+    if (!cookieJson) throw new Error('请在后台 Ulzix 集成中保存 Cookie JSON（ULZIX_COOKIES_JSON）');
     this.cookies = parseCookies(cookieJson); this.fetcher = fetcher;
   }
   /** Reuse a CSRF cookie or read the session-bound token from the Ulzix homepage. */

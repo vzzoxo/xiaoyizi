@@ -6,6 +6,8 @@
   "compatibility_flags": ["nodejs_compat"],
   "no_bundle": true,
   "workers_dev": true,
+  "preview_urls": false,
+  "d1_databases": [{"binding":"ULZIX_CONFIG","database_name":"xiaoyizi-config","database_id":"694d31ce-9f35-4f13-837e-50713c0b7d5c"}],
   "assets": { "directory": "public", "binding": "ASSETS", "run_worker_first": true },
   "durable_objects": { "bindings": [{ "name": "PANEL", "class_name": "Panel" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Panel"] }],
