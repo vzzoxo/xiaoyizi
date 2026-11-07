@@ -315,6 +315,7 @@ function cleanNodeMetrics() {
 cron.schedule('50 4 * * *', cleanNodeMetrics, { timezone: 'Asia/Shanghai' });
 
 // O3: Graceful Shutdown
+/** Close the Node server, Agent connections and database before exiting. */
 function gracefulShutdown(signal) {
   logger.info({ signal }, '收到关闭信号，开始优雅关闭...');
   server.close(() => {

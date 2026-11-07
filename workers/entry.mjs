@@ -7,6 +7,7 @@ import { configureStorage } from './sqlite.js';
 import files from './files.cjs';
 // Provides require for dependencies that conditionally load Node built-ins.
 export class Panel extends DurableObject {
+  /** Initialize the singleton durable database, assets, application and first administrator. */
   constructor(ctx, env) {
     super(ctx, env);
     this.env = env;
@@ -32,6 +33,7 @@ export class Panel extends DurableObject {
       this.handler = httpServerHandler(createServer(app));
     });
   }
+  /** Authenticate and route Telegram, Agent and HTTP requests to the panel. */
   async fetch(request) {
     const url = new URL(request.url);
     if (url.pathname === '/telegram/webhook') {
@@ -48,7 +50,11 @@ export class Panel extends DurableObject {
       if(prior) return new Response('ok');
       if(this.telegramInFlight.has(update.update_id)) {await this.telegramInFlight.get(update.update_id); return new Response('ok');}
       const work=Promise.resolve().then(async()=>{
-        await require('./lifetime').run(()=>require('../src/services/tgbot.js').processUpdate(update));
+        try {
+          await require('./lifetime').run(()=>require('../src/services/tgbot.js').processUpdate(update));
+        } catch (err) {
+          console.error('Telegram update failed', update.update_id, err);
+        }
         await this.ctx.storage.put('telegram-update:'+update.update_id,Date.now());
       });
       this.telegramInFlight.set(update.update_id,work);
@@ -95,6 +101,7 @@ export class Panel extends DurableObject {
     headers.set('X-Forwarded-For', request.headers.get('CF-Connecting-IP') || '127.0.0.1');
     return require('./lifetime').run(()=>this.handler.fetch(new Request(request, {headers})));
   }
+  /** Deduplicate concurrent cron invocations for the same scheduled minute. */
   async runScheduled(scheduledTime) {
     const minute=Math.floor(scheduledTime/60000);
     if(this.cronInFlight.has(minute)) return this.cronInFlight.get(minute);
@@ -102,6 +109,7 @@ export class Panel extends DurableObject {
     this.cronInFlight.set(minute,work);
     try {return await work;} finally {this.cronInFlight.delete(minute);}
   }
+  /** Run maintenance and Shanghai-time jobs, persisting successful daily completion. */
   async executeScheduled(scheduledTime) {
     return require('./lifetime').run(async()=>{
       require('../src/services/health.js').checkStaleAgents();

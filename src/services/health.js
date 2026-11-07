@@ -1046,6 +1046,7 @@ function startZeroTrafficWatch() {
   setTimeout(() => checkZeroTrafficNodes(), 10 * 60 * 1000).unref();
 }
 
+/** Notify once per active node with no traffic in the current two-day window. */
 function checkZeroTrafficNodes() {
   const nodes = db.getAllNodes().filter(n => n.is_active);
   if (!nodes.length) return;
@@ -1121,6 +1122,7 @@ function startSuddenZeroTrafficWatch() {
   setTimeout(() => checkSuddenZeroTraffic(), 5 * 60 * 1000).unref();
 }
 
+/** Detect previously active machines that become silent and clear recovered alerts. */
 function checkSuddenZeroTraffic() {
   try {
     const now = new Date();

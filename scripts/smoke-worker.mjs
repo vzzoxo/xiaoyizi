@@ -11,7 +11,9 @@ const options=convertV4MiniflareOptions({
   }],cf:false,host:'127.0.0.1',port:0,inspectorPort:0,resourcePersistencePath:state,
 });
 let mf=new Miniflare(options), cookie='', csrf='';
+/** Dispatch a local Worker request with the current test session cookie. */
 const request=(route,init={})=>mf.dispatchFetch('https://panel.test'+route,{redirect:'manual',...init,headers:{Cookie:cookie,...init.headers}});
+/** Send authenticated JSON to the local Worker with its session CSRF token. */
 const post=(route,body)=>request(route,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:JSON.stringify(body)});
 try {
   assert.equal((await request('/healthz')).status,200);
@@ -22,6 +24,10 @@ try {
   cookie=r.headers.get('set-cookie')?.split(';')[0]; assert.ok(cookie);
   r=await request('/admin'); const admin=await r.text(); assert.equal(r.status,200,admin.slice(0,500)); assert.match(admin,/Ulzix/);
   csrf=admin.match(/window\._csrf\s*=\s*['"]([^'"]+)/)?.[1] || admin.match(/const csrfToken\s*=\s*['"]([^'"]+)/)?.[1]; assert.ok(csrf,'CSRF token');
+  for(const route of ['/admin/api/users','/admin/api/users?search=admin','/admin/api/invite-relations','/admin/api/invite-relations?search=admin','/admin/api/logs?search=admin','/admin/api/sub-stats?search=admin']) {
+    const result=await request(route); assert.equal(result.status,200,await result.clone().text());
+    if(route.startsWith('/admin/api/users')) assert.equal((await result.json()).total,1);
+  }
   assert.equal((await request('/admin/api/ulzix/config')).status,200);
   r=await request('/admin/api/ulzix/orders'); assert.equal(r.status,502); assert.match((await r.json()).error,/ULZIX_COOKIES_JSON/);
   assert.equal((await request('/admin/api/nodes/manual',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status,403);
@@ -35,6 +41,7 @@ try {
   assert.ok((await r.text()).length,'Subscription');
   // Real WebSocket authentication and report flow through a Durable Object.
   r=await request('/ws/agent',{headers:{Upgrade:'websocket'}}); assert.equal(r.status,101); const ws=r.webSocket; ws.accept();
+  /** Wait for one Agent reply and reject on a bounded timeout. */
   const nextMessage=()=>new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(new Error('WebSocket response timeout')),5000);ws.addEventListener('message',e=>{clearTimeout(timeout);resolve(JSON.parse(e.data));},{once:true});});
   let next=nextMessage(); ws.send(JSON.stringify({type:'auth',nodeId,token:node.agent_token})); assert.equal((await next).type,'auth_ok');
   ws.send(JSON.stringify({type:'report',xrayAlive:true,cnReachable:true,loadAvg:[0,0,0],memUsage:{usagePercent:10},trafficRecords:[]}));

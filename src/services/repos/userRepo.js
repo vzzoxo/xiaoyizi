@@ -154,9 +154,10 @@ function escapeLikePattern(s) {
   return String(s == null ? '' : s).replace(/[\\%_]/g, '\\$&');
 }
 
+/** Return sorted users and a matching count, escaping literal LIKE search characters. */
 function getAllUsersPaged(limit = 20, offset = 0, search = '', sortBy = 'total_traffic', sortDir = 'DESC') {
   const escSearch = escapeLikePattern(search);
-  const where = search ? "WHERE (u.username LIKE '%' || @search || '%' ESCAPE '\\\\' OR u.name LIKE '%' || @search || '%' ESCAPE '\\\\')" : '';
+  const where = search ? "WHERE (u.username LIKE '%' || @search || '%' ESCAPE '\\' OR u.name LIKE '%' || @search || '%' ESCAPE '\\')" : '';
   const allowedSorts = {
     id: 'u.id', username: 'u.username', trust_level: 'u.trust_level',
     total_traffic: 'total_traffic', expires_at: 'u.expires_at', last_login: 'u.last_login'

@@ -2,6 +2,7 @@ const router = require('express').Router();
 const db = require('../../services/database');
 const { UlzixClient, BASE_URL } = require('../../services/ulzix');
 const { asyncHandler } = require('../../utils/asyncHandler');
+/** Accept only positive safe-integer IDs from route and request parameters. */
 const positiveId = value => /^\d+$/.test(String(value)) && Number.isSafeInteger(Number(value)) && Number(value)>0 ? Number(value) : null;
 router.get('/ulzix/config', (req,res) => res.json({configured: Boolean(process.env.ULZIX_COOKIES_JSON), baseUrl: BASE_URL}));
 router.get('/ulzix/orders', asyncHandler(async (req,res) => {

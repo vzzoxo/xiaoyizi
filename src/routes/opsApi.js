@@ -16,6 +16,7 @@ const OPS_SLOW_LOG_MS = Math.max(50, parseInt(process.env.OPS_SLOW_LOG_MS || '15
 const _opsResponseCache = new Map();
 
 // 节点安全字段白名单（只暴露这些字段）
+/** Project a node into the fields safe for authenticated OPS responses. */
 function safeNode(n, extra) {
   return {
     id: n.id, name: n.name, host: n.host, port: n.port,

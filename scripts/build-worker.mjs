@@ -5,6 +5,7 @@ import ejs from 'ejs';
 import { parse } from 'acorn';
 import { analyze } from 'eslint-scope';
 const root = process.cwd();
+/** Recursively enumerate source assets for build-time template and file bundling. */
 const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]);
 const views = walk('views').filter(f => f.endsWith('.ejs'));
 // Compile at build time: Workers forbid runtime eval/new Function.

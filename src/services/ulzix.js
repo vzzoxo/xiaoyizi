@@ -1,6 +1,7 @@
 /** Ulzix uses FOSSBilling's session-authenticated Client API. */
 const BASE_URL = 'https://idc-new.ulzix.com';
 const ALLOWED_METHODS = new Set(['order/get_list', 'order/get', 'order/service', 'client/get']);
+/** Validate exported Ulzix cookies, discard unrelated or expired entries, and extract CSRF. */
 function parseCookies(input, now = Date.now()) {
   let data;
   try { data = typeof input === 'string' ? JSON.parse(input) : input; }
@@ -25,10 +26,12 @@ function parseCookies(input, now = Date.now()) {
   return { header: [...cookies].map(([n,v]) => `${n}=${v}`).join('; '), csrf };
 }
 class UlzixClient {
+  /** Create a fixed-origin Ulzix client using validated server-side session cookies. */
   constructor(cookieJson = process.env.ULZIX_COOKIES_JSON, fetcher = fetch) {
     if (!cookieJson) throw new Error('请配置服务端 Secret ULZIX_COOKIES_JSON');
     this.cookies = parseCookies(cookieJson); this.fetcher = fetcher;
   }
+  /** Reuse a CSRF cookie or read the session-bound token from the Ulzix homepage. */
   async ensureCsrf() {
     if (this.cookies.csrf) return;
     // Ulzix's deployed API.js reads meta[name="csrf-token"], rather than
@@ -51,6 +54,7 @@ class UlzixClient {
     this.cookies.header=[...jar].map(([k,v])=>k+'='+v).join('; ');
     this.cookies.csrf=token;
   }
+  /** Send an allowlisted Client API request and validate its bounded JSON response. */
   async call(method, params = {}) {
     if (!ALLOWED_METHODS.has(method)) throw new Error('未支持的 Ulzix Client API 方法');
     await this.ensureCsrf();
@@ -74,6 +78,7 @@ class UlzixClient {
     if (!Object.hasOwn(json,'result')) throw new Error('Ulzix API 缺少 result');
     return json.result;
   }
+  /** Collect every client order page while enforcing the pagination limit. */
   async listOrders() {
     const orders = [];
     for(let page=1; page<=100; page++) {

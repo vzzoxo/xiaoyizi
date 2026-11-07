@@ -1,4 +1,5 @@
 /* Uses textContent and DOM APIs: provider-supplied strings never become HTML. */
+/** Load account-owned Ulzix orders and render node bindings with safe DOM APIs. */
 async function loadUlzix() {
   const output = document.getElementById('ulzix-orders');
   const nodes = document.getElementById('ulzix-nodes');

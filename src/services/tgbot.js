@@ -35,6 +35,7 @@ function getNodeEmoji(name) {
 }
 
 function getBotUsername() { return _botUsername; }
+/** Resolve the bot username from configuration, persistent cache or Telegram. */
 async function ensureBotUsername() {
   if (_botUsername || !bot) return _botUsername;
   const cached = db.getSetting('tg_bot_username');

@@ -31,6 +31,7 @@ function normalizeDuplicateNodeNames(db) {
   }
 }
 
+/** Apply missing SQLite schema changes and normalize legacy data during startup. */
 function runMigrations(db) {
   // ─── nodes 表迁移 ───
   const cols = db.prepare("PRAGMA table_info(nodes)").all().map(c => c.name);

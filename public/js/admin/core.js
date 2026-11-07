@@ -8,6 +8,7 @@ function callIfFn(fnName, ...args) {
   return undefined;
 }
 
+/** Activate the requested admin tab and load its current data. */
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => {
     const active = b.dataset.tab === name;
