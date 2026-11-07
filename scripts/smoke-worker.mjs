@@ -4,17 +4,32 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 const state=await fs.mkdtemp(path.join(os.tmpdir(),'xiaoyizi-worker-'));
-let expectedUlzixSession;
+let expectedUlzixSession,cartItems=[],checkoutCount=0;
 const options=convertV4MiniflareOptions({
   workers:[{name:'xiaoyizi',scriptPath:'dist/worker.mjs',modules:true,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],
     durableObjects:{PANEL:{className:'Panel',useSQLite:true}},
     d1Databases:['ULZIX_CONFIG'],
     // Block real outbound traffic and verify credentials through the complete Worker path.
     outboundService: async request => {
-      assert.equal(request.url,'https://idc-new.ulzix.com/api/client/order/get_list');
+      const url=new URL(request.url);
+      const method=url.pathname.replace('/api/','');
+      const product={id:67,product_category_id:11,title:'Mock NAT',type:'lxdapi',pricing:{type:'recurrent',recurrent:{'1Y':{enabled:true,price:4.5,setup:0}}}};
+      if(method.startsWith('guest/product/')) {
+        assert.equal(request.method,'GET');assert.ok(!url.searchParams.has('CSRFToken'));
+        const result=method==='guest/product/get' ? product : {list:method==='guest/product/category_get_list' ? [{id:11,title:'NAT'}] : [product],pages:1};
+        return MiniflareResponse.json({result,error:null});
+      }
       assert.ok(request.headers.get('cookie').includes('session='+expectedUlzixSession));
       assert.equal(request.headers.get('x-csrf-token'),'smoke-csrf-token');
-      return MiniflareResponse.json({result:{list:[],pages:1},error:null});
+      let result;
+      if(method==='client/order/get_list') result={list:checkoutCount ? [{id:991,title:'Mock NAT',status:'active',service_type:'lxdapi'}] : [],pages:1};
+      else if(method==='client/client/get') result={id:7};
+      else if(method==='client/order/get') {const body=new URLSearchParams(await request.text());result={id:Number(body.get('id')),product_id:67,status:'pending_setup'};}
+      else if(method==='guest/cart/get') result={items:cartItems,total:4.5,currency:{code:'CNY'}};
+      else if(method==='guest/cart/add_item') {const body=new URLSearchParams(await request.text());assert.equal(body.get('multiple'),'1');cartItems=[{id:12,product_id:67,quantity:1,period:'1Y'}];result=true;}
+      else if(method==='client/cart/checkout') {checkoutCount++;cartItems=[];result={order_id:991,invoice_hash:'smoke-invoice-hash'};}
+      else throw new Error('Unexpected outbound request: '+method);
+      return MiniflareResponse.json({result,error:null});
     },
     bindings:{NODE_ENV:'production',SESSION_SECRET:'local-worker-smoke-test-secret-32-characters-minimum',ADMIN_EMAIL:'admin@example.test',ADMIN_PASSWORD:'Local123456',ADMIN_PASSWORD_REVISION:'local-revision-1'},
   }],cf:false,host:'127.0.0.1',port:0,inspectorPort:0,resourcePersistencePath:state,
@@ -89,6 +104,13 @@ try {
   expectedUlzixSession='persisted-smoke-cookie';
   assert.equal((await request('/admin/api/ulzix/orders')).status,200,'D1 cookie is usable after restart');
   r=await request(`/admin/api/nodes/${nodeId}/info`); assert.equal(r.status,200); assert.equal((await r.json()).traffic_cap,0);
+  r=await request('/admin/api/ulzix/catalog');assert.equal(r.status,200,await r.clone().text());const catalog=await r.json();assert.equal(catalog.categories[0].id,11);assert.equal(catalog.products[0].id,67);
+  r=await post('/admin/api/ulzix/quote',{productId:67,period:'1Y'});assert.equal(r.status,200,await r.clone().text());const quote=await r.json();assert.equal(checkoutCount,0);
+  assert.equal((await post(`/admin/api/ulzix/purchases/${quote.token}/checkout`,{})).status,400);
+  r=await post(`/admin/api/ulzix/purchases/${quote.token}/checkout`,{confirmed:true});assert.equal(r.status,200,await r.clone().text());assert.equal((await r.json()).orderId,991);
+  assert.equal((await post(`/admin/api/ulzix/purchases/${quote.token}/checkout`,{confirmed:true})).status,200);assert.equal(checkoutCount,1);
+  const purchases=await (await request('/admin/api/ulzix/purchases')).json();assert.equal(purchases.purchases[0].orderId,991);
+  r=await post('/admin/api/nodes/deploy-smart',{host:'203.0.113.20',ssh_password:'local-test-password',enable_vless:'on',ulzix_order_id:991});assert.equal(r.status,302);assert.match(r.headers.get('location'),/ulzix_not_active/);
   r=await post('/admin/api/backups/restore',{name:backup}); assert.equal(r.status,200,await r.clone().text());
   assert.equal((await request('/admin')).status,302,'Restore invalidates sessions');
   console.log('PASS: Worker boot, precompiled views, login, CSRF, Ulzix failure handling, node CRUD, Agent WebSocket/report/commands, backups and restore, Cron retry deduplication, session/data survival after restart');

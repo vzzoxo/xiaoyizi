@@ -1,6 +1,7 @@
 /** Ulzix uses FOSSBilling's session-authenticated Client API. */
 const BASE_URL = 'https://idc-new.ulzix.com';
-const ALLOWED_METHODS = new Set(['order/get_list', 'order/get', 'order/service', 'client/get']);
+const ALLOWED_METHODS = new Set(['order/get_list', 'order/get', 'order/service', 'client/get', 'cart/checkout']);
+const GUEST_METHODS = new Set(['product/category_get_list','product/get_list','product/get','cart/get','cart/add_item','cart/remove_item']);
 /** Validate exported Ulzix cookies, discard unrelated or expired entries, and extract CSRF. */
 function parseCookies(input, now = Date.now()) {
   let data;
@@ -28,8 +29,7 @@ function parseCookies(input, now = Date.now()) {
 class UlzixClient {
   /** Create a fixed-origin Ulzix client using validated server-side session cookies. */
   constructor(cookieJson = process.env.ULZIX_COOKIES_JSON, fetcher = (...args) => fetch(...args)) {
-    if (!cookieJson) throw new Error('请在后台 Ulzix 集成中保存 Cookie JSON（ULZIX_COOKIES_JSON）');
-    this.cookies = parseCookies(cookieJson); this.fetcher = fetcher;
+    this.cookies = cookieJson ? parseCookies(cookieJson) : {header:'',csrf:''}; this.fetcher = fetcher;
   }
   /** Reuse a CSRF cookie or read the session-bound token from the Ulzix homepage. */
   async ensureCsrf() {
@@ -55,15 +55,18 @@ class UlzixClient {
     this.cookies.csrf=token;
   }
   /** Send an allowlisted Client API request and validate its bounded JSON response. */
-  async call(method, params = {}) {
-    if (!ALLOWED_METHODS.has(method)) throw new Error('未支持的 Ulzix Client API 方法');
-    await this.ensureCsrf();
+  async call(method, params = {}, scope = 'client') {
+    if (!['client','guest'].includes(scope) || !(scope === 'client' ? ALLOWED_METHODS : GUEST_METHODS).has(method)) throw new Error('未支持的 Ulzix Client API 方法');
+    const readOnly = scope === 'guest' && method.startsWith('product/');
+    if (!readOnly && !this.cookies.header) throw new Error('请在后台 Ulzix 集成中保存 Cookie JSON（ULZIX_COOKIES_JSON）');
+    if (!readOnly) await this.ensureCsrf();
     const headers = {Cookie: this.cookies.header, 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', Origin: BASE_URL, Referer: BASE_URL+'/'};
-    if (this.cookies.csrf) headers['X-CSRF-Token'] = this.cookies.csrf;
+    if (!readOnly && this.cookies.csrf) headers['X-CSRF-Token'] = this.cookies.csrf;
     const body = new URLSearchParams(Object.fromEntries(Object.entries(params).map(([k,v]) => [k,String(v)])));
-    if (this.cookies.csrf) body.set('CSRFToken', this.cookies.csrf);
+    if (!readOnly && this.cookies.csrf) body.set('CSRFToken', this.cookies.csrf);
     let response;
-    try { response = await this.fetcher(`${BASE_URL}/api/client/${method}`, {method:'POST', headers, body, redirect:'manual', signal: AbortSignal.timeout(15000)}); }
+    const url = `${BASE_URL}/api/${scope}/${method}`;
+    try { response = await this.fetcher(readOnly ? url+'?'+body : url, {method:readOnly ? 'GET' : 'POST', headers, ...(readOnly ? {} : {body}), redirect:'manual', signal: AbortSignal.timeout(15000)}); }
     catch { throw new Error('Ulzix 连接失败或超时'); }
     if ([301,302,303,307,308,401,403].includes(response.status)) throw new Error('Ulzix 登录态已失效或 CSRF 验证失败，请更新 Cookie JSON');
     if (!response.ok) throw new Error(`Ulzix API 请求失败（HTTP ${response.status}）`);
@@ -77,6 +80,19 @@ class UlzixClient {
     if (json.error) throw new Error(`Ulzix API 拒绝请求（代码 ${Number(json.error.code) || 'unknown'}），请检查登录态与权限`);
     if (!Object.hasOwn(json,'result')) throw new Error('Ulzix API 缺少 result');
     return json.result;
+  }
+  /** Access only the explicitly supported public catalog and session cart operations. */
+  guest(method, params = {}) { return this.call(method,params,'guest'); }
+  /** Read every catalog page with the same bounded pagination used for orders. */
+  async catalog(method) {
+    const list=[];
+    for(let page=1;page<=100;page++) {
+      const result=await this.guest(method,{page,per_page:20});
+      if(!result || !Array.isArray(result.list)) throw new Error('Ulzix 商品列表格式无效');
+      list.push(...result.list);
+      if(page>=Number(result.pages || 1)) return list;
+    }
+    throw new Error('Ulzix 商品超过分页上限');
   }
   /** Collect every client order page while enforcing the pagination limit. */
   async listOrders() {

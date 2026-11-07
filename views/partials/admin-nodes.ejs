@@ -144,8 +144,10 @@
   <!-- 一键部署 -->
   <details class="glass rounded-2xl">
     <summary class="text-rose-400 text-sm cursor-pointer hover:text-rose-300 p-4">🚀 一键部署节点</summary>
+    <div id="ulzix-deploy-list" class="px-4 pb-3 space-y-2 text-sm text-gray-300" aria-live="polite"></div>
     <form id="smart-deploy-form" method="POST" action="/admin/api/nodes/deploy-smart" class="px-4 pb-4 grid grid-cols-2 gap-3">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label class="col-span-2 text-gray-300 text-sm">Ulzix 订单（选填，可从上方列表选择）<input type="number" min="1" name="ulzix_order_id" class="bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm w-full"></label>
       <input type="text" name="host" placeholder="服务器 IP *" required class="bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
       <input type="password" name="ssh_password" placeholder="SSH 密码 *" required minlength="1" class="bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">
       <input type="number" name="ssh_port" placeholder="SSH 端口（默认 22）" min="1" max="65535" class="bg-black/30 text-white px-3 py-2 rounded-xl border border-white/10 text-sm">

@@ -55,6 +55,8 @@ npm run check:worker
 
 固定连接 `https://idc-new.ulzix.com`，使用标准 FOSSBilling Client API：
 
+- `GET /api/guest/product/category_get_list`、`product/get_list`、`product/get`：分组、商品、价格与库存。
+- `POST /api/guest/cart/add_item`、`cart/get`、`cart/remove_item` 和 `/api/client/cart/checkout`：报价、确认购买和取消未提交报价。
 - `POST /api/client/order/get_list`：分页查询自己的订单。
 - `POST /api/client/order/get`：绑定前验证订单归当前登录客户所有。
 
@@ -69,6 +71,10 @@ npm run check:worker
 也支持 `{"cookies":[...]}` 和 `{"COOKIE_NAME":"COOKIE_VALUE"}`。完整导出通常优于只选一个 Cookie；会自动过滤其他域名与已过期 Cookie。若存在 `fossbilling_csrf`，将其同步发送到请求头和请求体；否则使用相同会话读取首页 `meta[name="csrf-token"]`，与 Ulzix 现有 API.js 的方式保持一致。上游跳转不会自动跟随，避免 Cookie 被转发到其他站点。
 
 管理后台「Ulzix」中可查看订单状态、到期时间、服务类型，并将节点绑定到订单。Cookie 过期后直接在此粘贴新的 JSON 并保存。配置接口仅返回状态与更新时间，凭据使用 AES-256-GCM 加密，密钥由稳定的 `SESSION_SECRET` 派生；更换该 Secret 后需重新保存 Cookie。Node 常驻部署仍可使用环境变量 `ULZIX_COOKIES_JSON`，未绑定 D1 时不支持在线修改。
+
+后台支持选择分组、服务器商品和周期，先从上游购物车获取报价，再确认结账。余额足够时上游可能自动扣除余额；未付账单显示支付链接。报价要求现有购物车为空，使用 `multiple=1` 加入一个商品，确认前重新验证账号、购物车内容及金额；不会清空其他购物车内容。请勿在上游控制台同时修改同一会话购物车。需要额外表单的商品会引导到控制台购买。
+
+购买记录持久化在主数据库的 `ulzix_purchases` 表中，重复确认同一记录不会再次结账。结账超时会锁定为待核对，不自动重试；可到控制台核对，再手动关联相同商品的已生成订单。购买生成的订单自动出现在「节点 → 一键部署」列表，只有上游状态为 `active` 才可选择并部署；部署前再次核实订单所有权。Ulzix 自定义 NAT 模块的 SSH 字段未获证实，当前需在原有部署表单填写 SSH 地址、端口、用户名和密码；所有生成协议节点都会保留订单绑定。恢复旧主数据库快照也会回退购买记录，恢复后须与上游核对历史订单，不能把本地快照当作支付账本。
 
 **功能边界：** 标准 FOSSBilling 的订单 API 不等于 VPS 控制接口。目前没有核实 Ulzix 自定义 VPS 模块的开机、关机、重装、换 IP、创建实例接口，因此保留控制台入口，不猜测这些接口，也不会把旧 AWS 实例 ID 当作订单 ID。旧 AWS SDK、账号管理页面、自动换 IP 调用均已移除；旧数据库中的 AWS 列仅用于升级兼容，不再执行操作。OPS 换 IP 端点明确返回 501。
 
@@ -96,4 +102,4 @@ Workers 使用 webhook，不运行长期 polling。设置 Secret `TG_BOT_TOKEN`�
 
 ## 当前验证
 
-127 项 Node 测试通过，Workers 运行时测试与 Wrangler dry-run 通过。真实 Ulzix 登录态、VPS SSH、SMTP 和 Telegram webhook 需要对应凭据才能进行线上联调；未在这些外部服务创建或变更资源。
+132 项 Node 测试通过，Workers 运行时测试与 Wrangler dry-run 通过。真实 Ulzix 登录态、VPS SSH、SMTP 和 Telegram webhook 需要对应凭据才能进行线上联调；未在这些外部服务创建或变更资源。
