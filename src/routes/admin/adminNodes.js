@@ -154,13 +154,16 @@ router.post('/nodes/:id/delete', (req, res) => {
   const node = db.getNodeById(id);
   if (!node) return res.redirect('/admin#nodes');
 
-  const stopCmd = 'systemctl stop xray; systemctl disable xray; systemctl stop hysteria-server; systemctl disable hysteria-server; systemctl stop vless-agent; systemctl disable vless-agent';
+  const stopCmd = require('../../utils/serviceCommands').stopServices();
 
   (async () => {
     try {
+      let stopped=false;
       if (agentWs.isAgentOnline(node.id)) {
-        await agentWs.sendCommand(node.id, { type: 'exec', command: stopCmd });
-      } else if (node.ssh_password || node.ssh_key_path) {
+        const result=await agentWs.sendCommand(node.id, { type: 'exec', command: stopCmd });
+        stopped=result.success;
+      }
+      if (!stopped && (node.ssh_password || node.ssh_key_path)) {
         const { NodeSSH } = require('node-ssh');
         const ssh = new NodeSSH();
         const connectOpts = {

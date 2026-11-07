@@ -4,7 +4,7 @@
 
 ## 安装
 
-通常由面板部署节点时自动安装。手动安装：
+通常由面板部署节点时自动安装。支持 Debian/Ubuntu 的 systemd，以及 Alpine 的 OpenRC；Alpine 缺少 Node.js 时会通过 `apk` 安装。手动安装：
 
 ```bash
 ./install.sh <server_url> <token> <node_id> [--check-ipv6]
@@ -52,3 +52,5 @@ journalctl -u vless-agent -f
 
 - 面板域名变更后需同步更新 Agent 的 `server` 配置
 - `exec` 命令走白名单限制
+
+Alpine 服务管理使用 `rc-service vless-agent status` / `rc-service vless-agent restart`；日志位于 `/var/log/vless-agent.log`。Xray 和 Hysteria 的状态、重启、自愈、配置更新也会自动使用 OpenRC。

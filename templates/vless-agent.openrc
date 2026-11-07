@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+name="vless-agent"
+description="VLESS Panel Node Agent"
+command="{{NODE_BIN}}"
+command_args="/opt/vless-agent/agent.js"
+command_directory="/opt/vless-agent"
+supervisor="supervise-daemon"
+respawn_delay=5
+respawn_max=0
+output_log="/var/log/vless-agent.log"
+error_log="/var/log/vless-agent.log"
+export NODE_ENV=production
+depend() {
+  need net
+}

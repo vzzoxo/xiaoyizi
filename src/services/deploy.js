@@ -1,3 +1,4 @@
+const {restartService}=require('../utils/serviceCommands');
 const { NodeSSH } = require('node-ssh');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
@@ -328,7 +329,7 @@ async function pushConfigToNode(node, config) {
     const configPath = node.xray_config_path || '/usr/local/etc/xray/config.json';
 
     await sftpWriteFile(ssh, configPath, configJson);
-    const result = await ssh.execCommand('systemctl restart xray && sleep 1 && systemctl is-active --quiet xray && echo OK || echo FAIL');
+    const result = await ssh.execCommand(restartService('xray'));
 
     const ok = result.stdout.trim() === 'OK';
     return ok;
@@ -366,7 +367,7 @@ async function pushHy2ConfigToNode(node, configYaml) {
 
     await ssh.connect(connectOpts);
     await sftpWriteFile(ssh, '/etc/hysteria/config.yaml', configYaml);
-    const result = await ssh.execCommand('systemctl restart hysteria-server && sleep 1 && systemctl is-active --quiet hysteria-server && echo OK || echo FAIL');
+    const result = await ssh.execCommand(restartService('hysteria-server'));
     return result.stdout.trim() === 'OK';
   } catch (err) {
     logger.error({ err, nodeId: node.id, nodeName: node.name }, '推送Hy2配置 SSH 失败');
@@ -621,7 +622,7 @@ async function deployNode(sshInfo, db) {
 
     await ssh.execCommand('mkdir -p /usr/local/etc/xray');
     await sftpWriteFile(ssh, configPath, configJson);
-    const startResult = await ssh.execCommand('systemctl enable xray && systemctl restart xray && sleep 2 && systemctl is-active --quiet xray && echo DEPLOY_OK || echo DEPLOY_FAIL');
+    const startResult = await ssh.execCommand(restartService('xray',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
       db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
@@ -684,7 +685,7 @@ async function installAgentOnNode(ssh, nodeId, db) {
   if (nodeCheck.stdout.includes('NO_NODE')) {
     logger.info({ nodeId }, 'Agent 安装：开始安装 Node.js');
     const installNode = await ssh.execCommand(
-      'curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs',
+      'if command -v apk >/dev/null 2>&1; then apk add --no-cache nodejs; else curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs; fi',
       { execOptions: { timeout: 180000 } }
     );
     if (installNode.code !== 0 && installNode.code !== null) {
@@ -717,19 +718,24 @@ async function installAgentOnNode(ssh, nodeId, db) {
       'net.ipv6.conf.all.accept_ra = 2',
       'net.ipv6.conf.default.accept_ra = 2',
     ].join('\n');
+    await ssh.execCommand('mkdir -p /etc/sysctl.d');
     await sftpWriteFile(ssh, '/etc/sysctl.d/99-ipv6-accept-ra.conf', sysctlConf);
     await ssh.execCommand('sysctl -p /etc/sysctl.d/99-ipv6-accept-ra.conf >/dev/null 2>&1 || true');
     // 对所有以太网接口立即生效
     await ssh.execCommand("for iface in $(ls /sys/class/net 2>/dev/null | grep -E '^(eth|ens|enp)'); do sysctl -w net.ipv6.conf.${iface}.accept_ra=2 >/dev/null 2>&1 || true; done");
   }
 
-  // 创建 systemd service 并启动
-  const nodeBin = (await ssh.execCommand('which node')).stdout.trim() || '/usr/bin/node';
-  const serviceTemplate = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'vless-agent.service'), 'utf8');
-  const serviceContent = serviceTemplate.replace('{{NODE_BIN}}', nodeBin).trim();
-
-  await sftpWriteFile(ssh, '/etc/systemd/system/vless-agent.service', serviceContent);
-  await ssh.execCommand('systemctl daemon-reload && systemctl enable vless-agent && systemctl restart vless-agent');
+  // Install the service for the host's actual init system.
+  const nodeBin = (await ssh.execCommand('command -v node')).stdout.trim() || '/usr/bin/node';
+  if(!/^\/[A-Za-z0-9_./-]+$/.test(nodeBin)) throw new Error('Node.js executable path is invalid');
+  const initCheck=await ssh.execCommand('if command -v rc-service >/dev/null 2>&1 && [ ! -d /run/systemd/system ]; then echo openrc; else echo systemd; fi');
+  const openrc=initCheck.stdout.trim()==='openrc';
+  const serviceTemplate = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', openrc ? 'vless-agent.openrc' : 'vless-agent.service'), 'utf8');
+  const servicePath=openrc ? '/etc/init.d/vless-agent' : '/etc/systemd/system/vless-agent.service';
+  await sftpWriteFile(ssh,servicePath,serviceTemplate.replace('{{NODE_BIN}}',nodeBin).trim());
+  const prepare=openrc ? 'chmod 755 /etc/init.d/vless-agent' : 'systemctl daemon-reload';
+  const result=await ssh.execCommand(prepare+' && '+restartService('vless-agent',{enable:true,marker:'AGENT_OK'}));
+  if(!result.stdout.includes('AGENT_OK')) throw new Error('Agent 服务启动失败');
 
   logger.info({ nodeId }, 'Agent 安装完成');
 }
@@ -913,7 +919,7 @@ async function deploySsNode(sshInfo, db) {
     `);
 
     // 启动 xray
-    const startResult = await ssh.execCommand('systemctl enable xray && systemctl restart xray && sleep 2 && systemctl is-active --quiet xray && echo DEPLOY_OK || echo DEPLOY_FAIL');
+    const startResult = await ssh.execCommand(restartService('xray',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
       db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
@@ -1067,7 +1073,7 @@ async function deployDualNode(sshInfo, db) {
     `);
 
     // 启动 xray
-    const startResult = await ssh.execCommand('systemctl enable xray && systemctl restart xray && sleep 2 && systemctl is-active --quiet xray && echo DEPLOY_OK || echo DEPLOY_FAIL');
+    const startResult = await ssh.execCommand(restartService('xray',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
       db.updateNode(vlessNodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });
@@ -1247,7 +1253,7 @@ async function deployHy2Node(sshInfo, db) {
     `);
 
     // 启动 hysteria
-    const startResult = await ssh.execCommand('systemctl enable hysteria-server && systemctl restart hysteria-server && sleep 2 && systemctl is-active --quiet hysteria-server && echo DEPLOY_OK || echo DEPLOY_FAIL');
+    const startResult = await ssh.execCommand(restartService('hysteria-server',{enable:true,delay:2,marker:'DEPLOY_OK'}));
 
     if (startResult.stdout.includes('DEPLOY_OK')) {
       db.updateNode(nodeId, { is_active: 1, remark: sshInfo.socks5_host ? '🏠 家宽落地' : '' });

@@ -41,14 +41,22 @@ if (INSECURE_TLS) {
 // 精确匹配：完整命令必须严格等于白名单条目
 const EXEC_WHITELIST_EXACT = new Set([
   'systemctl restart xray',
+  'rc-service xray restart',
   'systemctl stop xray',
+  'rc-service xray stop',
   'systemctl start xray',
+  'rc-service xray start',
   'systemctl status xray',
+  'rc-service xray status',
   'systemctl is-active xray',
   'systemctl restart hysteria-server',
+  'rc-service hysteria-server restart',
   'systemctl stop hysteria-server',
+  'rc-service hysteria-server stop',
   'systemctl start hysteria-server',
+  'rc-service hysteria-server start',
   'systemctl status hysteria-server',
+  'rc-service hysteria-server status',
   'systemctl is-active hysteria-server',
   'uptime',
   'top -bn1',
@@ -279,14 +287,20 @@ async function getDiskUsage() {
   return { total: +total, used: +used, avail: +avail, usagePercent: parseFloat(percent) };
 }
 
+/** Select a fixed service command for OpenRC or systemd without accepting shell fragments. */
+function serviceCommand(service,action) {
+  if(!['xray','hysteria-server'].includes(service) || !['start','stop','restart','status'].includes(action)) throw new Error('Invalid service operation');
+  if(fs.existsSync('/sbin/rc-service') && !fs.existsSync('/run/systemd/system')) return 'rc-service '+service+' '+action;
+  return 'systemctl '+(action==='status' ? 'is-active' : action)+' '+service;
+}
 async function getXrayStatus() {
-  const { stdout } = await run('systemctl is-active xray');
-  return stdout === 'active';
+  const { ok } = await run(serviceCommand('xray','status'));
+  return ok;
 }
 
 async function getHysteriaStatus() {
-  const { stdout } = await run('systemctl is-active hysteria-server');
-  return stdout === 'active';
+  const { ok } = await run(serviceCommand('hysteria-server','status'));
+  return ok;
 }
 
 // Hysteria 2 流量统计（通过 HTTP API）
@@ -441,7 +455,7 @@ async function selfHeal() {
   const active = await getXrayStatus();
   if (!active) {
     log('自愈', 'xray 未运行，尝试重启...');
-    const { ok, stderr } = await run('systemctl restart xray');
+    const { ok, stderr } = await run(serviceCommand('xray','restart'));
     log('自愈', ok ? 'xray 重启成功' : `xray 重启失败: ${stderr}`);
   }
   // Hysteria 自愈：仅当 config 存在时才检测
@@ -450,7 +464,7 @@ async function selfHeal() {
       const hy2Active = await getHysteriaStatus();
       if (!hy2Active) {
         log('自愈', 'hysteria-server 未运行，尝试重启...');
-        const { ok, stderr } = await run('systemctl restart hysteria-server');
+        const { ok, stderr } = await run(serviceCommand('hysteria-server','restart'));
         log('自愈', ok ? 'hysteria-server 重启成功' : `hysteria-server 重启失败: ${stderr}`);
       }
     }
@@ -470,13 +484,13 @@ async function handleCommand(msg) {
       break;
 
     case 'restart_xray': {
-      const { ok, stderr } = await run('systemctl restart xray');
+      const { ok, stderr } = await run(serviceCommand('xray','restart'));
       reply({ success: ok, error: ok ? undefined : stderr });
       break;
     }
 
     case 'restart_hysteria': {
-      const { ok, stderr } = await run('systemctl restart hysteria-server');
+      const { ok, stderr } = await run(serviceCommand('hysteria-server','restart'));
       reply({ success: ok, error: ok ? undefined : stderr });
       break;
     }
@@ -499,7 +513,7 @@ async function handleCommand(msg) {
         }
         fs.mkdirSync('/etc/hysteria', { recursive: true });
         fs.writeFileSync(hy2ConfigPath, configStr, 'utf8');
-        const { ok, stderr } = await run('systemctl restart hysteria-server');
+        const { ok, stderr } = await run(serviceCommand('hysteria-server','restart'));
         reply({ success: ok, error: ok ? undefined : stderr });
       } catch (e) {
         reply({ success: false, error: e.message });
@@ -529,7 +543,7 @@ async function handleCommand(msg) {
           log('WARN', `备份当前配置失败: ${backupErr.message}`);
         }
         fs.writeFileSync(XRAY_CONFIG_PATH, configStr, 'utf8');
-        const { ok, stderr } = await run('systemctl restart xray');
+        const { ok, stderr } = await run(serviceCommand('xray','restart'));
         reply({ success: ok, error: ok ? undefined : stderr });
       } catch (e) {
         reply({ success: false, error: e.message });

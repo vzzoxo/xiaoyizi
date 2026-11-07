@@ -1,5 +1,5 @@
-#!/bin/bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 # vless-agent 安装脚本
 # 用法: ./install.sh <server_url> <token> <node_id> [--check-ipv6]
@@ -28,9 +28,8 @@ echo "NodeId: ${NODE_ID}"
 echo ""
 
 # 检查 Node.js
-if ! command -v node &>/dev/null; then
-  echo "❌ 未找到 Node.js，请先安装 Node.js 18+"
-  exit 1
+if ! command -v node >/dev/null 2>&1; then
+  if command -v apk >/dev/null 2>&1; then apk add --no-cache nodejs openrc; else echo '未找到 Node.js，请先安装 Node.js 18+'; exit 1; fi
 fi
 
 NODE_VERSION=$(node -v | sed 's/v//' | cut -d. -f1)
@@ -41,6 +40,7 @@ echo "Node.js 版本: $(node -v)"
 # 转发模式下接受 RA。AWS VPC 的某些子网仅通过 RA 广播默认网关，
 # 不修则会出现「IPv6 地址有但 ::/0 路由缺失」导致出站全断。
 if [ "$CHECK_IPV6" = "true" ]; then
+  mkdir -p /etc/sysctl.d
   cat > /etc/sysctl.d/99-ipv6-accept-ra.conf <<'SYSCTL_EOF'
 # 修复 IPv6 转发场景下 RA 默认路由不被接受的问题
 net.ipv6.conf.all.accept_ra = 2
@@ -74,6 +74,29 @@ cp "${SCRIPT_DIR}/agent.js" "${AGENT_DIR}/agent.js"
 chmod 755 "${AGENT_DIR}/agent.js"
 echo "✅ agent.js 复制到 ${AGENT_DIR}/"
 
+if command -v rc-service >/dev/null 2>&1 && [ ! -d /run/systemd/system ]; then
+  cat > /etc/init.d/vless-agent <<EOF_OPENRC
+#!/sbin/openrc-run
+name="vless-agent"
+command="$(command -v node)"
+command_args="/opt/vless-agent/agent.js"
+command_directory="/opt/vless-agent"
+supervisor="supervise-daemon"
+respawn_delay=5
+respawn_max=0
+output_log="/var/log/vless-agent.log"
+error_log="/var/log/vless-agent.log"
+export NODE_ENV=production
+depend() {
+  need net
+}
+EOF_OPENRC
+  chmod 755 /etc/init.d/vless-agent
+  rc-update add vless-agent default
+  rc-service vless-agent restart
+  rc-service vless-agent status
+  echo '日志: /var/log/vless-agent.log；状态: rc-service vless-agent status'
+else
 # 创建 systemd service
 cat > /etc/systemd/system/vless-agent.service <<EOF
 [Unit]
@@ -114,3 +137,5 @@ echo ""
 echo "=== 安装完成 ==="
 echo "查看日志: journalctl -u vless-agent -f"
 echo "服务状态: systemctl status vless-agent"
+
+fi
