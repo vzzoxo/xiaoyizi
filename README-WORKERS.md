@@ -25,6 +25,17 @@ npm run deploy
 
 首次打开网站后，使用初始化管理员的邮箱和密码登录。进入后台设置 SMTP、注册规则和节点。
 
+## GitHub 自动构建部署
+
+已通过 Cloudflare Workers Builds 连接 `hekuo5310/xiaoyizi`。当前监听 `work/cloudflare-ulzix` 的推送。迁移 PR 尚未合并，因此暂不监听仍为旧 Node 版本的 `main`；合并后在构建设置中将生产分支切换为 `main` 即可，仓库连接和部署凭据无需重建。
+
+- 构建检查：`npm test && npm run test:worker && npm run check:worker`
+- 发布命令：`npx wrangler deploy`
+- 构建环境：Node.js 22，仓库根目录，启用构建缓存。
+- 任一检查失败则停止发布；其他分支和外部 PR 不部署到生产环境。
+- 部署凭据由 Cloudflare Builds 管理，运行时 Secret 保留在 Worker 中；不把管理员密码或 Ulzix Cookie 写入 GitHub 仓库。
+- 后续可在 Cloudflare 的本 Worker「设置 → 构建」中查看日志和修改监听分支。
+
 ## 本地开发与检查
 
 复制 `.dev.vars.example` 为 `.dev.vars`，填入本地测试值，然后：
