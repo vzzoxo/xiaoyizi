@@ -86,7 +86,7 @@ async function loadUlzixCatalog() {
       products.replaceChildren();
       for(const product of data.products.filter(p=>String(p.categoryId)===group.value)) {
         const card=ulzixElement('div','','glass rounded-xl p-3 space-y-2');
-        card.append(ulzixElement('p',product.title,'text-white'),ulzixElement('p',product.description || ''),ulzixElement('p',`类型：${product.type} · 库存：${product.stock ?? '不限'}`));
+        card.append(ulzixElement('p',product.title,'text-white'),ulzixElement('p',product.description || ''),ulzixElement('p',`类型：${product.type} · 库存：${product.stock ?? '不限'} · 默认镜像：${product.image || '以上游为准'}`));
         const period=ulzixElement('select','','bg-gray-800 text-white rounded px-2 py-2');period.setAttribute('aria-label',product.title+' 计费周期');
         const pricing=product.pricing || {};
         const choices=pricing.type==='recurrent' ? Object.entries(pricing.recurrent || {}).filter(([,p])=>p.enabled) : [[pricing.type,pricing[pricing.type]]];

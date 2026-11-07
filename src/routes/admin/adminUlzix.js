@@ -28,7 +28,7 @@ router.get('/ulzix/catalog', asyncHandler(async (req,res) => {
     const client=new UlzixClient(await settings.read());
     const categories=await client.catalog('product/category_get_list');
     const products=await client.catalog('product/get_list');
-    res.json({categories:categories.map(c=>({id:c.id,title:c.title,description:c.description})),products:products.map(p=>({id:p.id,categoryId:p.product_category_id,title:p.title,description:p.description,type:p.type,pricing:p.pricing,stock:p.stock_control ? p.quantity_in_stock : null,formId:p.form_id}))});
+    res.json({categories:categories.map(c=>({id:c.id,title:c.title,description:c.description})),products:products.map(p=>({id:p.id,categoryId:p.product_category_id,title:p.title,description:p.description,type:p.type,pricing:p.pricing,stock:p.stock_control ? p.quantity_in_stock : null,formId:p.form_id,image:p.config?.image || null}))});
   } catch(e) {purchaseFailure(res,e);}
 }));
 router.get('/ulzix/purchases', (req,res) => res.json({purchases:purchases.list(db.getDb())}));

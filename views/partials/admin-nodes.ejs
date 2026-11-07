@@ -144,6 +144,7 @@
   <!-- 一键部署 -->
   <details class="glass rounded-2xl">
     <summary class="text-rose-400 text-sm cursor-pointer hover:text-rose-300 p-4">🚀 一键部署节点</summary>
+    <p class="px-4 pb-3 text-gray-400 text-xs">部署要求 Debian/Ubuntu + systemd。Ulzix NAT 如默认安装 Alpine，请先在控制台准备兼容系统，并核实 SSH 映射地址和端口。</p>
     <div id="ulzix-deploy-list" class="px-4 pb-3 space-y-2 text-sm text-gray-300" aria-live="polite"></div>
     <form id="smart-deploy-form" method="POST" action="/admin/api/nodes/deploy-smart" class="px-4 pb-4 grid grid-cols-2 gap-3">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
